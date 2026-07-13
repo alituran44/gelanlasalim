@@ -1,6 +1,7 @@
 import express from 'express';
 import http from 'http';
 import dotenv from 'dotenv';
+import path from 'path';
 
 // WebSocket & Seeding
 import { initWebSocket } from './config/websocket.js';
@@ -32,7 +33,7 @@ initWebSocket(server);
 app.use(express.json());
 
 // Statik dosyaları sunma (Frontend için)
-app.use(express.static('public'));
+app.use(express.static(path.join(process.cwd(), 'public')));
 
 // CORS & Temel Güvenlik Başlıkları
 app.use((req, res, next) => {

@@ -65,12 +65,19 @@ app.use('/api/admin', adminRouter);
 // Hata yönetimi (Tüm routerlardan sonra gelmeli)
 app.use(errorHandler);
 
-// Sunucuyu ayağa kaldırıyoruz (Express app yerine HTTP server dinlenmeli)
-server.listen(PORT, async () => {
-    await seedDatabase();
-    console.log(`==================================================`);
-    console.log(`🚀 Sunucu ${PORT} portunda başarıyla başlatıldı.`);
-    console.log(`👉 Sağlık Kontrolü: http://localhost:${PORT}/health`);
-    console.log(`👉 Arayüz (Frontend): http://localhost:${PORT}`);
-    console.log(`==================================================`);
-});
+// Sunucuyu ayağa kaldırıyoruz (Express app yerine HTTP server dinlenmeli - Vercel harici ortamlarda)
+if (!process.env.VERCEL) {
+    server.listen(PORT, async () => {
+        await seedDatabase();
+        console.log(`==================================================`);
+        console.log(`🚀 Sunucu ${PORT} portunda başarıyla başlatıldı.`);
+        console.log(`👉 Sağlık Kontrolü: http://localhost:${PORT}/health`);
+        console.log(`👉 Arayüz (Frontend): http://localhost:${PORT}`);
+        console.log(`==================================================`);
+    });
+} else {
+    // Vercel serverless ortamı için tohumlamayı asenkron başlat
+    seedDatabase().catch(err => console.error('Tohumlama hatası:', err));
+}
+
+export default app;

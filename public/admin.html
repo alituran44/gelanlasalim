@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetim Paneli | gelanlasalim.com</title>
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="portal-body">
+
+    <!-- Üst Bar -->
+    <header class="main-header">
+        <div class="header-inner">
+            <div class="brand-logo" style="cursor: pointer;" onclick="window.location.href='/'">
+                <span class="logo-main">gelanla<span class="logo-accent">salim</span></span>
+                <span class="logo-badge">Yönetim</span>
+            </div>
+            
+            <div class="portal-user-actions" id="headerActions" style="display: none;">
+                <span class="user-info-text" id="currentUserDisplay">Yönetici: Yükleniyor...</span>
+                <button class="secondary-btn" onclick="logout()">Güvenli Çıkış</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-layout">
+        
+        <!-- 1. GİRİŞ EKRANI (Admin sadece giriş yapabilir, kayıt olamaz) -->
+        <div id="authContainer" class="auth-wrapper">
+            <div class="content-card auth-card">
+                <form id="formLogin" class="styled-form auth-form">
+                    <h3>Yönetim Girişi</h3>
+                    <p class="auth-desc">Platform genel istatistiklerini izlemek ve firma onaylarını yönetmek için oturum açın.</p>
+                    <div class="form-field">
+                        <label for="loginEmail">Yönetici E-posta</label>
+                        <input type="email" id="loginEmail" placeholder="admin@gelanlasalim.com" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="loginPassword">Güvenlik Şifresi</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="primary-btn span-full">Yönetici Girişi Yap</button>
+                    
+                    <div class="divider"><span>veya</span></div>
+                    <button type="button" class="accent-btn span-full" onclick="quickLogin()">Tek Tıkla Hızlı Demo Girişi</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 2. ADMIN DASHBOARD -->
+        <div id="dashboardContainer" class="role-panel hidden">
+            <div class="panel-header-section">
+                <h1>Platform Yönetim Merkezi</h1>
+                <p>Firma evrak doğrulama taleplerini onaylayın, ihaleleri denetleyin ve finansal akışları takip edin.</p>
+            </div>
+
+            <!-- Admin Özet Kartları -->
+            <div class="admin-stats-strip">
+                <div class="stat-card">
+                    <span class="stat-label">Toplam İşlem Hacmi</span>
+                    <span class="stat-value" id="adminStatVolume">0.00 TL</span>
+                    <span class="stat-hint">Tamamlanan İhale Ciro Toplamı</span>
+                </div>
+                <div class="stat-card highlight">
+                    <span class="stat-label">Platform Komisyonu (%2)</span>
+                    <span class="stat-value" id="adminStatCommission">0.00 TL</span>
+                    <span class="stat-hint">Hizmet Bedeli Kazancı</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Güvenli Havuzda Duran</span>
+                    <span class="stat-value" id="adminStatEscrow">0.00 TL</span>
+                    <span class="stat-hint">Simüle Edilen Aktif Escrow Toplamı</span>
+                </div>
+            </div>
+
+            <div class="dashboard-grid admin-layout">
+                <!-- Sol Kolon: Firma Onay Kuyruğu -->
+                <div class="admin-verification-column">
+                    <div class="content-card">
+                        <h2 class="card-title">Firma Doğrulama Kuyruğu</h2>
+                        <div class="verification-list" id="adminVerificationQueue">
+                            <!-- Evrak kontrol bekleyen firmalar -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sağ Kolon: Aktif İhaleler Denetim Masası -->
+                <div class="admin-moderation-column">
+                    <div class="content-card">
+                        <h2 class="card-title">Tüm İhaleler Moderasyon Masası</h2>
+                        <div class="moderation-list" id="adminTendersList">
+                            <!-- Tüm ihaleler listesi ve iptal yetkisi -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Scriptler -->
+    <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gelanlasalim.com | B2B Tedarikte Canlı Tersine İhale Arenası</title>
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="landing-page">
+
+    <!-- Üst Gezinme Çubuğu -->
+    <header class="main-header">
+        <div class="header-inner">
+            <div class="brand-logo">
+                <span class="logo-main">gelanla<span class="logo-accent">salim</span></span>
+                <span class="logo-badge">Pro</span>
+            </div>
+            
+            <nav class="landing-nav">
+                <a href="#nasil-calisir" class="nav-link">Nasıl Çalışır?</a>
+                <a href="#avantajlar" class="nav-link">Avantajlar</a>
+                <a href="#istatistikler" class="nav-link">Sayılarla Biz</a>
+            </nav>
+
+            <div class="header-actions" style="display: flex; align-items: center; gap: 15px;">
+                <a href="/buyer.html" class="nav-link">Alıcı Girişi</a>
+                <a href="/seller.html" class="nav-link">Firma Girişi</a>
+                <button class="primary-btn" onclick="window.location.href='/buyer.html'">İhale Aç</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Kahraman (Hero) Bölümü - Kırık Simetri ve Güçlü Tipografi -->
+    <section class="hero-section">
+        <div class="hero-container">
+            <div class="hero-text-content">
+                <div class="tag-announcement">
+                    <span class="tag-dot"></span>
+                    Tedarikçilerin Canlı Yarıştığı Yeni Nesil B2B İhale Platformu
+                </div>
+                <h1 class="hero-headline">Tedarikte <br><span class="text-glow">Canlı Rekabet</span> Dönemi</h1>
+                <p class="hero-subheadline">Malzeme, hammadde, lojistik veya kurumsal hizmet taleplerinizi yayınlayın; onaylı tedarikçilerin anlık fiyat kırarak yarışmasını izleyin. Telefon trafiğini bitirin, en uygun fiyatı canlı yakalayın.</p>
+                
+                <div class="hero-ctas">
+                    <button class="primary-btn lg" onclick="window.location.href='/buyer.html'">Alıcı Portalı (İhale Aç)</button>
+                    <button class="secondary-btn lg" onclick="window.location.href='/seller.html'">Firma Portalı (Teklif Ver)</button>
+                </div>
+
+                <div class="hero-badges">
+                    <div class="badge-item">
+                        <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        <span>%100 Doğrulanmış B2B Firmaları</span>
+                    </div>
+                    <div class="badge-item">
+                        <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <span>Güvenli Havuz (Escrow) Altyapısı</span>
+                    </div>
+                    <div class="badge-item">
+                        <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        <span>Sıfır Alıcı Komisyonu</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ Taraf: Asimetrik Canlı Rekabet Simülasyonu Görseli -->
+            <div class="hero-visual-card">
+                <div class="visual-card-header">
+                    <span class="live-pulse">CANLI REKABET PANELI</span>
+                    <span class="visual-meta">15 Ton Polipropilen Hammadde Tedariği</span>
+                </div>
+                <div class="visual-bids-list">
+                    <div class="visual-bid-row gold">
+                        <span class="rank">1</span>
+                        <span class="name">Global Polimer A.Ş.</span>
+                        <span class="price">412.000 TL</span>
+                    </div>
+                    <div class="visual-bid-row silver">
+                        <span class="rank">2</span>
+                        <span class="name">Beta Plastik Kimya</span>
+                        <span class="price">415.500 TL</span>
+                    </div>
+                    <div class="visual-bid-row bronze">
+                        <span class="rank">3</span>
+                        <span class="name">Liman Kimya Sanayi</span>
+                        <span class="price">421.000 TL</span>
+                    </div>
+                </div>
+                <div class="visual-footer">
+                    <span>En Düşük Teklif: <strong>412.000 TL</strong></span>
+                    <span class="action-blink">Fiyat Kırılıyor...</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sayılarla Biz (İstatistikler) -->
+    <section class="stats-section" id="istatistikler">
+        <div class="section-container">
+            <div class="grid-stats">
+                <div class="stat-box">
+                    <span class="num">12.4M+</span>
+                    <span class="label">Toplam İşlem Bedeli</span>
+                </div>
+                <div class="stat-box">
+                    <span class="num">150+</span>
+                    <span class="label">Doğrulanmış Üretici & Tedarikçi</span>
+                </div>
+                <div class="stat-box">
+                    <span class="num">%14.2</span>
+                    <span class="label">Ortalama Fiyat Tasarrufu</span>
+                </div>
+                <div class="stat-box">
+                    <span class="num">0 TL</span>
+                    <span class="label">Alıcı Üyelik Ücreti</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Nasıl Çalışır? (Step-by-Step) -->
+    <section class="how-it-works" id="nasil-calisir">
+        <div class="section-container">
+            <h2 class="section-title-large">3 Adımda Tersine İhale Arenası</h2>
+            <p class="section-subtitle-large">Tüm kurumsal satın alma süreçlerinizi dijitalleştirin, pazarlık gücünüzü katlayın.</p>
+            
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-num">01</div>
+                    <h3>Talebinizi İletin</h3>
+                    <p>Miktar, malzeme cinsi, teslimat konumu ve şartlarınızı girerek canlı ihale ilanınızı saniyeler içinde oluşturun.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">02</div>
+                    <h3>Canlı Rekabeti İzleyin</h3>
+                    <p>Tedarikçilerin birbirlerinin fiyatlarının altına inerek fiyat düşürdüğü tersine ihale sürecini anlık takip edin.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">03</div>
+                    <h3>Güvenle Anlaşın</h3>
+                    <p>En rekabetçi teklifi seçin. Ödemenizi güvenli havuz (escrow) hesabımıza yapıp tedariği sıfır riskle başlatın.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- İki Yönlü Avantajlar (Alıcı ve Firma) - Kırık Simetri Grid -->
+    <section class="advantages-section" id="avantajlar">
+        <div class="section-container">
+            <div class="advantages-grid">
+                
+                <!-- Alıcı Avantajları -->
+                <div class="advantage-card buyer-adv">
+                    <div class="adv-badge">ALICILAR (MÜŞTERİLER) İÇİN</div>
+                    <h2>Tedarik Maliyetlerinizi Düşürün</h2>
+                    <ul class="adv-list">
+                        <li>
+                            <svg class="list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span><strong>Tek Ekrandan Rekabet:</strong> Tek tek teklif toplamak yerine, tüm adayları tek ilanda şeffaf şekilde yarıştırın.</span>
+                        </li>
+                        <li>
+                            <svg class="list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span><strong>Güvenilir Altyapı:</strong> Sadece resmi evrakları doğrulanmış, lisanslı ve ticaret odasına kayıtlı firmalarla çalışın.</span>
+                        </li>
+                        <li>
+                            <svg class="list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span><strong>Finansal Güvence:</strong> Ödemeniz havuzda bekler, ürünler kapınıza gelip onaylanmadan satıcıya aktarılmaz.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Satıcı Avantajları -->
+                <div class="advantage-card seller-adv">
+                    <div class="adv-badge">TEDARİKÇİLER (FİRMALAR) İÇİN</div>
+                    <h2>Pazarlama Bütçesi Harcamadan Satış Yapın</h2>
+                    <ul class="adv-list">
+                        <li>
+                            <svg class="list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span><strong>Doğrudan Sıcak Talep:</strong> Hizmet bölgenizdeki kurumsal firmaların açtığı güncel malzeme ve hammadde taleplerini anında görün.</span>
+                        </li>
+                        <li>
+                            <svg class="list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span><strong>Tahsilat Riski Sıfır:</strong> Müşteri ihaleyi onayladığında bütçe güvenli havuz hesabına bloke edilir. Tahsilat garantidir.</span>
+                        </li>
+                        <li>
+                            <svg class="list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span><strong>Adil Rekabet:</strong> Komisyoncu ve aracılar olmadan, fiyat ve teslim gücünüzle öne çıkarak yeni pazarlara açılın.</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <span class="logo-main">gelanla<span class="logo-accent">salim</span></span>
+                <p>B2B Canlı Tedarik ve Tersine İhale Platformu © 2026</p>
+            </div>
+            <div class="footer-links" style="display: flex; gap: 20px;">
+                <a href="/buyer.html">Alıcı Portalı</a>
+                <a href="/seller.html">Firma Portalı</a>
+                <a href="/admin.html">Yönetim Portalı</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

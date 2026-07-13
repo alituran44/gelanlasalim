@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firma Portalı | gelanlasalim.com</title>
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="portal-body">
+
+    <!-- Üst Bar -->
+    <header class="main-header">
+        <div class="header-inner">
+            <div class="brand-logo" style="cursor: pointer;" onclick="window.location.href='/'">
+                <span class="logo-main">gelanla<span class="logo-accent">salim</span></span>
+                <span class="logo-badge">Firma</span>
+            </div>
+            
+            <div class="portal-user-actions" id="headerActions" style="display: none;">
+                <span class="user-info-text" id="currentUserDisplay">Firma: Yükleniyor...</span>
+                <button class="secondary-btn" onclick="logout()">Güvenli Çıkış</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-layout">
+        
+        <!-- 1. GİRİŞ & KAYIT EKRANI -->
+        <div id="authContainer" class="auth-wrapper">
+            <div class="content-card auth-card">
+                <div class="auth-tabs">
+                    <button class="auth-tab-btn active" id="tabBtnLogin" onclick="toggleAuthMode('login')">Firma Girişi</button>
+                    <button class="auth-tab-btn" id="tabBtnRegister" onclick="toggleAuthMode('register')">Firma Kaydı</button>
+                </div>
+
+                <!-- Giriş Formu -->
+                <form id="formLogin" class="styled-form auth-form">
+                    <h3>Tedarikçi Girişi</h3>
+                    <p class="auth-desc">Canlı ihalelere katılarak teklif vermek için giriş yapın.</p>
+                    <div class="form-field">
+                        <label for="loginEmail">E-posta Adresi</label>
+                        <input type="email" id="loginEmail" placeholder="firma@tedarikci.com" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="loginPassword">Şifre</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="primary-btn span-full">Giriş Yap</button>
+                    
+                    <div class="divider"><span>veya</span></div>
+                    <button type="button" class="accent-btn span-full" onclick="quickLogin('seller')">Tek Tıkla Hızlı Demo Girişi</button>
+                </form>
+
+                <!-- Kayıt Formu -->
+                <form id="formRegister" class="styled-form auth-form hidden">
+                    <h3>Yeni Firma Kaydı</h3>
+                    <p class="auth-desc">Kayıt olduktan sonra evraklarınızın yönetici onayından geçmesi gerekmektedir.</p>
+                    <div class="form-field">
+                        <label for="regCompanyName">Firma Unvanı</label>
+                        <input type="text" id="regCompanyName" placeholder="Örn: Global Polimer Ticaret A.Ş." required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="regName">Yetkili Adı</label>
+                            <input type="text" id="regName" placeholder="Mehmet" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="regSurname">Yetkili Soyadı</label>
+                            <input type="text" id="regSurname" placeholder="Öztürk" required>
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <label for="regEmail">E-posta Adresi</label>
+                        <input type="email" id="regEmail" placeholder="firma@tedarikci.com" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="regPhone">Telefon Numarası</label>
+                        <input type="tel" id="regPhone" placeholder="05321112233" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="regDoc">Yetki ve Ticari Faaliyet Belgesi (PDF/Görsel)</label>
+                        <input type="text" id="regDoc" placeholder="Örn: Vergi Levhası No: 123456" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="regPassword">Şifre</label>
+                        <input type="password" id="regPassword" placeholder="En az 6 karakter" required>
+                    </div>
+                    <button type="submit" class="primary-btn span-full">Firma Başvurusunu Tamamla</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 2. FİRMA DASHBOARD (Giriş yaptıktan sonra gösterilir) -->
+        <div id="dashboardContainer" class="role-panel hidden">
+            <div class="panel-header-section">
+                <h1>Tedarikçi Satış Masası</h1>
+                <p>Kategorinizle ve hizmet bölgenizle eşleşen canlı ihaleleri takip edin, anlık fiyat düşürerek işi kapın.</p>
+            </div>
+
+            <!-- Satıcı Detay Grid -->
+            <div class="dashboard-grid seller-layout">
+                <!-- Sol Taraf: Firma Profil Ayarları & Bölgeler -->
+                <div class="seller-settings">
+                    <!-- Firma Durum Kartı -->
+                    <div class="content-card mb-24">
+                        <h2 class="card-title">Firma Bilgi Kartı</h2>
+                        <div class="company-status-info" id="sellerProfileStatus">
+                            <!-- JS ile doldurulacak -->
+                        </div>
+                    </div>
+
+                    <!-- Faaliyet ve Hizmet Bölgeleri Formu -->
+                    <div class="content-card">
+                        <h2 class="card-title">Hizmet Ayarları</h2>
+                        <div class="settings-form">
+                            <div class="form-field mb-16">
+                                <label>Hizmet Verdiğiniz Kategoriler</label>
+                                <div class="checkbox-grid" id="sellerCategoriesList">
+                                    <!-- Dinamik Kategori Checkbox'ları -->
+                                </div>
+                                <button class="secondary-btn mt-8" onclick="saveSellerCategories()">Kategorileri Kaydet</button>
+                            </div>
+
+                            <div class="form-field">
+                                <label>Yeni Hizmet Bölgesi (İl/İlçe)</label>
+                                <div class="region-add-box">
+                                    <input type="text" id="sellerRegionCity" placeholder="İl (Örn: Kocaeli)">
+                                    <input type="text" id="sellerRegionDistrict" placeholder="İlçe (Boş bırakılırsa tüm il)">
+                                    <button class="secondary-btn" onclick="addSellerRegion()">Bölge Ekle</button>
+                                </div>
+                                <div class="regions-list" id="sellerRegionsContainer">
+                                    <!-- Kayıtlı bölgeler -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sağ Taraf: Eşleşen İhaleler -->
+                <div class="seller-arena">
+                    <div class="content-card">
+                        <div class="card-header-row">
+                            <h2 class="card-title">Hizmet Alanınızdaki Canlı İhaleler</h2>
+                            <span class="badge-count" id="sellerMatchedCount">0 Eşleşen</span>
+                        </div>
+                        <div class="tenders-feed" id="sellerMatchedTenders">
+                            <!-- Eşleşen ihaleler -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- CANLI İHALE ARENA MODAL -->
+    <div class="arena-modal hidden" id="arenaModal">
+        <div class="modal-backdrop" onclick="closeArenaModal()"></div>
+        <div class="modal-body">
+            <button class="close-modal-btn" onclick="closeArenaModal()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            
+            <div class="arena-layout-grid">
+                <!-- Sol Taraf: Detaylar ve Canlı Teklif Listesi -->
+                <div class="arena-left-content">
+                    <div class="arena-meta-header">
+                        <span class="badge-category" id="modalCategory">Kategori</span>
+                        <span class="badge-status" id="modalStatus">Statü</span>
+                    </div>
+                    <h2 class="arena-main-title" id="modalTitle">İhale Başlığı Yükleniyor...</h2>
+                    
+                    <div class="meta-row">
+                        <div class="meta-item">
+                            <span class="meta-label">Talep Edilen Miktar</span>
+                            <span class="meta-value" id="modalQtyVal">0 adet</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Teslimat Yeri</span>
+                            <span class="meta-value" id="modalLocVal">İl, İlçe</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Kalan Süre</span>
+                            <span class="meta-value warning" id="modalCountdownVal">00:00:00</span>
+                        </div>
+                    </div>
+
+                    <div class="arena-description-box">
+                        <h3>Teknik Şartname ve Açıklamalar</h3>
+                        <p id="modalDesc">Şartname yükleniyor...</p>
+                        <div class="delivery-address-box">
+                            <strong>Teslimat Adresi:</strong>
+                            <span id="modalAddressVal">Yükleniyor...</span>
+                        </div>
+                    </div>
+
+                    <!-- Canlı Teklif Merdiveni -->
+                    <div class="arena-ladder-box">
+                        <div class="ladder-header-row">
+                            <h3>Canlı Teklifler (En Düşük Fiyat Kazandırır)</h3>
+                            <span class="total-bids-badge" id="modalBidCount">0 Teklif</span>
+                        </div>
+                        <div class="live-bid-ladder" id="modalBidLadder">
+                            <!-- Canlı düşen teklif kartları -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sağ Taraf: İşlem Alanı (Fiyat Teklifi Verme) -->
+                <div class="arena-right-actions">
+                    <div class="action-card" id="actionSellerSubmit">
+                        <h3>Fiyat Teklifi Verin</h3>
+                        <p class="action-hint">Rakiplerinizin fiyatlarının altına inerek canlı ihaleyi kazanın.</p>
+                        <form id="formSubmitBid" class="styled-form">
+                            <div class="form-field">
+                                <label for="bidPriceInput">Toplam Teklif Fiyatı (TL)</label>
+                                <input type="number" id="bidPriceInput" min="1" placeholder="Örn: 395000" required>
+                            </div>
+                            <div class="form-field">
+                                <label for="bidLeadTimeInput">Teslim Süresi (Gün)</label>
+                                <input type="number" id="bidLeadTimeInput" min="1" placeholder="Örn: 2" required>
+                            </div>
+                            <div class="form-field">
+                                <label for="bidTaxInput">KDV Durumu</label>
+                                <select id="bidTaxInput">
+                                    <option value="false">KDV Hariç</option>
+                                    <option value="true">KDV Dahil</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label for="bidNoteInput">Teklif Notu</label>
+                                <input type="text" id="bidNoteInput" placeholder="Vade, ek garanti vb. detaylar...">
+                            </div>
+                            <button type="submit" class="accent-btn">Teklifi Gönder ve Fiyat Kır</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scriptler -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="seller.js"></script>
+</body>
+</html>

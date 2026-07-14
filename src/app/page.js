@@ -1,12 +1,28 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LandingPage() {
   const [activeFaq, setActiveFaq] = useState(null);
-  
-  // Real-time simulated bidding state
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [chatInput, setChatInput] = useState("");
+  const [messages, setMessages] = useState([
+    { 
+      sender: "bot", 
+      text: "Merhaba! Ben gelanlasalim.com Yapay Zeka Destek Asistanıyım. B2B Tersine İhale Arenası, Güvenli Havuz (Escrow) ödemeleri, üyelik veya pazarlık sistemi hakkında merak ettiğiniz her şeyi bana sorabilirsiniz." 
+    }
+  ]);
+
+  const messagesEndRef = useRef(null);
+
+  // Auto-scroll messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Real-time simulated bidding state for Hero section
   const [simulatedBids, setSimulatedBids] = useState([
     { id: 1, rank: 1, name: "Kırtasiye Dünyası Ltd. Şti.", price: 62000, logo: "KD" },
     { id: 2, rank: 2, name: "Beta Malzeme Ticaret", price: 64000, logo: "BM" },
@@ -20,19 +36,15 @@ export default function LandingPage() {
         const next = [...prev];
         const targetIndex = Math.floor(Math.random() * next.length);
         const reduction = Math.floor(Math.random() * 800) + 200;
-        
-        // Ensure price doesn't fall below a floor
-        const currentLowest = Math.min(...next.map(b => b.price));
         const limitFloor = 55000;
         
         let newPrice = next[targetIndex].price - reduction;
         if (newPrice < limitFloor) {
-          newPrice = 64500; // Reset price upwards if it gets too low
+          newPrice = 64500;
         }
         
         next[targetIndex].price = newPrice;
         
-        // Re-calculate ranks based on lowest price winning (reverse auction)
         const sorted = [...next].sort((a, b) => a.price - b.price);
         return prev.map(item => {
           const sortedIndex = sorted.findIndex(s => s.id === item.id);
@@ -48,6 +60,38 @@ export default function LandingPage() {
 
     return () => clearInterval(timer);
   }, []);
+
+  const handleSendChat = (textToSend) => {
+    const query = textToSend || chatInput;
+    if (!query.trim()) return;
+
+    // Add user message
+    const userMsg = { sender: "user", text: query };
+    setMessages(prev => [...prev, userMsg]);
+    setChatInput("");
+
+    // Thinking delay simulation
+    setTimeout(() => {
+      let replyText = "";
+      const normalizedQuery = query.toLowerCase();
+
+      if (normalizedQuery.includes("havuz") || normalizedQuery.includes("escrow") || normalizedQuery.includes("güvenli") || normalizedQuery.includes("odeme") || normalizedQuery.includes("ödeme")) {
+        replyText = "Güvenli Havuz (Escrow) altyapımız, alıcının ihale bedelini platform korumalı hesabına yatırmasını sağlar. Tedarikçi teslimatı yaptıktan ve alıcı kontrol panelinden teslimatı onayladıktan sonra ödeme otomatik olarak tedarikçiye aktarılır. Böylece kurumsal alımlarınız sıfır riskle tamamlanır.";
+      } else if (normalizedQuery.includes("üye") || normalizedQuery.includes("uye") || normalizedQuery.includes("kayıt") || normalizedQuery.includes("giriş") || normalizedQuery.includes("hesap")) {
+        replyText = "Platformumuz yalnızca onaylı B2B şirketlerine açıktır. 'Üye Girişi' panelinden e-posta ve şifrenizle giriş yapabilirsiniz. Sistemi anında test etmek için Giriş panelinde bulunan 'Hızlı Demo Alıcı' veya 'Hızlı Demo Satıcı' butonlarını kullanarak şifresiz, tek tıkla giriş yapabilirsiniz.";
+      } else if (normalizedQuery.includes("ihale") || normalizedQuery.includes("ilan") || normalizedQuery.includes("nasıl") || normalizedQuery.includes("talep")) {
+        replyText = "İhale açmak çok kolaydır! Alıcı olarak giriş yaptıktan sonra üst menüdeki 'İLAN VER' butonuna tıklayarak ürün cinsi, miktarı, teslimat ili/ilçesi, hedef fiyatı ve varsa RAR/ZIP şartname dosyalarınızı girip ihaleyi anında yayına alabilirsiniz.";
+      } else if (normalizedQuery.includes("teklif") || normalizedQuery.includes("fiyat") || normalizedQuery.includes("pazarlık") || normalizedQuery.includes("satıcı")) {
+        replyText = "Satıcı (Tedarikçi) olarak sisteme giriş yaptıktan sonra ana sayfadaki aktif ihalelerden birine tıklayıp anlık fiyat kırarak teklifinizi sunabilirsiniz. Alıcı teklifinizi 'KABUL' edebilir, 'RET' edebilir veya 'PAZARLIK ET' seçeneğiyle size karşı teklif iletebilir.";
+      } else if (normalizedQuery.includes("whatsapp") || normalizedQuery.includes("destek") || normalizedQuery.includes("iletişim") || normalizedQuery.includes("telefon")) {
+        replyText = "Bizimle doğrudan sağ alt köşedeki yeşil WhatsApp butonuna tıklayarak iletişime geçebilirsiniz. Canlı müşteri temsilcilerimiz hafta içi 09:00 - 18:00 saatleri arasında destek sunmaktadır.";
+      } else {
+        replyText = "Sorunuzu tam olarak eşleştiremedim ancak size şu konularda yardımcı olabilirim: 1- Güvenli Havuz Sistemi, 2- Üye Girişi ve Demo Hesaplar, 3- İhale İlanı Oluşturma, 4- Teklif Verme ve Pazarlık Süreci. Lütfen bu başlıklardan birini sorunuz.";
+      }
+
+      setMessages(prev => [...prev, { sender: "bot", text: replyText }]);
+    }, 800);
+  };
 
   const faqs = [
     {
@@ -117,7 +161,6 @@ export default function LandingPage() {
       <section className="relative pt-12 pb-24 md:py-32 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-7 flex flex-col gap-6 text-left">
           
-          {/* Announcement Badge */}
           <motion.div 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -147,7 +190,6 @@ export default function LandingPage() {
             Malzeme, lojistik veya hizmet taleplerinizi yayınlayın; doğrulanmış tedarikçilerin anlık fiyat kırarak yarıştığı canlı tersine ihale arenasını izleyin. Telefon trafiğini bitirin, en uygun fiyatı canlı yakalayın.
           </motion.p>
 
-          {/* Call to Actions */}
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -161,14 +203,13 @@ export default function LandingPage() {
               <i className="fa-solid fa-building"></i> Alıcı Olarak İlan Aç
             </button>
             <button 
-              onClick={() => window.location.href = '/portal.html#/uyelik'}
-              className="px-7 py-3.5 rounded-xl bg-transparent border border-accent/40 text-accent font-bold text-base hover:bg-accent/5 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2"
+              onClick={() => setShowVideoModal(true)}
+              className="px-7 py-3.5 rounded-xl bg-transparent border border-white/20 text-white font-bold text-base hover:bg-white/5 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2"
             >
-              <i className="fa-solid fa-truck"></i> Satıcı Olarak Teklif Ver
+              <i className="fa-solid fa-circle-play text-accent"></i> Tanıtım Videosu
             </button>
           </motion.div>
 
-          {/* Core Trust Badges */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -190,8 +231,8 @@ export default function LandingPage() {
           </motion.div>
         </div>
 
-        {/* Live Arena Mockup Widget (Framer Motion Staggered Bids list) */}
-        <div className="lg:col-span-5 relative w-full flex justify-center">
+        {/* Live Arena Mockup Widget + Generated B2B Image Placement */}
+        <div className="lg:col-span-5 relative w-full flex flex-col items-center gap-6">
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -213,7 +254,6 @@ export default function LandingPage() {
               <p className="text-xs text-gray-400">Peyzaj & Kırtasiye Hizmetleri A.Ş. tarafından açıldı</p>
             </div>
 
-            {/* Bids Ladder */}
             <div className="flex flex-col gap-3">
               <AnimatePresence mode="popLayout">
                 {simulatedBids.map((bid) => (
@@ -255,8 +295,78 @@ export default function LandingPage() {
               </span>
             </div>
           </motion.div>
+
+          {/* Premium AI Generated Image Display */}
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="w-full max-w-[430px] rounded-2xl border border-white/5 overflow-hidden shadow-premium relative group cursor-pointer"
+            onClick={() => window.location.href = '/portal.html'}
+          >
+            <img 
+              src="/b2b_trade_hero.png" 
+              alt="B2B Supply Chain Network illustration" 
+              className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-4">
+              <div className="text-left">
+                <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-0.5">GA AKILLI ALTYAPI</h5>
+                <p className="text-[11px] text-gray-300 font-medium">B2B tedarik zincirleri ve nakliyede tam otomasyon.</p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
+
+      {/* Video Modal Simulation */}
+      <AnimatePresence>
+        {showVideoModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowVideoModal(false)}></div>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-4xl bg-card border border-white/10 rounded-2xl shadow-premium overflow-hidden z-10 p-2"
+            >
+              <button 
+                onClick={() => setShowVideoModal(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-white z-20 w-8 h-8 rounded-full bg-black/40 flex items-center justify-center"
+              >
+                <i className="fa-solid fa-xmark"></i>
+              </button>
+              
+              {/* Premium Simulated Platform Tour Video (HTML5 visual mockup) */}
+              <div className="w-full aspect-video bg-[#0c0d12] rounded-xl flex flex-col items-center justify-center p-8 relative overflow-hidden">
+                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,rgba(226,125,96,0.3)_0%,transparent_70%)]"></div>
+                
+                {/* Simulated playback visual */}
+                <div className="flex flex-col items-center gap-4 text-center max-w-md z-10">
+                  <div className="w-20 h-20 rounded-full bg-accent/10 border-2 border-accent flex items-center justify-center text-accent text-3xl pulse-dot">
+                    <i className="fa-solid fa-gavel"></i>
+                  </div>
+                  <h3 className="font-heading font-black text-xl text-white">gelanlasalim.com Platform Turu</h3>
+                  <p className="text-xs text-gray-400 leading-relaxed">
+                    Bu simülasyon videosunda Alıcı firmaların ilan açıp tedarikçilerin saniyeler içinde anlık fiyat kırarak yarıştığı kontrol panelini inceliyorsunuz.
+                  </p>
+                  
+                  {/* Interactive mock video loading bar */}
+                  <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mt-4">
+                    <motion.div 
+                      initial={{ width: "0%" }}
+                      animate={{ width: "100%" }}
+                      transition={{ duration: 10, ease: "linear", repeat: Infinity }}
+                      className="h-full bg-accent"
+                    ></motion.div>
+                  </div>
+                  <span className="text-[10px] text-gray-500 uppercase font-mono tracking-widest">Platform Simülasyonu Devam Ediyor...</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Stats Strip */}
       <section className="bg-card/50 border-y border-white/5 py-12" id="istatistikler">
@@ -413,6 +523,135 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* YÜZEN EYLEM ELEMANLARI (WhatsApp & Yapay Zeka Chatbot) */}
+      <div className="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 items-end">
+        
+        {/* WhatsApp Yüzen Butonu */}
+        <motion.a 
+          href="https://wa.me/905555555555?text=Merhaba,%20B2B%20%C4%B0hale%20Platformu%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum."
+          target="_blank"
+          rel="noopener noreferrer"
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
+          className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center text-white text-2xl shadow-premium relative group"
+        >
+          <i className="fa-brands fa-whatsapp"></i>
+          {/* Tooltip */}
+          <span className="absolute right-16 top-1/2 -translate-y-1/2 whitespace-nowrap bg-black/80 text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300 font-medium">
+            WhatsApp Destek
+          </span>
+        </motion.a>
+
+        {/* Yapay Zeka Chatbot Butonu */}
+        <motion.button 
+          onClick={() => setShowChat(!showChat)}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
+          className="w-14 h-14 rounded-full bg-accent hover:bg-accent/90 flex items-center justify-center text-black text-2xl shadow-premium relative group"
+        >
+          {showChat ? <i className="fa-solid fa-xmark"></i> : <i className="fa-solid fa-robot"></i>}
+          {/* Message notification bubble */}
+          {!showChat && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center pulse-dot">
+              1
+            </span>
+          )}
+          <span className="absolute right-16 top-1/2 -translate-y-1/2 whitespace-nowrap bg-black/80 text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300 font-medium">
+            Yapay Zeka Destek
+          </span>
+        </motion.button>
+
+        {/* Chatbot Sohbet Penceresi */}
+        <AnimatePresence>
+          {showChat && (
+            <motion.div 
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 30, scale: 0.95 }}
+              className="w-80 md:w-96 h-[460px] bg-card/95 border border-white/10 rounded-2xl shadow-premium backdrop-blur-lg flex flex-col overflow-hidden text-left"
+            >
+              {/* Chat Header */}
+              <div className="bg-[#191c26] px-5 py-4 border-b border-white/5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center text-black font-black text-sm">
+                    GA
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-white leading-tight">Yapay Zeka Destek Asistanı</h4>
+                    <span className="text-[9px] text-success font-semibold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-success pulse-dot"></span> Online / Canlı Destek
+                    </span>
+                  </div>
+                </div>
+                <button onClick={() => setShowChat(false)} className="text-gray-400 hover:text-white">
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+
+              {/* Chat Messages */}
+              <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 font-sans text-xs">
+                {messages.map((m, idx) => (
+                  <div 
+                    key={idx} 
+                    className={`max-w-[80%] p-3 rounded-xl leading-relaxed ${
+                      m.sender === 'user' 
+                        ? 'bg-accent text-black font-semibold self-end rounded-tr-none' 
+                        : 'bg-white/5 border border-white/5 text-gray-300 self-start rounded-tl-none'
+                    }`}
+                  >
+                    {m.text}
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Quick Suggestion Questions */}
+              <div className="px-4 py-2 flex flex-wrap gap-2 border-t border-white/5 bg-black/20">
+                <button 
+                  onClick={() => handleSendChat("Güvenli Havuz nedir?")}
+                  className="text-[10px] bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1 rounded-full text-gray-300"
+                >
+                  🔒 Havuz Nedir?
+                </button>
+                <button 
+                  onClick={() => handleSendChat("Nasıl üye olurum?")}
+                  className="text-[10px] bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1 rounded-full text-gray-300"
+                >
+                  🚀 Nasıl Üye Olunur?
+                </button>
+                <button 
+                  onClick={() => handleSendChat("Nasıl ihale ilanı açarım?")}
+                  className="text-[10px] bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1 rounded-full text-gray-300"
+                >
+                  ➕ İhale Açmak
+                </button>
+              </div>
+
+              {/* Chat Input */}
+              <form 
+                onSubmit={(e) => { e.preventDefault(); handleSendChat(); }}
+                className="p-3 bg-[#11141c] border-t border-white/5 flex gap-2"
+              >
+                <input 
+                  type="text" 
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  placeholder="Sorunuzu buraya yazın..."
+                  className="flex-1 bg-black/40 border border-white/5 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-accent/40"
+                />
+                <button 
+                  type="submit" 
+                  className="w-8 h-8 rounded-lg bg-accent text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+                >
+                  <i className="fa-solid fa-paper-plane text-xs"></i>
+                </button>
+              </form>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+      </div>
 
     </div>
   );

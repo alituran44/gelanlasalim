@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>gelanlasalim.com | B2B Canlı Tersine İhale Arenası</title>
+    <title>gelanlasalim.com | B2B Tedarikte Canlı Tersine İhale Arenası</title>
     <!-- Google Fonts: Outfit & Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,118 +12,207 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="dashboard-body">
+<body class="landing-page">
 
-    <!-- Ambient Glow Background -->
+    <!-- Ambient Background Light Glows -->
     <div class="ambient-glow-wrapper">
         <div class="glow-circle primary"></div>
         <div class="glow-circle secondary"></div>
     </div>
 
-    <!-- Üst Gezinme Çubuğu (Header) -->
+    <!-- Üst Gezinme Çubuğu (Navbar) -->
     <header class="main-header">
         <div class="header-inner">
-            <!-- Brand Logo -->
-            <div class="brand-logo" onclick="window.location.hash = '#/'" style="cursor: pointer;">
+            <div class="brand-logo" onclick="window.location.href = '/'" style="cursor: pointer;">
                 <div class="logo-circle">GA</div>
                 <span class="logo-main">gelanla<span class="logo-accent">salim</span></span>
             </div>
-
-            <!-- WebSocket Bağlantı Durumu -->
-            <div class="sys-status">
-                <span class="status-indicator online" id="ws-status-indicator"></span>
-                <span id="ws-status-text">Canlı Bağlantı Aktif</span>
-            </div>
-
-            <!-- Orta/Sağ Menü Tuşları -->
-            <nav class="header-nav">
-                <button class="nav-btn" onclick="app.navigateTo('/verilen-teklifler')">
-                    <i class="fa-solid fa-paper-plane"></i> Verilen Teklifler
-                </button>
-                <button class="nav-btn" onclick="app.navigateTo('/alinan-teklifler')">
-                    <i class="fa-solid fa-inbox"></i> Alınan Teklifler
-                </button>
-                <div class="notification-wrapper">
-                    <button class="nav-btn" onclick="app.toggleNotifications()">
-                        <i class="fa-solid fa-bell"></i> Bildirimler
-                        <span class="noti-badge" id="noti-count">1</span>
-                    </button>
-                    <!-- Bildirim Açılır Penceresi -->
-                    <div class="noti-dropdown" id="noti-dropdown">
-                        <div class="noti-dropdown-header">Bildirimler</div>
-                        <div class="noti-dropdown-list" id="noti-dropdown-list">
-                            <!-- Dinamik Bildirimler -->
-                            <div class="noti-item unread">
-                                <div class="noti-meta">Tebrikler!</div>
-                                <div class="noti-text">A4 KAĞIT ALIMI ihalesine yeni bir teklif geldi.</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button class="nav-btn-highlight" id="btn-membership" onclick="app.navigateTo('/uyelik')">
-                    <i class="fa-solid fa-user-plus"></i> Üyelik & Üye Girişi
-                </button>
-                <button class="primary-btn" onclick="app.navigateTo('/ilan-ver')">
-                    <i class="fa-solid fa-plus"></i> İLAN VER
-                </button>
+            
+            <nav class="landing-nav">
+                <a href="#nasil-calisir" class="nav-link">Sistem Nasıl Çalışır?</a>
+                <a href="#sektorler" class="nav-link">Faaliyet Sektörleri</a>
+                <a href="#sayilarla-biz" class="nav-link">Sayılarla Platform</a>
             </nav>
+
+            <div class="header-actions" style="display: flex; align-items: center; gap: 15px;">
+                <button class="nav-btn" onclick="window.location.href = '/portal.html#/uyelik'">Üye Girişi</button>
+                <button class="primary-btn" onclick="window.location.href = '/portal.html'">İHALE ARENASINA GİT ▷</button>
+            </div>
         </div>
     </header>
 
-    <!-- Ana İçerik Wrapper -->
-    <main class="page-layout" id="main-content-layout">
-        <!-- Sol Kenar Çubuğu (Dinamik Sidebar) -->
-        <aside class="sidebar-aside" id="sidebar-content">
-            <!-- Dinamik olarak doldurulacak -->
-        </aside>
-
-        <!-- Sağ Ana Panel -->
-        <section class="main-panel" id="panel-content">
-            <!-- Dinamik olarak doldurulacak -->
-        </section>
-    </main>
-
-    <!-- Giriş Modalı -->
-    <div class="arena-modal" id="login-modal" style="display: none;">
-        <div class="modal-backdrop" onclick="app.closeLoginModal()"></div>
-        <div class="modal-body auth-modal-body">
-            <button class="close-modal-btn" onclick="app.closeLoginModal()"><i class="fa-solid fa-xmark fa-lg"></i></button>
-            <div class="auth-modal-content">
-                <h2>Üye Giriş Paneli</h2>
-                <p>Platform özelliklerini test etmek için demo hesaplarından birini seçebilir veya giriş yapabilirsiniz.</p>
+    <!-- Kahraman (Hero) Bölümü - Kırık Asimetrik Düzen -->
+    <section class="hero-section fade-slide-in">
+        <div class="hero-container">
+            <div class="hero-text-content">
+                <div class="tag-announcement">
+                    <span class="tag-dot"></span>
+                    B2B KURUMSAL TEDARİKTE LİDER ENTEGRASYON PLATFORMU
+                </div>
+                <h1 class="hero-headline">Tedarikte <br><span class="text-glow">Canlı Tersine İhale</span> Arenası</h1>
+                <p class="hero-subheadline">
+                    Hammadde, malzeme, lojistik veya hizmet taleplerinizi yayınlayın; doğrulanmış tedarikçilerin anlık fiyat kırarak yarıştığı canlı tersine ihale arenasını izleyin. Telefon trafiğini bitirin, en uygun fiyatı canlı yakalayın.
+                </p>
                 
-                <!-- Hızlı Demo Girişleri -->
-                <div class="demo-login-strip">
-                    <h3>Hızlı Demo Hesap Seçimi:</h3>
-                    <div class="demo-buttons">
-                        <button class="demo-login-btn buyer" onclick="app.handleDemoLogin('buyer')">
-                            <i class="fa-solid fa-building"></i> Alıcı (İhale Açar)
-                        </button>
-                        <button class="demo-login-btn seller" onclick="app.handleDemoLogin('seller')">
-                            <i class="fa-solid fa-truck"></i> Satıcı (Teklif Verir)
-                        </button>
-                    </div>
+                <div class="hero-ctas">
+                    <button class="primary-btn lg" onclick="window.location.href = '/portal.html#/uyelik'">
+                        <i class="fa-solid fa-building"></i> Alıcı Olarak İlan Aç
+                    </button>
+                    <button class="secondary-btn lg" onclick="window.location.href = '/portal.html#/uyelik'" style="border-color: var(--clr-accent); color: var(--clr-accent);">
+                        <i class="fa-solid fa-truck"></i> Satıcı Olarak Teklif Ver
+                    </button>
                 </div>
 
-                <div class="divider"><span>VEYA</span></div>
+                <div class="hero-badges">
+                    <div class="badge-item">
+                        <i class="fa-solid fa-shield-halved badge-icon"></i>
+                        <span>%100 Onaylı B2B Şirketleri</span>
+                    </div>
+                    <div class="badge-item">
+                        <i class="fa-solid fa-vault badge-icon"></i>
+                        <span>Güvenli Havuz (Escrow) Altyapısı</span>
+                    </div>
+                    <div class="badge-item">
+                        <i class="fa-solid fa-percent badge-icon"></i>
+                        <span>Sıfır Alıcı Komisyonu</span>
+                    </div>
+                </div>
+            </div>
 
-                <form class="styled-form" id="login-form" onsubmit="app.handleLogin(event)">
-                    <div class="form-field">
-                        <label>E-POSTA ADRESİ</label>
-                        <input type="email" id="login-email" required placeholder="ornek@firma.com">
+            <!-- Sağ Taraf: Canlı Rekabet Simülasyonu -->
+            <div class="hero-visual-card">
+                <div class="visual-card-header">
+                    <span class="live-pulse">CANLI REKABET ARENASI</span>
+                    <span class="visual-meta">500 Paket A4 Fotokopi Kağıdı Alımı</span>
+                </div>
+                <div class="visual-bids-list">
+                    <div class="visual-bid-row gold">
+                        <span class="rank">1</span>
+                        <span class="name">Kırtasiye Dünyası Ltd. Şti.</span>
+                        <span class="price">62.000 TL</span>
                     </div>
-                    <div class="form-field">
-                        <label>ŞİFRE</label>
-                        <input type="password" id="login-password" required placeholder="••••••••">
+                    <div class="visual-bid-row silver">
+                        <span class="rank">2</span>
+                        <span class="name">Beta Malzeme Ticaret</span>
+                        <span class="price">64.000 TL</span>
                     </div>
-                    <button type="submit" class="primary-btn w-full">GİRİŞ YAP</button>
-                </form>
+                    <div class="visual-bid-row bronze">
+                        <span class="rank">3</span>
+                        <span class="name">Kaya Peyzaj ve Dağıtım</span>
+                        <span class="price">68.000 TL</span>
+                    </div>
+                </div>
+                <div class="visual-footer">
+                    <span>Hedef/Limit Fiyat: <strong>65.000 TL</strong></span>
+                    <span class="action-blink">Fiyat Kırılıyor...</span>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Socket.io İstemci Kütüphanesi -->
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="app.js"></script>
+    <!-- Sayılarla Biz (İstatistikler) -->
+    <section class="stats-section fade-slide-in" id="sayilarla-biz" style="animation-delay: 0.1s;">
+        <div class="section-container">
+            <div class="grid-stats">
+                <div class="stat-box">
+                    <span class="num">12.4M TL+</span>
+                    <span class="label">Toplam Ticaret Hacmi</span>
+                </div>
+                <div class="stat-box">
+                    <span class="num">150+</span>
+                    <span class="label">Doğrulanmış B2B Üretici</span>
+                </div>
+                <div class="stat-box">
+                    <span class="num">%14.2</span>
+                    <span class="label">Ortalama Tedarik Tasarrufu</span>
+                </div>
+                <div class="stat-box">
+                    <span class="num">0 TL</span>
+                    <span class="label">Alıcı Üyelik Komisyonu</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Nasıl Çalışır? (Step-by-Step) -->
+    <section class="how-it-works fade-slide-in" id="nasil-calisir" style="animation-delay: 0.15s;">
+        <div class="section-container">
+            <h2 class="section-title-large">3 Adımda Dijital Tedarik Yönetimi</h2>
+            <p class="section-subtitle-large">Tüm kurumsal satın alma süreçlerinizi şeffaflaştırın, pazarlık gücünüzü artırın.</p>
+            
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-num">01</div>
+                    <h3>Talebinizi İletin</h3>
+                    <p>Malzeme cinsi, miktar, teslimat konumu ve şartname dosyalarınızı girerek canlı ihale ilanınızı saniyeler içinde oluşturun.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">02</div>
+                    <h3>Canlı Rekabeti İzleyin</h3>
+                    <p>Tedarikçilerin birbirlerinin fiyatlarının altına inerek fiyat düşürdüğü tersine ihale sürecini anlık takip edin.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">03</div>
+                    <h3>Güvenle Anlaşın</h3>
+                    <p>En rekabetçi teklifi seçin. Ödemenizi güvenli havuz hesabımıza yapıp tedariği sıfır riskle başlatın.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sektörler Gridi (Screenshot 1 Kategorileri) -->
+    <section class="sectors-section fade-slide-in" id="sektorler" style="animation-delay: 0.2s; padding: var(--sp-64) 0;">
+        <div class="section-container">
+            <h2 class="section-title-large" style="text-align: center; margin-bottom: var(--sp-12);">Faaliyet Gösterilen Ana Sektörler</h2>
+            <p class="section-subtitle-large" style="text-align: center; margin-bottom: var(--sp-48);">İhale arenasında her türlü sektöre özel genel çerçevede alım ve satım yapabilirsiniz.</p>
+            
+            <div class="sectors-grid-preview">
+                <div class="sector-card-preview" onclick="window.location.href = '/portal.html'">
+                    <i class="fa-solid fa-pen-nib sector-icon"></i>
+                    <h3>Kırtasiye</h3>
+                    <p>Double A kağıt, dosya, kurumsal ofis sarf malzemesi talepleri ve toptan alımları.</p>
+                </div>
+                <div class="sector-card-preview" onclick="window.location.href = '/portal.html'">
+                    <i class="fa-solid fa-seedling sector-icon"></i>
+                    <h3>Peyzaj</h3>
+                    <p>Fidan alımı, Leylandi ağacı, çim alım ve satım ihaleleri ile bahçe düzenleme.</p>
+                </div>
+                <div class="sector-card-preview" onclick="window.location.href = '/portal.html'">
+                    <i class="fa-solid fa-handshake-angle sector-icon"></i>
+                    <h3>Hizmet</h3>
+                    <p>Dış cephe temizlik hizmeti, kurumsal güvenlik ve diğer profesyonel hizmet tedariği.</p>
+                </div>
+                <div class="sector-card-preview" onclick="window.location.href = '/portal.html'">
+                    <i class="fa-solid fa-wheat-awn sector-icon"></i>
+                    <h3>Tarım</h3>
+                    <p>Organize nohut alımı, taze limon satışı gibi toptan gıda ve tarımsal hammadde.</p>
+                </div>
+                <div class="sector-card-preview" onclick="window.location.href = '/portal.html'">
+                    <i class="fa-solid fa-helmet-safety sector-icon"></i>
+                    <h3>İnşaat</h3>
+                    <p>Hazır beton, çimento, kaba ve ince yapı malzemeleri tedarik ihale odaları.</p>
+                </div>
+                <div class="sector-card-preview" onclick="window.location.href = '/portal.html'">
+                    <i class="fa-solid fa-truck-ramp-box sector-icon"></i>
+                    <h3>Lojistik</h3>
+                    <p>Kurumsal yük nakliyesi, şehirler arası taşımacılık ve tır/kamyon lojistik hizmetleri.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer" style="background-color: var(--clr-bg-card); border-top: 1px solid var(--clr-border); padding: var(--sp-48) 0; text-align: center;">
+        <div class="footer-container">
+            <span class="logo-main" style="font-size: 24px; font-weight: 800;">gelanla<span class="logo-accent">salim</span></span>
+            <p style="color: var(--clr-text-muted); font-size: 13px; margin: 15px 0 25px;">B2B Canlı Tedarik ve Tersine İhale Arenası © 2026</p>
+            <div class="footer-links" style="display: flex; justify-content: center; gap: 30px;">
+                <a href="/portal.html" class="nav-link">İhale Arenası</a>
+                <a href="/portal.html#/uyelik" class="nav-link">Üyelik Oluştur</a>
+                <a href="/portal.html#/ilan-ver" class="nav-link">İhale İlanı Aç</a>
+            </div>
+        </div>
+    </footer>
+
 </body>
 </html>

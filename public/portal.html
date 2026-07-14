@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gelanlasalim.com | B2B Canlı Tersine İhale Arenası</title>
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-body">
+
+    <!-- Ambient Glow Background -->
+    <div class="ambient-glow-wrapper">
+        <div class="glow-circle primary"></div>
+        <div class="glow-circle secondary"></div>
+    </div>
+
+    <!-- Üst Gezinme Çubuğu (Header) -->
+    <header class="main-header">
+        <div class="header-inner">
+            <!-- Brand Logo -->
+            <div class="brand-logo" onclick="window.location.href = '/'" style="cursor: pointer;">
+                <div class="logo-circle">GA</div>
+                <span class="logo-main">gelanla<span class="logo-accent">salim</span></span>
+            </div>
+
+            <!-- WebSocket Bağlantı Durumu -->
+            <div class="sys-status">
+                <span class="status-indicator online" id="ws-status-indicator"></span>
+                <span id="ws-status-text">Canlı Bağlantı Aktif</span>
+            </div>
+
+            <!-- Orta/Sağ Menü Tuşları -->
+            <nav class="header-nav">
+                <button class="nav-btn" onclick="app.navigateTo('/verilen-teklifler')">
+                    <i class="fa-solid fa-paper-plane"></i> Verilen Teklifler
+                </button>
+                <button class="nav-btn" onclick="app.navigateTo('/alinan-teklifler')">
+                    <i class="fa-solid fa-inbox"></i> Alınan Teklifler
+                </button>
+                <div class="notification-wrapper">
+                    <button class="nav-btn" onclick="app.toggleNotifications()">
+                        <i class="fa-solid fa-bell"></i> Bildirimler
+                        <span class="noti-badge" id="noti-count">1</span>
+                    </button>
+                    <!-- Bildirim Açılır Penceresi -->
+                    <div class="noti-dropdown" id="noti-dropdown">
+                        <div class="noti-dropdown-header">Bildirimler</div>
+                        <div class="noti-dropdown-list" id="noti-dropdown-list">
+                            <!-- Dinamik Bildirimler -->
+                            <div class="noti-item unread">
+                                <div class="noti-meta">Tebrikler!</div>
+                                <div class="noti-text">A4 KAĞIT ALIMI ihalesine yeni bir teklif geldi.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="nav-btn-highlight" id="btn-membership" onclick="app.navigateTo('/uyelik')">
+                    <i class="fa-solid fa-user-plus"></i> Üyelik & Üye Girişi
+                </button>
+                <button class="primary-btn" onclick="app.navigateTo('/ilan-ver')">
+                    <i class="fa-solid fa-plus"></i> İLAN VER
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Ana İçerik Wrapper -->
+    <main class="page-layout" id="main-content-layout">
+        <!-- Sol Kenar Çubuğu (Dinamik Sidebar) -->
+        <aside class="sidebar-aside" id="sidebar-content">
+            <!-- Dinamik olarak doldurulacak -->
+        </aside>
+
+        <!-- Sağ Ana Panel -->
+        <section class="main-panel" id="panel-content">
+            <!-- Dinamik olarak doldurulacak -->
+        </section>
+    </main>
+
+    <!-- Giriş Modalı -->
+    <div class="arena-modal" id="login-modal" style="display: none;">
+        <div class="modal-backdrop" onclick="app.closeLoginModal()"></div>
+        <div class="modal-body auth-modal-body">
+            <button class="close-modal-btn" onclick="app.closeLoginModal()"><i class="fa-solid fa-xmark fa-lg"></i></button>
+            <div class="auth-modal-content">
+                <h2>Üye Giriş Paneli</h2>
+                <p>Platform özelliklerini test etmek için demo hesaplarından birini seçebilir veya giriş yapabilirsiniz.</p>
+                
+                <!-- Hızlı Demo Girişleri -->
+                <div class="demo-login-strip">
+                    <h3>Hızlı Demo Hesap Seçimi:</h3>
+                    <div class="demo-buttons">
+                        <button class="demo-login-btn buyer" onclick="app.handleDemoLogin('buyer')">
+                            <i class="fa-solid fa-building"></i> Alıcı (İhale Açar)
+                        </button>
+                        <button class="demo-login-btn seller" onclick="app.handleDemoLogin('seller')">
+                            <i class="fa-solid fa-truck"></i> Satıcı (Teklif Verir)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="divider"><span>VEYA</span></div>
+
+                <form class="styled-form" id="login-form" onsubmit="app.handleLogin(event)">
+                    <div class="form-field">
+                        <label>E-POSTA ADRESİ</label>
+                        <input type="email" id="login-email" required placeholder="ornek@firma.com">
+                    </div>
+                    <div class="form-field">
+                        <label>ŞİFRE</label>
+                        <input type="password" id="login-password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="primary-btn w-full">GİRİŞ YAP</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Socket.io İstemci Kütüphanesi -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

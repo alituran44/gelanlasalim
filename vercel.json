@@ -3,16 +3,24 @@
   "builds": [
     {
       "src": "src/server.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": "public/**"
-      }
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "/api/(.*)",
       "dest": "src/server.js"
+    },
+    {
+      "src": "/socket.io/(.*)",
+      "dest": "src/server.js"
+    },
+    {
+      "src": "/health",
+      "dest": "src/server.js"
+    },
+    {
+      "handle": "filesystem"
     }
   ]
 }

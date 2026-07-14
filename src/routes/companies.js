@@ -212,4 +212,21 @@ router.patch('/:id/verify', authenticateToken, requireRole(['admin']), async (re
     }
 });
 
+// 9. [Demo] Hızlı Firma Doğrulama
+router.post('/verify-demo-quick', authenticateToken, async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const companyRes = await db.query('SELECT id FROM companies WHERE user_id = $1', [userId]);
+        if (companyRes.rows.length === 0) {
+            return res.status(404).json({ error: 'Firma profili bulunamadı.' });
+        }
+        const companyId = companyRes.rows[0].id;
+        
+        await db.query('UPDATE companies SET is_verified = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2', [true, companyId]);
+        res.json({ message: 'Firma demo sürümünde anında doğrulandı!' });
+    } catch (err) {
+        next(err);
+    }
+});
+
 export default router;

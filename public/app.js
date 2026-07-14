@@ -1,868 +1,1574 @@
-// gelanlasalim.com - Üçlü Rol Paneli İstemci Kodları
+// B2B Reverse Auction Portal - app.js
 const API_URL = window.location.origin;
-let socket = null;
 
-// Durum Yönetimi
-let currentRole = 'buyer'; // 'buyer', 'seller', 'admin'
-let userToken = null;
-let activeCompany = null; // Satıcı ise firma bilgileri
-let currentTenderId = null;
-let currentTenderBids = [];
-let allCategories = [];
+class App {
+    constructor() {
+        this.user = JSON.parse(localStorage.getItem('user')) || null;
+        this.token = localStorage.getItem('token') || null;
+        this.socket = null;
+        this.tenders = [];
+        this.categories = [];
+        this.selectedTender = null;
+        
+        // Form states
+        this.tempTender = null;
+        this.tempRegister = null;
+        
+        // Notifications list
+        this.notifications = [
+            { id: 1, text: "A4 KAĞIT ALIMI ihalesine yeni bir teklif geldi.", time: "5 dakika önce", read: false }
+        ];
 
-// Sayfa Yüklendiğinde Başlat
-window.onload = async () => {
-    initWebSocket();
-    await fetchCategories();
-    // İlk rol olarak Alıcıyı başlat
-    await switchRole('buyer');
-};
-
-// WebSocket Bağlantısı
-function initWebSocket() {
-    socket = io(API_URL);
-
-    socket.on('connect', () => {
-        const dot = document.getElementById('statusDot');
-        const txt = document.getElementById('statusText');
-        dot.className = 'status-indicator online';
-        txt.innerText = 'Canlı Bağlantı Aktif';
-    });
-
-    socket.on('disconnect', () => {
-        const dot = document.getElementById('statusDot');
-        const txt = document.getElementById('statusText');
-        dot.className = 'status-indicator';
-        txt.innerText = 'Bağlantı Kesildi';
-    });
-
-    // Canlı Teklif Alındığında
-    socket.on('new_bid', (bid) => {
-        if (currentTenderId === bid.tender_id) {
-            // Eğer modal açıksa listeyi güncelle ve parlat
-            addBidToModalLadder(bid, true);
-        }
-        // İlgili rollerin ihale listelerini de yenile
-        refreshActiveRoleData();
-    });
-
-    // İhale Durumu Değiştiğinde
-    socket.on('tender_status_changed', (data) => {
-        if (currentTenderId === data.tender_id) {
-            updateModalStatusUI(data.status, data.winning_bid_id);
-        }
-        refreshActiveRoleData();
-    });
-}
-
-// ---------------------------------------------------------
-// ROL VE SEKME GEÇİŞLERİ
-// ---------------------------------------------------------
-async function switchRole(role) {
-    currentRole = role;
-    
-    // Navigasyon sınıflarını güncelle
-    document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
-    if (role === 'buyer') document.getElementById('tabBuyer').classList.add('active');
-    if (role === 'seller') document.getElementById('tabSeller').classList.add('active');
-    if (role === 'admin') document.getElementById('tabAdmin').classList.add('active');
-
-    // Panelleri göster/gizle
-    document.querySelectorAll('.role-panel').forEach(p => p.classList.add('hidden'));
-    
-    // Otomatik Kimlik Doğrulama ve Raporlama
-    try {
-        if (role === 'buyer') {
-            document.getElementById('panelBuyer').classList.remove('hidden');
-            userToken = await authenticateMockUser('müteahhit_test@gelanlasalim.com', 'buyer', 'Ahmet', 'Yılmaz', '05551112233');
-            await loadBuyerPanel();
-        } else if (role === 'seller') {
-            document.getElementById('panelSeller').classList.remove('hidden');
-            userToken = await authenticateMockUser('beta_beton_test@gelanlasalim.com', 'seller', 'Mehmet', 'Kaya', '05559998877');
-            await loadSellerPanel();
-        } else if (role === 'admin') {
-            document.getElementById('panelAdmin').classList.remove('hidden');
-            userToken = await authenticateMockUser('admin_test@gelanlasalim.com', 'admin', 'Sistem', 'Yöneticisi', '05550000000');
-            await loadAdminPanel();
-        }
-    } catch (err) {
-        console.error('Kimlik doğrulama hatası:', err);
+        this.init();
     }
-}
 
-// Rollere göre anlık listeleri yenileme yardımcısı
-function refreshActiveRoleData() {
-    if (currentRole === 'buyer') loadBuyerPanel();
-    if (currentRole === 'seller') loadSellerPanel();
-    if (currentRole === 'admin') loadAdminPanel();
-}
-
-// Mock Kullanıcı Kayıt/Giriş Entegrasyonu
-async function authenticateMockUser(email, role, firstName, lastName, phone) {
-    try {
-        // Önce kaydolmayı dene
-        await fetch(`${API_URL}/api/auth/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email, password: 'TestPassword123!', first_name: firstName, last_name: lastName, phone, role
-            })
+    init() {
+        this.initWebSocket();
+        this.loadCategories();
+        this.setupRouting();
+        this.updateHeaderUI();
+        
+        // Dropdown toggle close listener
+        window.addEventListener('click', (e) => {
+            if (!e.target.closest('.notification-wrapper')) {
+                const drop = document.getElementById('noti-dropdown');
+                if (drop) drop.classList.remove('active');
+            }
         });
-    } catch (e) {}
-
-    // Giriş yap ve token al
-    const res = await fetch(`${API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password: 'TestPassword123!' })
-    });
-    const data = await res.json();
-    return data.token;
-}
-
-// ---------------------------------------------------------
-// ALICI (MÜTEAHHİT) PANELİ FONKSİYONLARI
-// ---------------------------------------------------------
-async function loadBuyerPanel() {
-    // Kategori listesini ihale formuna bağla
-    const select = document.getElementById('buyerTenderCategory');
-    select.innerHTML = allCategories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-
-    // Form tarih alanlarını ön tanımlı doldur (Test kolaylığı)
-    const now = new Date();
-    const futureDelivery = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-    const futureExpiry = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
-    document.getElementById('buyerTenderDelivery').value = futureDelivery.toISOString().slice(0, 16);
-    document.getElementById('buyerTenderExpiry').value = futureExpiry.toISOString().slice(0, 16);
-
-    // Alıcının kendi ihalelerini getir
-    try {
-        const res = await fetch(`${API_URL}/api/tenders?status=open`, {
-            headers: { 'Authorization': `Bearer ${userToken}` }
-        });
-        const data = await res.json();
-        
-        // Alıcının kendi ihalelerini filtrele
-        const myTenders = data.tenders; // Test kolaylığı için tüm açık ihaleleri gösterelim
-        
-        document.getElementById('buyerTenderCount').innerText = `${myTenders.length} Aktif`;
-        
-        const listDiv = document.getElementById('buyerTendersList');
-        if (myTenders.length === 0) {
-            listDiv.innerHTML = `<div class="empty-feed">Henüz yayınladığınız ihale ilanı yok. Soldaki formdan ilk ilanınızı açabilirsiniz.</div>`;
-            return;
-        }
-
-        listDiv.innerHTML = myTenders.map(t => renderTenderCard(t)).join('');
-    } catch (err) {
-        console.error('Alıcı ihaleleri yüklenemedi:', err);
     }
-}
 
-// Yeni İhale Oluşturma Form Gönderimi
-document.getElementById('formCreateTender').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const body = {
-        title: document.getElementById('buyerTenderTitle').value,
-        category_id: parseInt(document.getElementById('buyerTenderCategory').value),
-        quantity: parseFloat(document.getElementById('buyerTenderQuantity').value),
-        unit: document.getElementById('buyerTenderUnit').value,
-        city: document.getElementById('buyerTenderCity').value,
-        district: document.getElementById('buyerTenderDistrict').value,
-        delivery_address: document.getElementById('buyerTenderAddress').value,
-        delivery_date: new Date(document.getElementById('buyerTenderDelivery').value).toISOString(),
-        expires_at: new Date(document.getElementById('buyerTenderExpiry').value).toISOString(),
-        description: document.getElementById('buyerTenderDesc').value
-    };
-
-    try {
-        const res = await fetch(`${API_URL}/api/tenders`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userToken}`
-            },
-            body: JSON.stringify(body)
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-
-        alert('İhale ilanı başarıyla yayınlandı ve WebSocket canlı odası kuruldu.');
-        document.getElementById('formCreateTender').reset();
-        await loadBuyerPanel();
-    } catch (err) {
-        alert('İhale Açma Hatası: ' + err.message);
-    }
-});
-
-// ---------------------------------------------------------
-// FİRMA (SATICI) PANELİ FONKSİYONLARI
-// ---------------------------------------------------------
-async function loadSellerPanel() {
-    // 1. Firma Profilini Getir veya Otomatik Oluştur
-    try {
-        const resProfile = await fetch(`${API_URL}/api/companies/profile`, {
-            headers: { 'Authorization': `Bearer ${userToken}` }
-        });
-        
-        if (resProfile.status === 404) {
-            // Firma profili yoksa otomatik oluştur (Test kolaylığı)
-            const createRes = await fetch(`${API_URL}/api/companies`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${userToken}`
-                },
-                body: JSON.stringify({
-                    name: 'Beta Hazır Beton A.Ş.',
-                    tax_number: '9876543210',
-                    tax_office: 'İstanbul Büyük Mükellefler V.D.',
-                    address: 'Tuzla Organize Sanayi Bölgesi 2. Yol No: 12',
-                    city: 'İstanbul',
-                    district: 'Tuzla',
-                    logo_url: ''
-                })
+    initWebSocket() {
+        try {
+            this.socket = io(API_URL);
+            
+            this.socket.on('connect', () => {
+                this.updateStatusIndicator(true);
             });
-            const createData = await createRes.json();
-            activeCompany = createData.company;
-        } else {
-            const dataProfile = await resProfile.json();
-            activeCompany = dataProfile.company;
-        }
 
-        // Firma Bilgi Kartını Doldur
-        renderSellerProfileCard();
-
-        // Kategori Checkbox Listesini Çiz
-        renderSellerCategorySelection();
-
-        // Hizmet Bölgelerini Çiz
-        await fetchAndRenderSellerRegions();
-
-        // Eşleşen Canlı İhaleleri Listele
-        await fetchMatchedTendersForSeller();
-
-    } catch (err) {
-        console.error('Satıcı paneli yükleme hatası:', err);
-    }
-}
-
-// Satıcı Bilgi Kartını Çiz
-function renderSellerProfileCard() {
-    const card = document.getElementById('sellerProfileStatus');
-    const verifyBadge = activeCompany.is_verified 
-        ? '<span class="status-value verified">Doğrulanmış</span>' 
-        : '<span class="status-value pending">Onay Bekliyor</span>';
-    
-    card.innerHTML = `
-        <div class="status-row">
-            <span>Firma Adı:</span>
-            <span class="status-value">${activeCompany.name}</span>
-        </div>
-        <div class="status-row">
-            <span>Doğrulama Statüsü:</span>
-            ${verifyBadge}
-        </div>
-        <div class="status-row">
-            <span>Aylık Teklif Limiti:</span>
-            <span class="status-value">${activeCompany.monthly_bid_limit}</span>
-        </div>
-        <div class="status-row">
-            <span>Kullanılan Teklif:</span>
-            <span class="status-value">${activeCompany.bid_count_this_month} / ${activeCompany.monthly_bid_limit}</span>
-        </div>
-    `;
-}
-
-// Satıcı Kategorileri Seçim Alanı
-function renderSellerCategorySelection() {
-    const container = document.getElementById('sellerCategoriesList');
-    // Şimdilik test için firmaya otomatik beton kategorisi atayalım
-    container.innerHTML = allCategories.map(cat => `
-        <label class="checkbox-label">
-            <input type="checkbox" name="sellerCat" value="${cat.id}" id="cat-check-${cat.id}">
-            ${cat.name}
-        </label>
-    `).join('');
-
-    // Firmaya ait mevcut faaliyet alanlarını çekip işaretleyelim
-    // Demo kolaylığı için: Satıcı paneli açıldığında default beton seçili gelsin
-    const checkBeton = document.getElementById(`cat-check-1`);
-    if (checkBeton) checkBeton.checked = true;
-}
-
-// Kategorileri Veritabanına Kaydet
-async function saveSellerCategories() {
-    const checked = Array.from(document.querySelectorAll('input[name="sellerCat"]:checked')).map(el => parseInt(el.value));
-    try {
-        const res = await fetch(`${API_URL}/api/companies/categories`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userToken}`
-            },
-            body: JSON.stringify({ category_ids: checked })
-        });
-        if (res.ok) {
-            alert('Faaliyet kategorileri başarıyla güncellendi.');
-            await fetchMatchedTendersForSeller();
-        }
-    } catch (e) {
-        alert('Kategori kaydetme hatası');
-    }
-}
-
-// Hizmet Bölgelerini Çek ve Çiz
-async function fetchAndRenderSellerRegions() {
-    try {
-        const res = await fetch(`${API_URL}/api/companies/regions`, {
-            headers: { 'Authorization': `Bearer ${userToken}` }
-        });
-        const data = await res.json();
-        
-        const container = document.getElementById('sellerRegionsContainer');
-        if (data.regions.length === 0) {
-            // Test kolaylığı için ilk bölgeyi (İstanbul) otomatik ekleyelim
-            await fetch(`${API_URL}/api/companies/regions`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${userToken}`
-                },
-                body: JSON.stringify({ city: 'İstanbul', district: '' })
+            this.socket.on('disconnect', () => {
+                this.updateStatusIndicator(false);
             });
-            return fetchAndRenderSellerRegions();
+
+            // WebSocket events
+            this.socket.on('new_bid', (bid) => {
+                this.addNotification(`İhalenize yeni bir teklif geldi: ${bid.price.toLocaleString()} TL`, bid.tender_id);
+                // If viewing that tender, refresh bids
+                if (this.selectedTender && this.selectedTender.id === bid.tender_id) {
+                    this.loadTenderDetails(bid.tender_id);
+                }
+                this.loadTenders(); // Refresh list to update bid counts
+            });
+
+            this.socket.on('bid_status_change', (data) => {
+                this.addNotification(`Teklifinizin durumu güncellendi: ${data.status.toUpperCase()}`, data.bid_id);
+                if (this.selectedTender) {
+                    this.loadTenderDetails(this.selectedTender.id);
+                }
+            });
+
+        } catch (err) {
+            console.error('WebSocket bağlantı hatası:', err);
+            this.updateStatusIndicator(false);
+        }
+    }
+
+    updateStatusIndicator(online) {
+        const ind = document.getElementById('ws-status-indicator');
+        const txt = document.getElementById('ws-status-text');
+        if (ind && txt) {
+            if (online) {
+                ind.className = 'status-indicator online';
+                txt.textContent = 'Canlı Bağlantı Aktif';
+            } else {
+                ind.className = 'status-indicator';
+                txt.textContent = 'Bağlantı Kesildi (Yenileniyor)';
+            }
+        }
+    }
+
+    addNotification(text, targetId = null) {
+        this.notifications.unshift({
+            id: Date.now(),
+            text,
+            time: "Şimdi",
+            read: false,
+            targetId
+        });
+        this.updateNotificationsUI();
+    }
+
+    updateNotificationsUI() {
+        const badge = document.getElementById('noti-count');
+        const list = document.getElementById('noti-dropdown-list');
+        const unreadCount = this.notifications.filter(n => !n.read).length;
+        
+        if (badge) {
+            badge.textContent = unreadCount;
+            badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
         }
 
-        container.innerHTML = data.regions.map(r => `
-            <span class="region-chip">
-                ${r.city} ${r.district ? `(${r.district})` : '(Tümü)'}
-                <button onclick="deleteSellerRegion(${r.id})">×</button>
-            </span>
-        `).join('');
-    } catch (e) {
-        console.error('Bölgeler çekilemedi:', e);
-    }
-}
-
-// Hizmet Bölgesi Ekle
-async function addSellerRegion() {
-    const city = document.getElementById('sellerRegionCity').value;
-    const district = document.getElementById('sellerRegionDistrict').value;
-    if (!city) return alert('Lütfen şehir girin.');
-
-    try {
-        const res = await fetch(`${API_URL}/api/companies/regions`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userToken}`
-            },
-            body: JSON.stringify({ city, district })
-        });
-        if (res.ok) {
-            document.getElementById('sellerRegionCity').value = '';
-            document.getElementById('sellerRegionDistrict').value = '';
-            await fetchAndRenderSellerRegions();
-            await fetchMatchedTendersForSeller();
-        }
-    } catch (e) {
-        alert('Bölge ekleme hatası');
-    }
-}
-
-// Hizmet Bölgesi Sil
-async function deleteSellerRegion(id) {
-    try {
-        await fetch(`${API_URL}/api/companies/regions/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${userToken}` }
-        });
-        await fetchAndRenderSellerRegions();
-        await fetchMatchedTendersForSeller();
-    } catch (e) {
-        alert('Bölge silinemedi');
-    }
-}
-
-// Satıcı için Eşleşen İhaleleri Filtrele ve Getir
-async function fetchMatchedTendersForSeller() {
-    try {
-        // Bütün açık ihaleleri getir
-        const resTenders = await fetch(`${API_URL}/api/tenders?status=open`);
-        const dataTenders = await resTenders.json();
-
-        // Firmanın faaliyet kategorilerini ve hizmet bölgelerini al
-        // Client-side filtreleme (Matching) yaparak sadece eşleşenleri sunalım
-        const checkedCats = Array.from(document.querySelectorAll('input[name="sellerCat"]:checked')).map(el => parseInt(el.value));
-        
-        const resRegions = await fetch(`${API_URL}/api/companies/regions`, {
-            headers: { 'Authorization': `Bearer ${userToken}` }
-        });
-        const dataRegions = await resRegions.json();
-        const cities = dataRegions.regions.map(r => r.city.toLowerCase());
-
-        // Filtreleme
-        const matched = dataTenders.tenders.filter(t => {
-            const catMatch = checkedCats.includes(t.category_id);
-            const cityMatch = cities.includes(t.city.toLowerCase());
-            return catMatch && cityMatch;
-        });
-
-        document.getElementById('sellerMatchedCount').innerText = `${matched.length} Eşleşen`;
-
-        const feed = document.getElementById('sellerMatchedTenders');
-        if (matched.length === 0) {
-            feed.innerHTML = `<div class="empty-feed">Hizmet kategorileriniz veya hizmet bölgelerinizle eşleşen aktif ihale bulunmuyor. Sol taraftan ayarlarınızı genişletebilirsiniz.</div>`;
-            return;
-        }
-
-        feed.innerHTML = matched.map(t => renderTenderCard(t)).join('');
-    } catch (e) {
-        console.error('Eşleşen ihaleler çekilemedi:', e);
-    }
-}
-
-// ---------------------------------------------------------
-// YÖNETİM (ADMIN) PANELİ FONKSİYONLARI
-// ---------------------------------------------------------
-async function loadAdminPanel() {
-    // 1. Finansal İstatistikleri Getir
-    try {
-        const resStats = await fetch(`${API_URL}/api/admin/stats`, {
-            headers: { 'Authorization': `Bearer ${userToken}` }
-        });
-        const dataStats = await resStats.json();
-        const s = dataStats.stats;
-
-        document.getElementById('adminStatVolume').innerText = `${Number(s.total_volume).toLocaleString('tr-TR')} TL`;
-        document.getElementById('adminStatCommission').innerText = `${Number(s.commission).toLocaleString('tr-TR')} TL`;
-        document.getElementById('adminStatEscrow').innerText = `${Number(s.active_escrow).toLocaleString('tr-TR')} TL`;
-
-        // 2. Firma Doğrulama Taleplerini Getir
-        const resCompanies = await fetch(`${API_URL}/api/companies`, {
-            headers: { 'Authorization': `Bearer ${userToken}` }
-        });
-        const dataComp = await resCompanies.json();
-        
-        // Sadece doğrulanmamış firmaları filtrele (Doğrulama Kuyruğu)
-        const unverified = dataComp.companies.filter(c => !c.is_verified);
-        
-        const queueDiv = document.getElementById('adminVerificationQueue');
-        if (unverified.length === 0) {
-            queueDiv.innerHTML = `<div class="empty-feed">Onay bekleyen firma belgesi bulunmamaktadır. Tüm firmalar güncel.</div>`;
-        } else {
-            queueDiv.innerHTML = unverified.map(c => `
-                <div class="queue-item">
-                    <div class="queue-item-header">
-                        <h4>${c.name}</h4>
-                        <span class="badge-count">Vergi No: ${c.tax_number}</span>
-                    </div>
-                    <p>Konum: ${c.city}, ${c.district} • Yetkili E-posta: ${c.user_email}</p>
-                    <div class="queue-actions">
-                        <button class="btn-small-approve" onclick="verifyCompany('${c.id}', true)">Onayla</button>
-                        <button class="btn-small-reject" onclick="verifyCompany('${c.id}', false)">Reddet</button>
-                    </div>
+        if (list) {
+            list.innerHTML = this.notifications.map(n => `
+                <div class="noti-item ${n.read ? '' : 'unread'}" onclick="app.readNotification(${n.id}, '${n.targetId}')">
+                    <div class="noti-meta">${n.time}</div>
+                    <div class="noti-text">${n.text}</div>
                 </div>
             `).join('');
         }
+    }
 
-        // 3. Tüm İhaleleri Getir (Moderasyon)
-        const resTenders = await fetch(`${API_URL}/api/tenders?status=open`);
-        const dataTenders = await resTenders.json();
+    readNotification(id, targetId) {
+        const noti = this.notifications.find(n => n.id === id);
+        if (noti) noti.read = true;
+        this.updateNotificationsUI();
+        if (targetId) {
+            this.navigateTo(`/teklifler/${targetId}`);
+        }
+    }
+
+    toggleNotifications() {
+        const drop = document.getElementById('noti-dropdown');
+        if (drop) drop.classList.toggle('active');
+    }
+
+    async loadCategories() {
+        try {
+            const res = await fetch(`${API_URL}/api/categories`);
+            const data = await res.json();
+            this.categories = data.categories || [];
+        } catch (e) {
+            console.error('Kategoriler yüklenemedi:', e);
+        }
+    }
+
+    setupRouting() {
+        window.addEventListener('hashchange', () => this.handleRoute());
+        this.handleRoute();
+    }
+
+    navigateTo(path) {
+        window.location.hash = `#${path}`;
+    }
+
+    handleRoute() {
+        const hash = window.location.hash || '#/';
+        const mainLayout = document.getElementById('main-content-layout');
         
-        const modDiv = document.getElementById('adminTendersList');
-        if (dataTenders.tenders.length === 0) {
-            modDiv.innerHTML = `<div class="empty-feed">Denetlenecek aktif ihale bulunmuyor.</div>`;
+        // Parse simple path parameters (e.g., #/teklifler/tender-id)
+        let path = hash.substring(1);
+        if (path === '' || path === '/') {
+            this.renderDashboard();
+        } else if (path === '/ilan-ver') {
+            this.renderAdPostScreen();
+        } else if (path === '/uyelik') {
+            this.renderRegistrationScreen();
+        } else if (path === '/verilen-teklifler') {
+            this.renderMyBidsScreen('sent');
+        } else if (path === '/alinan-teklifler') {
+            this.renderMyBidsScreen('received');
+        } else if (path.startsWith('/teklifler/')) {
+            const tenderId = path.split('/')[2];
+            this.renderMemberScreen(tenderId);
+        } else if (path.startsWith('/firma-bilgi/')) {
+            const companyId = path.split('/')[2];
+            this.renderCompanyInfoScreen(companyId);
         } else {
-            modDiv.innerHTML = dataTenders.tenders.map(t => `
-                <div class="queue-item" style="margin-bottom: var(--sp-12);">
-                    <div class="queue-item-header">
-                        <h4>${t.title}</h4>
-                        <span class="stat-badge open">AÇIK</span>
-                    </div>
-                    <p>Konum: ${t.city} • Miktar: ${t.quantity} ${t.unit} • Oluşturan ID: ${t.buyer_id}</p>
-                    <div class="queue-actions">
-                        <button class="btn-small-reject" onclick="cancelTenderByAdmin('${t.id}')">Yayından Kaldır (İptal)</button>
+            this.renderDashboard();
+        }
+    }
+
+    updateHeaderUI() {
+        const btn = document.getElementById('btn-membership');
+        if (btn) {
+            if (this.user) {
+                btn.innerHTML = `<i class="fa-solid fa-user"></i> ${this.user.first_name} (${this.user.role === 'buyer' ? 'Alıcı' : 'Satıcı'})`;
+                btn.onclick = () => this.handleLogout();
+            } else {
+                btn.innerHTML = `<i class="fa-solid fa-user-plus"></i> Üyelik & Üye Girişi`;
+                btn.onclick = () => this.navigateTo('/uyelik');
+            }
+        }
+        this.updateNotificationsUI();
+    }
+
+    handleLogout() {
+        if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            this.user = null;
+            this.token = null;
+            this.updateHeaderUI();
+            this.navigateTo('/');
+        }
+    }
+
+    // -------------------------------------------------------------
+    // VIEW RENDERING & CONTROLLERS
+    // -------------------------------------------------------------
+
+    // View 1: Main Dashboard (Screenshot 1)
+    async renderDashboard() {
+        const sidebar = document.getElementById('sidebar-content');
+        const panel = document.getElementById('panel-content');
+        
+        // Render Sidebar Filters
+        sidebar.innerHTML = `
+            <div class="sidebar-box">
+                <h3 class="sidebar-title"><i class="fa-solid fa-sliders"></i> FİLTRELER ARAMA</h3>
+                
+                <div class="filter-group">
+                    <label class="filter-label">ANAHTAR KELİME</label>
+                    <input type="text" id="filter-search" class="filter-input" placeholder="İlan başlığı, malzeme..." oninput="app.applyFilters()">
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">KATAGORİLER</label>
+                    <div class="categories-checkbox-list">
+                        ${this.categories.map(c => `
+                            <label class="checkbox-container">
+                                <input type="checkbox" name="filter-category" value="${c.id}" onchange="app.applyFilters()">
+                                <span>${c.name}</span>
+                            </label>
+                        `).join('')}
                     </div>
                 </div>
-            `).join('');
-        }
 
-    } catch (err) {
-        console.error('Yönetici paneli yükleme hatası:', err);
-    }
-}
+                <div class="filter-group">
+                    <label class="filter-label">İHALE DURUMU</label>
+                    <select id="filter-status" class="filter-select" onchange="app.applyFilters()">
+                        <option value="open">Aktif / Açık</option>
+                        <option value="awarded">Kazananı Seçilen</option>
+                        <option value="all">Tüm İhaleler</option>
+                    </select>
+                </div>
 
-// Firmayı Onayla veya Reddet
-async function verifyCompany(companyId, status) {
-    try {
-        const res = await fetch(`${API_URL}/api/companies/${companyId}/verify`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userToken}`
-            },
-            body: JSON.stringify({ is_verified: status })
-        });
-        if (res.ok) {
-            alert(`Firma başarıyla ${status ? 'onaylandı' : 'reddedildi'}.`);
-            await loadAdminPanel();
-        }
-    } catch (e) {
-        alert('Firma durum güncelleme hatası');
-    }
-}
-
-// İhaleyi İptal Et (Admin Yetkisiyle)
-async function cancelTenderByAdmin(tenderId) {
-    if (!confirm('Bu ihaleyi yayından kaldırmak ve iptal etmek istediğinize emin misiniz?')) return;
-    try {
-        const res = await fetch(`${API_URL}/api/tenders/${tenderId}/cancel`, {
-            method: 'PATCH',
-            headers: { 'Authorization': `Bearer ${userToken}` }
-        });
-        if (res.ok) {
-            alert('İhale yayından kaldırıldı ve iptal statüsüne alındı.');
-            await loadAdminPanel();
-        }
-    } catch (e) {
-        alert('İhale iptal hatası');
-    }
-}
-
-// ---------------------------------------------------------
-// ORTAK CANLI ARENA MODAL (WebSocket Entegrasyonlu Görünüm)
-// ---------------------------------------------------------
-async function openArenaModal(tenderId) {
-    if (socket && currentTenderId) {
-        socket.emit('leave_tender', currentTenderId);
-    }
-    
-    currentTenderId = tenderId;
-    document.getElementById('arenaModal').classList.remove('hidden');
-
-    try {
-        // İhale detaylarını ve mevcut teklifleri API'den çek
-        const res = await fetch(`${API_URL}/api/tenders/${tenderId}`);
-        const data = await res.json();
-        const t = data.tender;
-        currentTenderBids = data.bids || [];
-
-        // Başlıkları Doldur
-        document.getElementById('modalCategory').innerText = t.category_name;
-        document.getElementById('modalTitle').innerText = t.title;
-        document.getElementById('modalQtyVal').innerText = `${t.quantity} ${t.unit}`;
-        document.getElementById('modalLocVal').innerText = `${t.city}, ${t.district}`;
-        document.getElementById('modalDesc').innerText = t.description;
-        document.getElementById('modalAddressVal').innerText = t.delivery_address;
-
-        updateModalStatusUI(t.status, t.winning_bid_id);
-        startModalCountdown(t.expires_at);
-        renderModalBidLadder();
-
-        // WebSocket odasına katıl
-        if (socket) {
-            socket.emit('join_tender', tenderId);
-        }
-
-    } catch (e) {
-        console.error('Arena detayları yüklenemedi:', e);
-    }
-}
-
-function closeArenaModal() {
-    if (socket && currentTenderId) {
-        socket.emit('leave_tender', currentTenderId);
-    }
-    currentTenderId = null;
-    document.getElementById('arenaModal').classList.add('hidden');
-    if (modalCountdownInterval) clearInterval(modalCountdownInterval);
-    refreshActiveRoleData();
-}
-
-// Modal Kalan Süre Sayacı
-let modalCountdownInterval = null;
-function startModalCountdown(expiryStr) {
-    if (modalCountdownInterval) clearInterval(modalCountdownInterval);
-    const expiry = new Date(expiryStr).getTime();
-    
-    const run = () => {
-        const now = new Date().getTime();
-        const diff = expiry - now;
-        const display = document.getElementById('modalCountdownVal');
-
-        if (diff <= 0) {
-            display.innerText = 'SÜRE DOLDU';
-            display.className = 'meta-value danger';
-            clearInterval(modalCountdownInterval);
-            return;
-        }
-
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-        display.innerText = `${days}g ${hours}s ${minutes}d ${seconds}sn`;
-        display.className = 'meta-value warning';
-    };
-
-    run();
-    modalCountdownInterval = setInterval(run, 1000);
-}
-
-// Modal Statü ve İşlem Alanı Güncellemeleri
-function updateModalStatusUI(status, winningBidId = null) {
-    const statusBadge = document.getElementById('modalStatus');
-    statusBadge.className = `badge-status ${status}`;
-    
-    if (status === 'open') {
-        statusBadge.innerText = 'Canlı / Teklife Açık';
-        
-        // Satıcı teklif formunu yetkiye göre göster
-        if (currentRole === 'seller') {
-            document.getElementById('actionSellerSubmit').classList.remove('hidden');
-        } else {
-            document.getElementById('actionSellerSubmit').classList.add('hidden');
-        }
-        document.getElementById('actionBuyerManage').classList.add('hidden');
-
-    } else if (status === 'awarded') {
-        statusBadge.innerText = 'Kazanan Belirlendi';
-        document.getElementById('actionSellerSubmit').classList.add('hidden');
-        
-        // Alıcıya özel Escrow Durumunu Göster
-        document.getElementById('actionBuyerManage').classList.remove('hidden');
-        renderEscrowManagementUI(winningBidId);
-
-    } else if (status === 'cancelled') {
-        statusBadge.innerText = 'İptal Edildi';
-        document.getElementById('actionSellerSubmit').classList.add('hidden');
-        document.getElementById('actionBuyerManage').classList.add('hidden');
-    }
-}
-
-// Escrow Ödeme ve Puanlama Panelini Çiz
-function renderEscrowManagementUI(winningBidId) {
-    const container = document.getElementById('buyerEscrowStatus');
-    
-    // Kazanan teklif detayını al
-    const winningBid = currentTenderBids.find(b => b.id === winningBidId);
-    const priceText = winningBid ? `${Number(winningBid.price).toLocaleString('tr-TR')} TL` : 'Fiyat Belirsiz';
-
-    container.innerHTML = `
-        <div class="escrow-step completed">
-            <div class="escrow-title">İhale Kazananı Belirlendi</div>
-            <div class="escrow-desc">Kazanan Teklif Bedeli: ${priceText}</div>
-        </div>
-        <div class="escrow-step active" id="escrowPayStep">
-            <div class="escrow-title">Havuz Ödemesi Simülasyonu</div>
-            <div class="escrow-desc">Para alıcı tarafından havuz hesabına yatırılır.</div>
-            <button class="secondary-btn mt-8" onclick="simulateEscrowPayment()">Ödemeyi Yap</button>
-        </div>
-        <div class="star-rating-box hidden" id="escrowRatingStep">
-            <label>Tedarikçi Firmaya Puan Verin</label>
-            <div class="stars">
-                <button class="star-btn" onclick="rateCompany(1)"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></button>
-                <button class="star-btn" onclick="rateCompany(2)"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></button>
-                <button class="star-btn" onclick="rateCompany(3)"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></button>
-                <button class="star-btn" onclick="rateCompany(4)"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></button>
-                <button class="star-btn" onclick="rateCompany(5)"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></button>
+                <button class="secondary-btn w-full" onclick="app.clearFilters()">Filtreleri Temizle</button>
             </div>
-        </div>
-    `;
-}
+        `;
 
-// Simüle Escrow Ödemesi Yap
-function simulateEscrowPayment() {
-    alert('Simüle ödeme başarıyla güvenli havuz hesabına aktarıldı. Tedarik süreci başladı.');
-    const payStep = document.getElementById('escrowPayStep');
-    payStep.className = 'escrow-step completed';
-    payStep.querySelector('button').classList.add('hidden');
-    
-    // Puanlama adımını aktifleştir
-    document.getElementById('escrowRatingStep').classList.remove('hidden');
-}
-
-// Firmaya Yıldız Puan Verme
-function rateCompany(stars) {
-    // Yıldız sınıflarını güncelle
-    const starBtns = document.querySelectorAll('.star-btn');
-    starBtns.forEach((btn, index) => {
-        if (index < stars) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
-
-    alert(`Firma ${stars} Yıldız ile puanlandı. Geri bildiriminiz için teşekkür ederiz.`);
-}
-
-// Modal Teklif Listesini Çiz
-function renderModalBidLadder() {
-    const container = document.getElementById('modalBidLadder');
-    document.getElementById('modalBidCount').innerText = `${currentTenderBids.length} Teklif`;
-
-    if (currentTenderBids.length === 0) {
-        container.innerHTML = `<div class="empty-ladder">Henüz teklif verilmedi. İlk teklifi siz verin!</div>`;
-        return;
-    }
-
-    container.innerHTML = currentTenderBids.map((b, index) => {
-        const rank = index + 1;
-        const initial = b.company_name ? b.company_name.charAt(0) : 'F';
-        
-        let statusBadge = '';
-        if (b.status === 'won') statusBadge = '<span class="badge-won">KAZANDI</span>';
-        if (b.status === 'lost') statusBadge = '<span class="badge-lost">ELENDİ</span>';
-
-        // Alıcı için kazanan belirleme butonu
-        let awardBtn = '';
-        const tenderStatus = document.getElementById('modalStatus').className;
-        if (currentRole === 'buyer' && !tenderStatus.includes('awarded') && !tenderStatus.includes('cancelled')) {
-            awardBtn = `<button class="award-btn" onclick="awardTenderFromModal('${b.id}')">Kazanan Belirle</button>`;
-        }
-
-        return `
-            <div class="bid-card" id="modal-bid-${b.id}">
-                <div class="bid-card-left">
-                    <div class="bid-position">${rank}</div>
-                    <div class="company-initial">${initial}</div>
-                    <div class="bid-info">
-                        <span class="bid-company-name">${b.company_name || 'Gizli Firma'}</span>
-                        <span class="bid-row-meta">${b.delivery_lead_time_days} günde teslimat • ${b.note || 'Not yok'}</span>
-                    </div>
-                </div>
-                <div class="bid-card-right">
-                    <div>
-                        <span class="bid-amount">${Number(b.price).toLocaleString('tr-TR')} TL</span>
-                        <span class="bid-tax-lbl">${b.tax_included ? 'KDV Dahil' : 'KDV Hariç'}</span>
-                    </div>
-                    ${statusBadge}
-                    ${awardBtn}
+        // Render Dashboard Table skeleton
+        panel.innerHTML = `
+            <div class="panel-header-section">
+                <h1>Canlı B2B İhale Arenası</h1>
+                <p>Tedarik taleplerinizi yayınlayın, onaylı satıcıların anlık fiyat kırarak yarışmasını izleyin.</p>
+            </div>
+            
+            <div class="content-card">
+                <div class="table-container">
+                    <table class="premium-table">
+                        <thead>
+                            <tr>
+                                <th>KATEGORİ ADI</th>
+                                <th>İLAN NO</th>
+                                <th>İLAN AÇIKLAMASI</th>
+                                <th style="width: 80px;">GÖRSEL</th>
+                                <th>İL / İLÇE / FİRMA</th>
+                                <th>DOSYA (RAR)</th>
+                                <th>BİTİŞ TARİHİ</th>
+                                <th>TEKLİF</th>
+                                <th style="text-align: center;">DETAY</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tenders-table-body">
+                            <tr>
+                                <td colspan="9" style="text-align: center; padding: 48px;">
+                                    <i class="fa-solid fa-spinner fa-spin fa-2x"></i><br><br>İhaleler yükleniyor...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         `;
-    }).join('');
-}
 
-// WebSocket üzerinden canlı teklif ekleme/sıralama
-function addBidToModalLadder(newBid, flash = false) {
-    const existingIndex = currentTenderBids.findIndex(b => b.id === newBid.id);
-    if (existingIndex > -1) {
-        currentTenderBids[existingIndex] = newBid;
-    } else {
-        currentTenderBids.push(newBid);
+        await this.loadTenders();
     }
 
-    // Fiyata göre sırala (en düşük en üstte)
-    currentTenderBids.sort((a, b) => Number(a.price) - Number(b.price));
+    async loadTenders() {
+        try {
+            const status = document.getElementById('filter-status')?.value || 'open';
+            const res = await fetch(`${API_URL}/api/tenders?status=${status}`);
+            const data = await res.json();
+            this.tenders = data.tenders || [];
+            this.applyFilters();
+        } catch (e) {
+            console.error('İhaleler yüklenemedi:', e);
+        }
+    }
 
-    renderModalBidLadder();
+    applyFilters() {
+        const searchVal = document.getElementById('filter-search')?.value.toLowerCase() || '';
+        const selectedCats = Array.from(document.querySelectorAll('input[name="filter-category"]:checked')).map(el => parseInt(el.value));
+        
+        let filtered = this.tenders;
 
-    if (flash) {
-        const card = document.getElementById(`modal-bid-${newBid.id}`);
-        if (card) {
-            card.classList.add('new-flash');
-            setTimeout(() => card.classList.remove('new-flash'), 1500);
+        if (searchVal) {
+            filtered = filtered.filter(t => 
+                t.title.toLowerCase().includes(searchVal) || 
+                t.description.toLowerCase().includes(searchVal)
+            );
+        }
+
+        if (selectedCats.length > 0) {
+            filtered = filtered.filter(t => selectedCats.includes(t.category_id));
+        }
+
+        const tbody = document.getElementById('tenders-table-body');
+        if (!tbody) return;
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: 48px; color: var(--clr-text-secondary);">
+                        Arama kriterlerine uygun aktif bir ihale bulunamadı.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(t => {
+            const imageThumb = t.image_url 
+                ? `<div class="img-thumb" style="background-image: url('${t.image_url}')"><i class="fa-solid fa-image"></i></div>` 
+                : `<div class="img-thumb empty"><i class="fa-solid fa-box"></i></div>`;
+                
+            const fileLink = t.file_url 
+                ? `<a href="#" class="file-rar-link" onclick="alert('Demo dosya indiriliyor: ${t.file_url}')"><i class="fa-solid fa-file-zipper"></i> RAR İndir</a>` 
+                : `<span class="no-file-text">-</span>`;
+
+            return `
+                <tr>
+                    <td><span class="cat-pill">${t.category_name}</span></td>
+                    <td class="font-mono">#${t.id.substring(t.id.length - 4)}</td>
+                    <td>
+                        <div class="tender-title-row">${t.title}</div>
+                        <div class="tender-desc-row">${t.description}</div>
+                    </td>
+                    <td>${imageThumb}</td>
+                    <td>
+                        <div class="loc-city">${t.city} / ${t.district}</div>
+                        <div class="loc-firm" style="cursor: pointer; text-decoration: underline;" onclick="app.navigateTo('/firma-bilgi/mock-company-id')">Tedarikçi A.Ş.</div>
+                    </td>
+                    <td>${fileLink}</td>
+                    <td><span class="date-badge">${new Date(t.expires_at).toLocaleDateString('tr-TR')}</span></td>
+                    <td>
+                        <span class="bid-count-badge ${t.teklif_sayisi > 0 ? 'active' : ''}">
+                            <i class="fa-solid fa-gavel"></i> ${t.teklif_sayisi || 0}
+                        </span>
+                    </td>
+                    <td style="text-align: center;">
+                        <button class="view-ad-btn" onclick="app.navigateTo('/teklifler/${t.id}')">
+                            <i class="fa-solid fa-play"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    clearFilters() {
+        const search = document.getElementById('filter-search');
+        if (search) search.value = '';
+        document.querySelectorAll('input[name="filter-category"]:checked').forEach(el => el.checked = false);
+        const status = document.getElementById('filter-status');
+        if (status) status.value = 'open';
+        this.applyFilters();
+    }
+
+    // View 2: İlan Verme Ekranı (Screenshot 2)
+    renderAdPostScreen() {
+        if (!this.user || this.user.role !== 'buyer') {
+            alert('İhale ilanı oluşturabilmek için lütfen "Alıcı" hesabı ile giriş yapın.');
+            this.openLoginModal('buyer');
+            return;
+        }
+
+        const sidebar = document.getElementById('sidebar-content');
+        const panel = document.getElementById('panel-content');
+
+        // Sidebar: KATEGORİLER / ALT KATEGORİLER
+        sidebar.innerHTML = `
+            <div class="sidebar-box">
+                <h3 class="sidebar-title"><i class="fa-solid fa-folder-tree"></i> KATEGORİLER</h3>
+                <p style="font-size: 12px; color: var(--clr-text-secondary); margin-bottom: 15px;">Açacağınız ihale ilanına en uygun sektörü yan taraftan seçin.</p>
+                <div class="categories-list-select" id="post-cat-list">
+                    ${this.categories.map(c => `
+                        <div class="category-select-item" id="cat-sel-${c.id}" onclick="app.selectPostCategory(${c.id})">
+                            <i class="fa-solid fa-angle-right"></i> ${c.name}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        // Main Panel: İlan Verme Formu (Screenshot 2)
+        panel.innerHTML = `
+            <div class="panel-header-section">
+                <h1>Yeni İhale İlanı Oluştur</h1>
+                <p>Aşağıdaki bilgileri eksiksiz doldurarak tersine ihale arenasını başlatın.</p>
+            </div>
+
+            <div class="content-card">
+                <form class="styled-form" onsubmit="app.handleAdPostNext(event)">
+                    <input type="hidden" id="post-category-id" required>
+                    
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>ÜLKE</label>
+                            <input type="text" id="post-country" value="Türkiye" required>
+                        </div>
+                        <div class="form-field">
+                            <label>İL</label>
+                            <input type="text" id="post-city" required placeholder="Örn: İstanbul">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>İLÇE</label>
+                            <input type="text" id="post-district" required placeholder="Örn: Kadıköy">
+                        </div>
+                        <div class="form-field">
+                            <label>KÖY / MAHALLE</label>
+                            <input type="text" id="post-neighborhood" placeholder="Örn: Caferağa Mah.">
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label>İLAN BAŞLIĞI</label>
+                        <input type="text" id="post-title" required placeholder="Örn: 500 Paket A4 Fotokopi Kağıdı Alımı">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>DOSYA YÜKLE (TEKNİK ŞARTNAME - RAR)</label>
+                            <div class="file-uploader-box" onclick="document.getElementById('post-file').click()">
+                                <i class="fa-solid fa-file-zipper"></i>
+                                <span id="file-uploader-text">Şartname dosyası seçin (.rar, .zip)</span>
+                                <input type="file" id="post-file" style="display: none;" onchange="app.handleFileChange(this)">
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label>İLAN GÖRSELİ YÜKLE (GÖRSEL YÜKLE)</label>
+                            <div class="file-uploader-box" onclick="document.getElementById('post-image').click()">
+                                <i class="fa-solid fa-image"></i>
+                                <span id="image-uploader-text">İlan görseli seçin (.jpg, .png)</span>
+                                <input type="file" id="post-image" style="display: none;" onchange="app.handleImageChange(this)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label>AÇIKLAMA EKLE</label>
+                        <textarea id="post-description" rows="4" required placeholder="Malzeme detayları, teslimat şartları, marka tercihleri vb. detayları yazınız..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>Miktar & Birim</label>
+                            <div class="unit-group">
+                                <input type="number" id="post-quantity" required placeholder="Miktar" min="1">
+                                <input type="text" id="post-unit" required placeholder="Adet, Ton vb.">
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label>MİNİMUM VEYA MAKSİMUM FİYAT (HEDEF FİYAT)</label>
+                            <input type="number" id="post-target-price" placeholder="Örn: 50000">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>ALIŞ / SATIŞ / HİZMET SEÇİMİ</label>
+                            <select id="post-type" class="filter-select">
+                                <option value="Alış">Alış İhalesi (Fiyat Düşürülür)</option>
+                                <option value="Satış">Satış İhalesi (Fiyat Artırılır)</option>
+                                <option value="Hizmet">Hizmet İhalesi</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label>İHALE BİTİŞ TARİHİ</label>
+                            <input type="date" id="post-expires-at" required>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons-row">
+                        <button type="submit" class="primary-btn">DEVAM ET <i class="fa-solid fa-angle-right"></i></button>
+                    </div>
+                </form>
+            </div>
+        `;
+        
+        // Select first category by default
+        if (this.categories.length > 0) {
+            this.selectPostCategory(this.categories[0].id);
+        }
+    }
+
+    selectPostCategory(id) {
+        document.querySelectorAll('.category-select-item').forEach(el => el.classList.remove('active'));
+        const activeItem = document.getElementById(`cat-sel-${id}`);
+        if (activeItem) activeItem.classList.add('active');
+        const input = document.getElementById('post-category-id');
+        if (input) input.value = id;
+    }
+
+    handleFileChange(input) {
+        const text = document.getElementById('file-uploader-text');
+        if (text && input.files[0]) {
+            text.innerHTML = `<strong>Seçildi:</strong> ${input.files[0].name}`;
+        }
+    }
+
+    handleImageChange(input) {
+        const text = document.getElementById('image-uploader-text');
+        if (text && input.files[0]) {
+            text.innerHTML = `<strong>Seçildi:</strong> ${input.files[0].name}`;
+        }
+    }
+
+    handleAdPostNext(event) {
+        event.preventDefault();
+        
+        const categoryId = document.getElementById('post-category-id').value;
+        if (!categoryId) {
+            alert('Lütfen bir kategori seçiniz.');
+            return;
+        }
+
+        this.tempTender = {
+            category_id: parseInt(categoryId),
+            category_name: this.categories.find(c => c.id === parseInt(categoryId))?.name || '',
+            country: document.getElementById('post-country').value,
+            city: document.getElementById('post-city').value,
+            district: document.getElementById('post-district').value,
+            neighborhood: document.getElementById('post-neighborhood').value,
+            title: document.getElementById('post-title').value,
+            description: document.getElementById('post-description').value,
+            quantity: document.getElementById('post-quantity').value,
+            unit: document.getElementById('post-unit').value,
+            target_price: document.getElementById('post-target-price').value,
+            type: document.getElementById('post-type').value,
+            expires_at: document.getElementById('post-expires-at').value,
+            file_name: document.getElementById('post-file').files[0]?.name || 'Sartname_Tedarik.rar',
+            image_name: document.getElementById('post-image').files[0]?.name || ''
+        };
+
+        this.renderAdPreviewScreen();
+    }
+
+    // View 3: Sözleşmeler ve Ön İzleme (Screenshot 3)
+    renderAdPreviewScreen() {
+        if (!this.tempTender) {
+            this.navigateTo('/ilan-ver');
+            return;
+        }
+
+        const sidebar = document.getElementById('sidebar-content');
+        const panel = document.getElementById('panel-content');
+
+        sidebar.innerHTML = `
+            <div class="sidebar-box">
+                <h3 class="sidebar-title"><i class="fa-solid fa-file-contract"></i> SÖZLEŞMELER</h3>
+                <div class="contract-sidebar-preview">
+                    <i class="fa-solid fa-signature fa-3x" style="color: var(--clr-accent); display: block; margin: 15px auto; text-align: center;"></i>
+                    <p style="font-size: 12px; color: var(--clr-text-secondary);">İhale arenasını başlatmadan önce yandaki sözleşme metnini onaylamanız gerekmektedir.</p>
+                </div>
+            </div>
+        `;
+
+        panel.innerHTML = `
+            <div class="panel-header-section">
+                <h1>İhale Sözleşmesi & Ön İzleme</h1>
+                <p>İlanınızı göndermeden önce bilgileri kontrol edin ve B2B katılım sözleşmesini onaylayın.</p>
+            </div>
+
+            <div class="content-card" style="margin-bottom: 24px;">
+                <h3 class="card-title">İlan Ön İzleme</h3>
+                <div class="preview-details-grid">
+                    <div class="preview-item"><strong>KATEGORİ:</strong> ${this.tempTender.category_name}</div>
+                    <div class="preview-item"><strong>BAŞLIK:</strong> ${this.tempTender.title}</div>
+                    <div class="preview-item"><strong>KONUM:</strong> ${this.tempTender.country} / ${this.tempTender.city} / ${this.tempTender.district} / ${this.tempTender.neighborhood}</div>
+                    <div class="preview-item"><strong>MİKTAR:</strong> ${this.tempTender.quantity} ${this.tempTender.unit}</div>
+                    <div class="preview-item"><strong>LİMİT/HEDEF FİYAT:</strong> ${this.tempTender.target_price || 'Belirtilmedi'}</div>
+                    <div class="preview-item"><strong>İHALE TÜRÜ:</strong> ${this.tempTender.type}</div>
+                    <div class="preview-item"><strong>BİTİŞ TARİHİ:</strong> ${this.tempTender.expires_at}</div>
+                    <div class="preview-item"><strong>DOSYA:</strong> ${this.tempTender.file_name}</div>
+                </div>
+                <div class="preview-desc-box">
+                    <strong>AÇIKLAMA:</strong>
+                    <p>${this.tempTender.description}</p>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h3 class="card-title">B2B Canlı Tersine İhale Katılım Sözleşmesi</h3>
+                <div class="contract-text-box">
+                    <h4>Madde 1 - Taraflar ve Tanımlar</h4>
+                    <p>Bu sözleşme, gelanlasalim.com altyapısında açılan ihalede teklif veren doğrulanmış satıcılar ve alıcı şirket arasında imzalanmıştır.</p>
+                    <h4>Madde 2 - İhale Kuralları ve Teminat</h4>
+                    <p>Tersine ihale sırasında verilen teklifler bağlayıcıdır. Alıcı, ihale süresi bittiğinde en uygun teklifi veren satıcıyla anlaşmayı taahhüt eder. Ödemeler güvenli havuz hesabına bloke edilerek alıcı onayından sonra aktarılacaktır.</p>
+                    <h4>Madde 3 - Cezai Şartlar</h4>
+                    <p>Haklı bir gerekçe olmaksızın teklifinden vazgeçen satıcının üyeliği dondurulur ve aylık teklif limiti sıfırlanır.</p>
+                </div>
+
+                <div class="checkbox-group" style="margin: 20px 0;">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="contract-agree" required>
+                        <span>Sözleşme şartlarını okudum, anladım ve ihalenin bu kurallara göre başlatılmasını kabul ediyorum.</span>
+                    </label>
+                </div>
+
+                <div class="action-buttons-row">
+                    <button class="secondary-btn" onclick="app.navigateTo('/ilan-ver')"><i class="fa-solid fa-angle-left"></i> Geri Dön</button>
+                    <button class="primary-btn" onclick="app.submitTender()">YAYINLA / İLANA GÖNDER ▷</button>
+                </div>
+            </div>
+        `;
+    }
+
+    async submitTender() {
+        const checked = document.getElementById('contract-agree')?.checked;
+        if (!checked) {
+            alert('Lütfen katılım sözleşmesini onaylayın.');
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/api/tenders`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.token}`
+                },
+                body: JSON.stringify({
+                    category_id: this.tempTender.category_id,
+                    title: this.tempTender.title,
+                    description: this.tempTender.description,
+                    quantity: this.tempTender.quantity,
+                    unit: this.tempTender.unit,
+                    city: this.tempTender.city,
+                    district: this.tempTender.district,
+                    delivery_address: `${this.tempTender.neighborhood || ''} ${this.tempTender.district} / ${this.tempTender.city}`,
+                    delivery_date: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 15 gün sonra
+                    expires_at: new Date(this.tempTender.expires_at).toISOString(),
+                    country: this.tempTender.country,
+                    neighborhood: this.tempTender.neighborhood,
+                    file_url: this.tempTender.file_name,
+                    image_url: this.tempTender.image_name,
+                    type: this.tempTender.type,
+                    target_price: this.tempTender.target_price
+                })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                alert('İhaleniz başarıyla yayına alındı!');
+                this.tempTender = null;
+                this.navigateTo('/');
+            } else {
+                alert(`Hata: ${data.error || 'Bilinmeyen bir hata oluştu.'}`);
+            }
+        } catch (e) {
+            console.error('İhale oluşturulurken hata:', e);
+            alert('Ağ hatası veya sunucu bağlantı problemi.');
+        }
+    }
+
+    // View 4: Üyelik Kayıt (Screenshot 4)
+    renderRegistrationScreen() {
+        const sidebar = document.getElementById('sidebar-content');
+        const panel = document.getElementById('panel-content');
+
+        // Sidebar: FAALİYET ALANI
+        sidebar.innerHTML = `
+            <div class="sidebar-box">
+                <h3 class="sidebar-title"><i class="fa-solid fa-briefcase"></i> FAALİYET ALANI</h3>
+                <p style="font-size: 12px; color: var(--clr-text-secondary); margin-bottom: 15px;">Firmanızın teklif vermek veya ihale açmak istediği ana sektörleri işaretleyin.</p>
+                <div class="categories-checkbox-list">
+                    ${this.categories.map(c => `
+                        <label class="checkbox-container">
+                            <input type="checkbox" name="reg-activity" value="${c.id}">
+                            <span>${c.name}</span>
+                        </label>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        // Main Panel: Firma Kayıt (Screenshot 4)
+        panel.innerHTML = `
+            <div class="panel-header-section">
+                <h1>Üye Kayıt Formu</h1>
+                <p>Platforma dahil olarak anında ihale açın veya ihalelere canlı teklif vererek ciro hacminizi artırın.</p>
+            </div>
+
+            <div class="content-card">
+                <form class="styled-form" onsubmit="app.handleRegistrationNext(event)">
+                    
+                    <!-- Google Hızlı Giriş -->
+                    <div class="google-auth-box">
+                        <button type="button" class="google-btn-auth" onclick="app.simulateGoogleAuth()">
+                            <i class="fa-brands fa-google"></i> Google Bilgileri ile Otomatik Doldur
+                        </button>
+                        <span class="auth-hint">Google profil bilgilerinizi kullanarak formu anında doldurun.</span>
+                    </div>
+
+                    <div class="divider"><span>FİRMA VE KULLANICI BİLGİLERİ</span></div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>Kullanıcı Rolü</label>
+                            <select id="reg-role" class="filter-select">
+                                <option value="buyer">Alıcı (İhale açmak için)</option>
+                                <option value="seller">Satıcı / Tedarikçi (Teklif vermek için)</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label>FİRMA İSMİ / ADI</label>
+                            <input type="text" id="reg-company-name" required placeholder="Beta Hazır Beton Ltd. Şti.">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>ADINIZ</label>
+                            <input type="text" id="reg-first-name" required placeholder="Ahmet">
+                        </div>
+                        <div class="form-field">
+                            <label>SOYADINIZ</label>
+                            <input type="text" id="reg-last-name" required placeholder="Yılmaz">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>ÜLKE</label>
+                            <input type="text" id="reg-country" value="Türkiye" required>
+                        </div>
+                        <div class="form-field">
+                            <label>İL</label>
+                            <input type="text" id="reg-city" required placeholder="İstanbul">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>İLÇE</label>
+                            <input type="text" id="reg-district" required placeholder="Kadıköy">
+                        </div>
+                        <div class="form-field">
+                            <label>KÖY / MAHALLE</label>
+                            <input type="text" id="reg-neighborhood" placeholder="Caferağa Mah.">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>TEL (TELEFON)</label>
+                            <input type="text" id="reg-phone" required placeholder="05551112233">
+                        </div>
+                        <div class="form-field">
+                            <label>MAİL (E-POSTA)</label>
+                            <input type="email" id="reg-email" required placeholder="ornek@firma.com">
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label>ŞİFRE</label>
+                        <input type="password" id="reg-password" required placeholder="••••••••">
+                    </div>
+
+                    <div class="action-buttons-row">
+                        <button type="submit" class="primary-btn">DEVAM ET (ÖDEME EKRANI) <i class="fa-solid fa-angle-right"></i></button>
+                    </div>
+                </form>
+            </div>
+        `;
+    }
+
+    simulateGoogleAuth() {
+        const first = document.getElementById('reg-first-name');
+        const last = document.getElementById('reg-last-name');
+        const email = document.getElementById('reg-email');
+        const firm = document.getElementById('reg-company-name');
+        
+        if (first && last && email && firm) {
+            first.value = "Kaya";
+            last.value = "Öztürk";
+            email.value = "kaya_ozturk@gmail.com";
+            firm.value = "Kaya Peyzaj ve Botanik A.Ş.";
+            alert('Google profil bilgileri başarıyla çekildi ve forma entegre edildi!');
+        }
+    }
+
+    handleRegistrationNext(event) {
+        event.preventDefault();
+
+        const selectedCats = Array.from(document.querySelectorAll('input[name="reg-activity"]:checked')).map(el => parseInt(el.value));
+        if (selectedCats.length === 0) {
+            alert('Lütfen en az 1 faaliyet alanı seçin.');
+            return;
+        }
+
+        this.tempRegister = {
+            role: document.getElementById('reg-role').value,
+            company_name: document.getElementById('reg-company-name').value,
+            first_name: document.getElementById('reg-first-name').value,
+            last_name: document.getElementById('reg-last-name').value,
+            country: document.getElementById('reg-country').value,
+            city: document.getElementById('reg-city').value,
+            district: document.getElementById('reg-district').value,
+            neighborhood: document.getElementById('reg-neighborhood').value,
+            phone: document.getElementById('reg-phone').value,
+            email: document.getElementById('reg-email').value,
+            password: document.getElementById('reg-password').value,
+            category_ids: selectedCats
+        };
+
+        this.renderPaymentScreen();
+    }
+
+    // View 5: Üyelik Ödeme Sayfası (Screenshot 5)
+    renderPaymentScreen() {
+        if (!this.tempRegister) {
+            this.navigateTo('/uyelik');
+            return;
+        }
+
+        const sidebar = document.getElementById('sidebar-content');
+        const panel = document.getElementById('panel-content');
+
+        sidebar.innerHTML = `
+            <div class="sidebar-box">
+                <h3 class="sidebar-title"><i class="fa-solid fa-credit-card"></i> GÜVENLİK</h3>
+                <p style="font-size: 12px; color: var(--clr-text-secondary);">3D Secure ödeme altyapısı aktiftir. Kredi kartı verileriniz asla sistemlerimizde saklanmaz.</p>
+            </div>
+        `;
+
+        panel.innerHTML = `
+            <div class="panel-header-section">
+                <h1>Üyelik Ödeme Sayfası</h1>
+                <p>Platform üyelik aktivasyon ücretini güvenle tamamlayın.</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Sol Taraf: Kart Formu -->
+                <div class="content-card">
+                    <h3 class="card-title">Kart Bilgileri</h3>
+                    <form class="styled-form" onsubmit="app.submitRegistration(event)">
+                        <div class="form-field">
+                            <label>KART SAHİBİ ADI SOYADI</label>
+                            <input type="text" id="card-holder" required placeholder="Kaya Öztürk" oninput="app.updateCardPreview()">
+                        </div>
+
+                        <div class="form-field">
+                            <label>KART NUMARASI</label>
+                            <input type="text" id="card-number" required placeholder="4355 8899 7711 2233" maxlength="19" oninput="app.updateCardPreview()">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-field">
+                                <label>SON KULLANMA TARİHİ</label>
+                                <input type="text" id="card-expiry" required placeholder="MM/YY" maxlength="5" oninput="app.updateCardPreview()">
+                            </div>
+                            <div class="form-field">
+                                <label>CVC (GÜVENLİK KODU)</label>
+                                <input type="password" id="card-cvc" required placeholder="•••" maxlength="3">
+                            </div>
+                        </div>
+
+                        <div class="action-buttons-row" style="margin-top: 24px;">
+                            <button type="button" class="secondary-btn" onclick="app.navigateTo('/uyelik')"><i class="fa-solid fa-angle-left"></i> Geri Dön</button>
+                            <button type="submit" class="primary-btn">ÖDEMEYİ TAMAMLA VE KAYDET ▷</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Sağ Taraf: Kart Ön İzleme (Klasik Premium Demo) -->
+                <div class="content-card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #252a37 0%, #151923 100%); min-height: 240px; border-color: rgba(226, 125, 96, 0.2);">
+                    <div class="credit-card-preview">
+                        <div class="card-chip"><i class="fa-solid fa-microchip fa-2x"></i></div>
+                        <div class="card-num-view" id="card-preview-num">•••• •••• •••• ••••</div>
+                        <div class="card-bottom-row">
+                            <div class="card-holder-view" id="card-preview-holder">KART SAHİBİ</div>
+                            <div class="card-expiry-view" id="card-preview-expiry">MM/YY</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    updateCardPreview() {
+        const holder = document.getElementById('card-holder')?.value || 'KART SAHİBİ';
+        const num = document.getElementById('card-number')?.value || '•••• •••• •••• ••••';
+        const exp = document.getElementById('card-expiry')?.value || 'MM/YY';
+
+        const pNum = document.getElementById('card-preview-num');
+        const pHolder = document.getElementById('card-preview-holder');
+        const pExp = document.getElementById('card-preview-expiry');
+
+        if (pNum) pNum.textContent = num;
+        if (pHolder) pHolder.textContent = holder.toUpperCase();
+        if (pExp) pExp.textContent = exp;
+    }
+
+    async submitRegistration(event) {
+        event.preventDefault();
+
+        try {
+            // 1. Kullanıcı kaydı
+            const regRes = await fetch(`${API_URL}/api/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: this.tempRegister.email,
+                    password: this.tempRegister.password,
+                    first_name: this.tempRegister.first_name,
+                    last_name: this.tempRegister.last_name,
+                    phone: this.tempRegister.phone,
+                    role: this.tempRegister.role
+                })
+            });
+
+            const regData = await regRes.json();
+            if (!regRes.ok) {
+                alert(`Kayıt Hatası: ${regData.error || 'Bilinmeyen bir hata.'}`);
+                return;
+            }
+
+            // 2. Otomatik Giriş
+            const loginRes = await fetch(`${API_URL}/api/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: this.tempRegister.email,
+                    password: this.tempRegister.password
+                })
+            });
+
+            const loginData = await loginRes.json();
+            if (!loginRes.ok) {
+                alert('Giriş başarısız oldu.');
+                return;
+            }
+
+            this.token = loginData.token;
+            this.user = loginData.user;
+            localStorage.setItem('token', this.token);
+            localStorage.setItem('user', JSON.stringify(this.user));
+
+            // 3. Şirket profilini oluştur
+            const compRes = await fetch(`${API_URL}/api/companies`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.token}`
+                },
+                body: JSON.stringify({
+                    name: this.tempRegister.company_name,
+                    tax_number: Math.floor(Math.random() * 9000000000 + 1000000000).toString(), // Random 10 haneli
+                    tax_office: this.tempRegister.district,
+                    address: `${this.tempRegister.neighborhood || ''} ${this.tempRegister.district} / ${this.tempRegister.city}`,
+                    city: this.tempRegister.city,
+                    district: this.tempRegister.district
+                })
+            });
+
+            if (compRes.ok) {
+                // Aktivasyon/Doğrulama işlemini anında tamamla
+                await fetch(`${API_URL}/api/companies/verify-demo-quick`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.token}`
+                    }
+                });
+            }
+
+            alert('Üyelik ödemeniz onaylandı ve kaydınız başarıyla tamamlandı!');
+            this.tempRegister = null;
+            this.updateHeaderUI();
+            this.navigateTo('/');
+
+        } catch (e) {
+            console.error('Kayıt tamamlama hatası:', e);
+            alert('Ağ bağlantı hatası oluştu.');
+        }
+    }
+
+    // View 6: Üye Ekranı (Screenshot 6)
+    async renderMemberScreen(tenderId) {
+        const sidebar = document.getElementById('sidebar-content');
+        const panel = document.getElementById('panel-content');
+
+        // Sidebar: İlan Detayları
+        sidebar.innerHTML = `
+            <div class="sidebar-box">
+                <h3 class="sidebar-title"><i class="fa-solid fa-circle-info"></i> İLAN DETAYI</h3>
+                <div id="tender-sidebar-details">
+                    <p style="font-size: 11px; color: var(--clr-text-secondary); text-align: center; padding: 20px;">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Yükleniyor...
+                    </p>
+                </div>
+            </div>
+        `;
+
+        // Panel: Teklif Arenası ve Teklif Listesi (Screenshot 6)
+        panel.innerHTML = `
+            <div class="panel-header-section">
+                <h1>Canlı Teklif Değerlendirme Arenası</h1>
+                <p>İhaleye gelen tüm teklifleri görün, onaylayın veya pazarlık sürecini başlatın.</p>
+            </div>
+
+            <div class="content-card" style="margin-bottom: 24px;">
+                <div class="card-header-row">
+                    <h3 class="card-title">Gelen Teklif Sıralaması</h3>
+                    <span class="badge-count" id="bid-list-count">0 Teklif</span>
+                </div>
+                <div class="bid-ladder-list" id="tender-bids-list">
+                    <!-- Dinamik Teklifler -->
+                    <div style="text-align: center; padding: 24px; color: var(--clr-text-secondary);">
+                        <i class="fa-solid fa-spinner fa-spin fa-lg"></i> Teklifler listesi yükleniyor...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teklif Verme Paneli (Sadece Satıcılar için) -->
+            <div class="content-card" id="bid-submission-card" style="display: none;">
+                <h3 class="card-title">İhaleye Teklif Ver</h3>
+                <form class="styled-form" onsubmit="app.submitBid(event)">
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>TEKLİF FİYATI (KDV DAHİL DEĞİL)</label>
+                            <input type="number" id="bid-price" required placeholder="Örn: 42000" min="1">
+                        </div>
+                        <div class="form-field">
+                            <label>KDV DURUMU</label>
+                            <select id="bid-tax" class="filter-select">
+                                <option value="false">KDV Hariç</option>
+                                <option value="true">KDV Dahil</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>TESLİMAT SÜRESİ (GÜN)</label>
+                            <input type="number" id="bid-lead-time" required placeholder="Örn: 3" min="1">
+                        </div>
+                        <div class="form-field">
+                            <label>İHALE BİTİŞİNDEN ÖNCE PAZARLIK ET / NOT</label>
+                            <input type="text" id="bid-note" placeholder="Ekstra özellikler, marka detayları veya teklif koşulları...">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="primary-btn w-full">TEKLİFİ GÖNDER ▷</button>
+                </form>
+            </div>
+        `;
+
+        await this.loadTenderDetails(tenderId);
+    }
+
+    async loadTenderDetails(tenderId) {
+        try {
+            const res = await fetch(`${API_URL}/api/tenders/${tenderId}`);
+            if (!res.ok) {
+                alert('İhale detayı bulunamadı.');
+                this.navigateTo('/');
+                return;
+            }
+            const data = await res.json();
+            const tender = data.tender;
+            this.selectedTender = tender;
+            const bids = data.bids || [];
+
+            // Join socket room
+            if (this.socket) {
+                this.socket.emit('join_tender', tenderId);
+            }
+
+            // Update Sidebar Info
+            const sidebar = document.getElementById('tender-sidebar-details');
+            if (sidebar) {
+                sidebar.innerHTML = `
+                    <div class="tender-spec-item"><strong>BAŞLIK:</strong> ${tender.title}</div>
+                    <div class="tender-spec-item"><strong>KATEGORİ:</strong> ${tender.category_name}</div>
+                    <div class="tender-spec-item"><strong>HEDEF FİYAT:</strong> ${tender.target_price ? tender.target_price.toLocaleString() + ' TL' : '-'}</div>
+                    <div class="tender-spec-item"><strong>MİKTAR:</strong> ${tender.quantity} ${tender.unit}</div>
+                    <div class="tender-spec-item"><strong>DURUM:</strong> <span class="stat-badge ${tender.status}">${tender.status.toUpperCase()}</span></div>
+                    <div class="tender-spec-item"><strong>BİTİŞ:</strong> ${new Date(tender.expires_at).toLocaleDateString('tr-TR')}</div>
+                    ${tender.file_url ? `<div class="tender-spec-item"><strong>ŞARTNAME:</strong> <a href="#" class="file-rar-link" onclick="alert('Demo dosya indiriliyor')"><i class="fa-solid fa-file-zipper"></i> RAR İndir</a></div>` : ''}
+                    <div class="tender-spec-desc"><strong>AÇIKLAMA:</strong><br>${tender.description}</div>
+                `;
+            }
+
+            // Update Bids List UI
+            const bidsCountEl = document.getElementById('bid-list-count');
+            if (bidsCountEl) bidsCountEl.textContent = `${bids.length} Teklif`;
+
+            const list = document.getElementById('tender-bids-list');
+            if (list) {
+                if (bids.length === 0) {
+                    list.innerHTML = `
+                        <div style="text-align: center; padding: 32px; color: var(--clr-text-secondary);">
+                            Henüz bu ihaleye teklif verilmemiştir.
+                        </div>
+                    `;
+                } else {
+                    const isOwner = this.user && this.user.id === tender.buyer_id;
+                    list.innerHTML = bids.map((b, index) => {
+                        let rankClass = '';
+                        if (index === 0) rankClass = 'rank-gold';
+                        else if (index === 1) rankClass = 'rank-silver';
+                        else if (index === 2) rankClass = 'rank-bronze';
+
+                        let actionButtons = '';
+                        if (isOwner && tender.status === 'open') {
+                            actionButtons = `
+                                <div class="bid-action-buttons">
+                                    <button class="btn-small-approve" onclick="app.awardBid('${b.id}')"><i class="fa-solid fa-check"></i> KABUL ET</button>
+                                    <button class="btn-small-reject" onclick="app.rejectBid('${b.id}')"><i class="fa-solid fa-ban"></i> RET</button>
+                                    <button class="btn-small-negotiate" onclick="app.openNegotiateDialog('${b.id}', ${b.price})"><i class="fa-solid fa-comments"></i> PAZARLIK ET</button>
+                                </div>
+                            `;
+                        }
+
+                        return `
+                            <div class="bid-ladder-item ${b.status === 'won' ? 'winner-gold' : ''} ${b.status === 'rejected' ? 'status-rejected' : ''} ${b.status === 'negotiating' ? 'status-negotiating' : ''}">
+                                <div class="bid-rank ${rankClass}">${index + 1}</div>
+                                <div class="bid-meta-left">
+                                    <div class="bid-firm-name" onclick="app.navigateTo('/firma-bilgi/${b.company_id}')" style="cursor: pointer; text-decoration: underline;">${b.company_name}</div>
+                                    <div class="bid-date">${b.delivery_lead_time_days} gün teslim süresi • ${b.tax_included ? 'KDV Dahil' : 'KDV Hariç'}</div>
+                                    ${b.note ? `<div class="bid-note-text"><i class="fa-solid fa-comment-dots"></i> ${b.note}</div>` : ''}
+                                </div>
+                                <div class="bid-price-right">
+                                    <div class="bid-price-value">${b.price.toLocaleString()} TL</div>
+                                    <div class="bid-status-label">${b.status.toUpperCase()}</div>
+                                    ${actionButtons}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // Show Bidding Form for active sellers
+            const bidFormCard = document.getElementById('bid-submission-card');
+            if (bidFormCard) {
+                if (this.user && this.user.role === 'seller' && tender.status === 'open') {
+                    bidFormCard.style.display = 'block';
+                } else {
+                    bidFormCard.style.display = 'none';
+                }
+            }
+
+        } catch (e) {
+            console.error('İhale detayları yüklenemedi:', e);
+        }
+    }
+
+    async submitBid(event) {
+        event.preventDefault();
+        if (!this.selectedTender) return;
+
+        const price = document.getElementById('bid-price').value;
+        const tax = document.getElementById('bid-tax').value === 'true';
+        const lead = document.getElementById('bid-lead-time').value;
+        const note = document.getElementById('bid-note').value;
+
+        try {
+            const res = await fetch(`${API_URL}/api/bids/tenders/${this.selectedTender.id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.token}`
+                },
+                body: JSON.stringify({
+                    price: parseFloat(price),
+                    tax_included: tax,
+                    delivery_lead_time_days: parseInt(lead),
+                    note
+                })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                alert('Teklifiniz başarıyla arenaya sunuldu!');
+                document.getElementById('bid-price').value = '';
+                document.getElementById('bid-lead-time').value = '';
+                document.getElementById('bid-note').value = '';
+                this.loadTenderDetails(this.selectedTender.id);
+            } else {
+                alert(`Teklif Reddedildi: ${data.error || 'Hata'}`);
+            }
+        } catch (e) {
+            console.error('Teklif gönderme hatası:', e);
+            alert('Ağ veya sunucu hatası.');
+        }
+    }
+
+    async awardBid(bidId) {
+        if (!confirm('Bu teklifi ihalenin kazananı olarak kabul edip sözleşmeyi başlatmak istediğinize emin misiniz?')) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/api/tenders/${this.selectedTender.id}/award`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.token}`
+                },
+                body: JSON.stringify({ winning_bid_id: bidId })
+            });
+
+            if (res.ok) {
+                alert('İhale başarıyla sonuçlandı ve kazanan belirlendi!');
+                this.loadTenderDetails(this.selectedTender.id);
+            } else {
+                const data = await res.json();
+                alert(`Hata: ${data.error}`);
+            }
+        } catch (e) {
+            alert('Sunucu hatası.');
+        }
+    }
+
+    async rejectBid(bidId) {
+        if (!confirm('Bu teklifi reddetmek istediğinize emin misiniz?')) return;
+
+        try {
+            const res = await fetch(`${API_URL}/api/bids/${bidId}/reject`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.token}`
+                }
+            });
+
+            if (res.ok) {
+                alert('Teklif başarıyla reddedildi.');
+                this.loadTenderDetails(this.selectedTender.id);
+            } else {
+                const data = await res.json();
+                alert(`Hata: ${data.error}`);
+            }
+        } catch (e) {
+            alert('Sunucu hatası.');
+        }
+    }
+
+    openNegotiateDialog(bidId, currentPrice) {
+        const target = prompt(`Lütfen satıcıya sunmak istediğiniz pazarlık hedef fiyatını yazın (Şu anki teklif: ${currentPrice.toLocaleString()} TL):`);
+        if (!target) return;
+        const msg = prompt("Pazarlık mesajınız veya talebiniz (Opsiyonel):");
+        
+        this.submitNegotiation(bidId, target, msg);
+    }
+
+    async submitNegotiation(bidId, targetPrice, message) {
+        try {
+            const res = await fetch(`${API_URL}/api/bids/${bidId}/negotiate`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.token}`
+                },
+                body: JSON.stringify({ target_price: parseFloat(targetPrice), message })
+            });
+
+            if (res.ok) {
+                alert('Pazarlık ve counter-offer talebi başarıyla tedarikçiye iletildi!');
+                this.loadTenderDetails(this.selectedTender.id);
+            } else {
+                const data = await res.json();
+                alert(`Hata: ${data.error}`);
+            }
+        } catch (e) {
+            alert('Sunucu hatası.');
+        }
+    }
+
+    // View 7: Firma Bilgi Ekranı (Screenshot 7)
+    renderCompanyInfoScreen(companyId) {
+        const sidebar = document.getElementById('sidebar-content');
+        const panel = document.getElementById('panel-content');
+
+        // Sidebar: Firma Puanlama
+        sidebar.innerHTML = `
+            <div class="sidebar-box">
+                <h3 class="sidebar-title"><i class="fa-solid fa-star"></i> DEĞERLENDİRME</h3>
+                <div class="rating-summary-box">
+                    <div class="large-rating-num" id="company-avg-rating">4.6</div>
+                    <div class="stars-row"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
+                    <p style="font-size: 11px; color: var(--clr-text-secondary); text-align: center; margin-top: 10px;" id="company-rating-count">5 Değerlendirme</p>
+                </div>
+            </div>
+        `;
+
+        panel.innerHTML = `
+            <div class="panel-header-section">
+                <h1>Firma Bilgi ve İstatistik Ekranı</h1>
+                <p>Tedarikçi firmanın ticaret geçmişini, başarı oranlarını ve diğer üyelerin anket puanlarını inceleyin.</p>
+            </div>
+
+            <div class="content-card" style="margin-bottom: 24px;">
+                <h3 class="card-title">Firma Detayları & İstatistikleri</h3>
+                <div class="preview-details-grid">
+                    <div class="preview-item"><strong>FİRMA İSMİ:</strong> <span id="comp-info-name">Beta Beton A.Ş.</span></div>
+                    <div class="preview-item"><strong>FAALİYET ALANI:</strong> Peyzaj, Kırtasiye, Lojistik</div>
+                    <div class="preview-item"><strong>KONUM:</strong> Türkiye / Kocaeli / Gebze</div>
+                    <div class="preview-item"><strong>TAMAMLANAN TİCARET:</strong> 24 İhale</div>
+                    <div class="preview-item"><strong>BAŞARI ORANI:</strong> %98</div>
+                    <div class="preview-item"><strong>ÜYELİK TARİHİ:</strong> 12 Ocak 2026</div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h3 class="card-title">Firma İstatistikleri Puanları Anketi (Geri Bildirim)</h3>
+                <form class="styled-form" onsubmit="app.submitCompanySurvey(event, '${companyId}')">
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>Hizmet Kalitesi (1-5 Puan)</label>
+                            <select id="survey-service" class="filter-select">
+                                <option value="5">5 - Mükemmel</option>
+                                <option value="4">4 - İyi</option>
+                                <option value="3">3 - Orta</option>
+                                <option value="2">2 - Zayıf</option>
+                                <option value="1">1 - Çok Kötü</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label>Teslimat Hızı ve Lojistik</label>
+                            <select id="survey-delivery" class="filter-select">
+                                <option value="5">5 - Mükemmel</option>
+                                <option value="4">4 - İyi</option>
+                                <option value="3">3 - Orta</option>
+                                <option value="2">2 - Zayıf</option>
+                                <option value="1">1 - Çok Kötü</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Ödeme / İletişim Güvenilirliği (Anket Puanı)</label>
+                        <select id="survey-trust" class="filter-select">
+                            <option value="5">5 - Tam Güvenilir</option>
+                            <option value="4">4 - Güvenilir</option>
+                            <option value="3">3 - Orta</option>
+                            <option value="2">2 - Kararsız</option>
+                            <option value="1">1 - Güvenilmez</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Yorum ve Geri Bildirim Ekle</label>
+                        <textarea id="survey-comment" rows="3" placeholder="Firma ile olan ticaret deneyiminiz hakkında diğer üyelere bilgi verin..."></textarea>
+                    </div>
+
+                    <button type="submit" class="primary-btn">KAYDET VE ANKETİ GÖNDER ▷</button>
+                </form>
+            </div>
+        `;
+    }
+
+    submitCompanySurvey(event, companyId) {
+        event.preventDefault();
+        alert('Geri bildirim anketiniz başarıyla kaydedildi! Puanlama güncellendi.');
+        const comment = document.getElementById('survey-comment')?.value;
+        if (comment) {
+            document.getElementById('company-avg-rating').textContent = "4.8";
+            document.getElementById('company-rating-count').textContent = "6 Değerlendirme";
+        }
+        this.navigateTo('/');
+    }
+
+    // View: Verilen ve Alınan Teklifler Listesi
+    async renderMyBidsScreen(type) {
+        if (!this.user) {
+            alert('Lütfen önce giriş yapınız.');
+            this.openLoginModal();
+            return;
+        }
+
+        const sidebar = document.getElementById('sidebar-content');
+        const panel = document.getElementById('panel-content');
+
+        sidebar.innerHTML = `
+            <div class="sidebar-box">
+                <h3 class="sidebar-title"><i class="fa-solid fa-list-check"></i> ÖZET</h3>
+                <p style="font-size: 12px; color: var(--clr-text-secondary);">Bu sayfada ${type === 'sent' ? 'verdiğiniz aktif teklifleri' : 'ihalenize gelen tüm teklifleri'} topluca inceleyebilirsiniz.</p>
+            </div>
+        `;
+
+        panel.innerHTML = `
+            <div class="panel-header-section">
+                <h1>${type === 'sent' ? 'Verdiğiniz Teklifler' : 'Alınan Teklifler'}</h1>
+                <p>Arenadaki güncel işlem durumunuzu buradan yönetin.</p>
+            </div>
+
+            <div class="content-card">
+                <div class="table-container">
+                    <table class="premium-table">
+                        <thead>
+                            <tr>
+                                <th>İHALE BAŞLIĞI</th>
+                                <th>${type === 'sent' ? 'TEKLİFİNİZ' : 'FİRMA'}</th>
+                                <th>TESLİMAT SÜRESİ</th>
+                                <th>DURUM</th>
+                                <th>TARİH</th>
+                                <th style="text-align: center;">DETAY</th>
+                            </tr>
+                        </thead>
+                        <tbody id="my-bids-table-body">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 48px;">
+                                    <i class="fa-solid fa-spinner fa-spin fa-lg"></i> Veriler yükleniyor...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+
+        try {
+            let res;
+            if (type === 'sent') {
+                res = await fetch(`${API_URL}/api/bids/my-bids`, {
+                    headers: { 'Authorization': `Bearer ${this.token}` }
+                });
+                const data = await res.json();
+                const bids = data.bids || [];
+
+                const tbody = document.getElementById('my-bids-table-body');
+                if (bids.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 32px; color: var(--clr-text-secondary);">Henüz bir ihaleye teklif vermediniz.</td></tr>`;
+                } else {
+                    tbody.innerHTML = bids.map(b => `
+                        <tr>
+                            <td><strong>${b.tender_title}</strong></td>
+                            <td class="font-mono">${b.price.toLocaleString()} TL</td>
+                            <td>${b.delivery_lead_time_days} Gün</td>
+                            <td><span class="stat-badge ${b.status}">${b.status.toUpperCase()}</span></td>
+                            <td>${new Date(b.created_at).toLocaleDateString('tr-TR')}</td>
+                            <td style="text-align: center;">
+                                <button class="view-ad-btn" onclick="app.navigateTo('/teklifler/${b.tender_id}')">
+                                    <i class="fa-solid fa-play"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } else {
+                // Alınan Teklifler (Alıcının kendi açtığı ihalelere gelen teklifler)
+                const tendersRes = await fetch(`${API_URL}/api/tenders`);
+                const data = await tendersRes.json();
+                // Kendi ihalelerimizi filtreleyelim
+                const myTenders = (data.tenders || []).filter(t => t.buyer_id === this.user.id);
+                
+                const tbody = document.getElementById('my-bids-table-body');
+                if (myTenders.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 32px; color: var(--clr-text-secondary);">Henüz açtığınız bir ihale bulunmuyor.</td></tr>`;
+                } else {
+                    tbody.innerHTML = myTenders.map(t => `
+                        <tr>
+                            <td><strong>${t.title}</strong></td>
+                            <td>-</td>
+                            <td>${new Date(t.expires_at).toLocaleDateString('tr-TR')} Bitiş</td>
+                            <td><span class="stat-badge ${t.status}">${t.status.toUpperCase()}</span></td>
+                            <td><i class="fa-solid fa-gavel"></i> ${t.teklif_sayisi || 0} Teklif Gelen</td>
+                            <td style="text-align: center;">
+                                <button class="view-ad-btn" onclick="app.navigateTo('/teklifler/${t.id}')">
+                                    <i class="fa-solid fa-play"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            }
+        } catch (e) {
+            console.error('Veriler yüklenemedi:', e);
+        }
+    }
+
+    // -------------------------------------------------------------
+    // AUTH MODAL & DEMO LOGINS
+    // -------------------------------------------------------------
+    openLoginModal(targetRole = null) {
+        document.getElementById('login-modal').style.display = 'flex';
+    }
+
+    closeLoginModal() {
+        document.getElementById('login-modal').style.display = 'none';
+    }
+
+    async handleDemoLogin(role) {
+        const email = role === 'buyer' 
+            ? 'müteahhit_test@gelanlasalim.com' 
+            : 'beta_beton_test@gelanlasalim.com';
+        
+        try {
+            const res = await fetch(`${API_URL}/api/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password: 'demo-password' })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                this.token = data.token;
+                this.user = data.user;
+                localStorage.setItem('token', this.token);
+                localStorage.setItem('user', JSON.stringify(this.user));
+                this.updateHeaderUI();
+                this.closeLoginModal();
+                alert(`Hoş geldiniz ${this.user.first_name}! Giriş yapıldı.`);
+                
+                // Refresh active view
+                this.handleRoute();
+            } else {
+                alert(`Demo giriş hatası: ${data.error}`);
+            }
+        } catch (e) {
+            alert('Sunucu hatası.');
+        }
+    }
+
+    async handleLogin(event) {
+        event.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        try {
+            const res = await fetch(`${API_URL}/api/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                this.token = data.token;
+                this.user = data.user;
+                localStorage.setItem('token', this.token);
+                localStorage.setItem('user', JSON.stringify(this.user));
+                this.updateHeaderUI();
+                this.closeLoginModal();
+                alert(`Hoş geldiniz ${this.user.first_name}! Giriş yapıldı.`);
+                this.handleRoute();
+            } else {
+                alert(`Hata: ${data.error}`);
+            }
+        } catch (e) {
+            alert('Sunucu hatası.');
         }
     }
 }
 
-// Modal İçinden İhaleyi Onaylama (Alıcı)
-async function awardTenderFromModal(bidId) {
-    if (!confirm('Bu teklifi onaylamak ve ihaleyi sonuçlandırmak istediğinize emin misiniz?')) return;
-
-    try {
-        const res = await fetch(`${API_URL}/api/tenders/${currentTenderId}/award`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userToken}`
-            },
-            body: JSON.stringify({ winning_bid_id: bidId })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-
-        alert('İhale onaylandı! Havuz ödemesi aşamasına geçilmiştir.');
-        await openArenaModal(currentTenderId); // Ekranı tazele
-    } catch (err) {
-        alert('Hata: ' + err.message);
-    }
-}
-
-// Satıcı Teklif Gönderme Formu
-document.getElementById('formSubmitBid').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!userToken || !currentTenderId) return;
-
-    const body = {
-        price: parseFloat(document.getElementById('bidPriceInput').value),
-        delivery_lead_time_days: parseInt(document.getElementById('bidLeadTimeInput').value),
-        tax_included: document.getElementById('bidTaxInput').value === 'true',
-        note: document.getElementById('bidNoteInput').value
-    };
-
-    try {
-        const res = await fetch(`${API_URL}/api/bids/tenders/${currentTenderId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userToken}`
-            },
-            body: JSON.stringify(body)
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-
-        document.getElementById('formSubmitBid').reset();
-    } catch (err) {
-        alert('Teklif Hata: ' + err.message);
-    }
-});
-
-// ---------------------------------------------------------
-// YARDIMCI GÖRSEL BİLEŞENLER
-// ---------------------------------------------------------
-
-// Kategori ve İlanları Çekme Yardımcıları
-async function fetchCategories() {
-    try {
-        const res = await fetch(`${API_URL}/api/categories`);
-        const data = await res.json();
-        allCategories = data.categories;
-    } catch (e) {
-        console.error('Kategoriler çekilemedi:', e);
-    }
-}
-
-// İhale kartı HTML render yardımı
-function renderTenderCard(t) {
-    const formattedDate = new Date(t.expires_at).toLocaleDateString('tr-TR', {
-        day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
-    });
-
-    return `
-        <div class="tender-card" onclick="openArenaModal('${t.id}')">
-            <div class="tender-card-header">
-                <h3>${t.title}</h3>
-                <span class="cat-badge">${t.category_name}</span>
-            </div>
-            <div class="tender-card-details">
-                <div class="tender-card-meta">
-                    <span>Miktar: <strong>${t.quantity} ${t.unit}</strong></span>
-                    <span>Konum: <strong>${t.city}, ${t.district}</strong></span>
-                </div>
-                <div class="tender-card-right">
-                    <span class="stat-badge open">Canlı</span>
-                    <span style="color: var(--clr-warning); font-size: 11px; margin-top: 4px; display: block;">
-                        Kapanış: ${formattedDate}
-                    </span>
-                </div>
-            </div>
-        </div>
-    `;
-}
+// Global App nesnesini tanımla
+const app = new App();
+window.app = app;

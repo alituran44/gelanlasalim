@@ -53,6 +53,28 @@ const mockDb = {
             role: 'seller',
             is_active: true,
             created_at: new Date()
+        },
+        {
+            id: 'mock-seller-2-id',
+            email: 'kaya_peyzaj@gelanlasalim.com',
+            password_hash: demoPasswordHash,
+            first_name: 'Ali',
+            last_name: 'Kaya',
+            phone: '05332223344',
+            role: 'seller',
+            is_active: true,
+            created_at: new Date()
+        },
+        {
+            id: 'mock-seller-3-id',
+            email: 'kirtasiye_test@gelanlasalim.com',
+            password_hash: demoPasswordHash,
+            first_name: 'Hakan',
+            last_name: 'Yıldız',
+            phone: '05343334455',
+            role: 'seller',
+            is_active: true,
+            created_at: new Date()
         }
     ],
     companies: [
@@ -69,20 +91,264 @@ const mockDb = {
             is_verified: true,
             verification_documents: ['Vergi_Levhasi_2026.pdf'],
             monthly_bid_limit: 10,
-            bid_count_this_month: 0,
-            rating_sum: 0,
-            rating_count: 0,
+            bid_count_this_month: 2,
+            rating_sum: 23,
+            rating_count: 5,
+            created_at: new Date()
+        },
+        {
+            id: 'mock-company-2-id',
+            user_id: 'mock-seller-2-id',
+            name: 'Kaya Peyzaj ve Fidancılık',
+            tax_number: '1231231234',
+            tax_office: 'Bornova',
+            address: 'Bornova, İzmir',
+            city: 'İzmir',
+            district: 'Bornova',
+            logo_url: '',
+            is_verified: true,
+            verification_documents: ['Ticaret_Sicil.pdf'],
+            monthly_bid_limit: 10,
+            bid_count_this_month: 1,
+            rating_sum: 18,
+            rating_count: 4,
+            created_at: new Date()
+        },
+        {
+            id: 'mock-company-3-id',
+            user_id: 'mock-seller-3-id',
+            name: 'Kırtasiye Dünyası Ltd. Şti.',
+            tax_number: '5556667778',
+            tax_office: 'Kadıköy',
+            address: 'Kadıköy, İstanbul',
+            city: 'İstanbul',
+            district: 'Kadıköy',
+            logo_url: '',
+            is_verified: true,
+            verification_documents: ['Vergi_Levhasi.pdf'],
+            monthly_bid_limit: 10,
+            bid_count_this_month: 3,
+            rating_sum: 9,
+            rating_count: 2,
             created_at: new Date()
         }
     ],
     categories: [
-        { id: 1, name: 'İnşaat & Yapı Malzemeleri', slug: 'insaat-yapi-malzemeleri', description: 'Demir, beton, çimento, ince yapı ve kaba inşaat malzemeleri' },
-        { id: 2, name: 'Lojistik & Nakliye', slug: 'lojistik-nakliye', description: 'Şehir içi ve şehirler arası yük taşımacılığı, tır, kamyon ve depo hizmetleri' },
-        { id: 3, name: 'Endüstriyel Hammadde', slug: 'endustriyel-hammadde', description: 'Plastik, metal, kimyasal ve diğer endüstriyel üretim hammadde tedariği' },
-        { id: 4, name: 'Kurumsal Hizmetler & IT', slug: 'kurumsal-hizmetler-it', description: 'Yazılım, donanım tedariği, danışmanlık, güvenlik ve temizlik hizmetleri' }
+        { id: 1, name: 'Kırtasiye', slug: 'kirtasiye', description: 'A4 kağıt, kalem, dosya ve kırtasiye malzemeleri' },
+        { id: 2, name: 'Peyzaj', slug: 'peyzaj', description: 'Bitki alımı, satımı ve peyzaj düzenleme hizmetleri' },
+        { id: 3, name: 'Hizmet', slug: 'hizmet', description: 'Kurumsal danışmanlık, temizlik, güvenlik ve diğer hizmetler' },
+        { id: 4, name: 'Tarım', slug: 'tarim', description: 'Tarım ürünleri alış, satış ve hammadde tedariği' },
+        { id: 5, name: 'İnşaat & Yapı Malzemeleri', slug: 'insaat-yapi-malzemeleri', description: 'Demir, beton, çimento, kaba ve ince yapı malzemeleri' },
+        { id: 6, name: 'Lojistik & Nakliye', slug: 'lojistik-nakliye', description: 'Şehirler arası nakliye, lojistik ve yük taşımacılığı' }
     ],
-    tenders: [],
-    bids: [],
+    tenders: [
+        {
+            id: 'tender-1',
+            buyer_id: 'mock-buyer-id',
+            category_id: 1,
+            title: 'A4 KAĞIT ALIMI',
+            description: 'Şirket merkezimizde kullanılmak üzere 500 paket A4 fotokopi kağıdı alınacaktır. Marka: Double A veya Copier Land tercihidir. Teslimat adresi Kadıköy.',
+            quantity: 500,
+            unit: 'paket',
+            city: 'İstanbul',
+            district: 'Kadıköy',
+            delivery_address: 'Kadıköy İş Merkezi No:12, İstanbul',
+            delivery_date: '2026-08-01',
+            status: 'open',
+            expires_at: '2026-07-28',
+            winning_bid_id: null,
+            created_at: new Date(),
+            country: 'Türkiye',
+            neighborhood: 'Caferağa Mah.',
+            file_url: 'Sartname_A4_Kagit.rar',
+            image_url: 'a4_paper.jpg',
+            type: 'Alış',
+            target_price: 65000
+        },
+        {
+            id: 'tender-2',
+            buyer_id: 'mock-buyer-id',
+            category_id: 2,
+            title: 'BİTKİ ALIMI',
+            description: 'Belediye parkı projemiz için 200 adet Leylandi ağacı ve 150 adet Taflan çalısı alımı yapılacaktır. Leylandiler en az 1.5 metre boyunda olmalıdır.',
+            quantity: 350,
+            unit: 'adet',
+            city: 'İzmir',
+            district: 'Bornova',
+            delivery_address: 'Bornova Şantiye Sahası, İzmir',
+            delivery_date: '2026-08-10',
+            status: 'open',
+            expires_at: '2026-07-30',
+            winning_bid_id: null,
+            created_at: new Date(),
+            country: 'Türkiye',
+            neighborhood: 'Evka 3',
+            file_url: 'Peyzaj_Bitki.rar',
+            image_url: 'flowers.jpg',
+            type: 'Alış',
+            target_price: 45000
+        },
+        {
+            id: 'tender-3',
+            buyer_id: 'mock-buyer-id',
+            category_id: 2,
+            title: 'BİTKİ SATIMI',
+            description: 'Üretim sahamızdaki 1000 adet zeytin fidanını toptan olarak satıyoruz. Fidanlar 2 yaşındadır ve tüplüdür.',
+            quantity: 1000,
+            unit: 'adet',
+            city: 'Antalya',
+            district: 'Muratpaşa',
+            delivery_address: 'Antalya Sera Deposu',
+            delivery_date: '2026-08-05',
+            status: 'open',
+            expires_at: '2026-07-25',
+            winning_bid_id: null,
+            created_at: new Date(),
+            country: 'Türkiye',
+            neighborhood: 'Yeşilbahçe Mah.',
+            file_url: '',
+            image_url: '',
+            type: 'Satış',
+            target_price: 35000
+        },
+        {
+            id: 'tender-4',
+            buyer_id: 'mock-buyer-id',
+            category_id: 3,
+            title: 'HİZMET ALIMI',
+            description: 'Genel müdürlük binamızın dış cephe temizliği için 1 defaya mahsus temizlik hizmeti alınacaktır. Gerekli güvenlik belgeleri zorunludur.',
+            quantity: 1,
+            unit: 'hizmet',
+            city: 'Ankara',
+            district: 'Çankaya',
+            delivery_address: 'Çankaya Plaza Kat:10, Ankara',
+            delivery_date: '2026-08-15',
+            status: 'open',
+            expires_at: '2026-08-05',
+            winning_bid_id: null,
+            created_at: new Date(),
+            country: 'Türkiye',
+            neighborhood: 'Kavaklıdere',
+            file_url: 'Cephe_Temizlik_Sartname.rar',
+            image_url: '',
+            type: 'Hizmet',
+            target_price: 25000
+        },
+        {
+            id: 'tender-5',
+            buyer_id: 'mock-buyer-id',
+            category_id: 4,
+            title: 'TARIM ÜRÜNÜ ALIŞ',
+            description: 'Fabrikamızda işlenmek üzere 20 ton organik nohut alımı yapılacaktır. Rutubet oranı en fazla %12 olmalıdır.',
+            quantity: 20,
+            unit: 'ton',
+            city: 'Konya',
+            district: 'Selçuklu',
+            delivery_address: 'Konya Organize Gıda Deposu',
+            delivery_date: '2026-08-20',
+            status: 'open',
+            expires_at: '2026-07-27',
+            winning_bid_id: null,
+            created_at: new Date(),
+            country: 'Türkiye',
+            neighborhood: 'Büyük Kayacık',
+            file_url: '',
+            image_url: '',
+            type: 'Alış',
+            target_price: 800000
+        },
+        {
+            id: 'tender-6',
+            buyer_id: 'mock-buyer-id',
+            category_id: 4,
+            title: 'TARIM ÜRÜNÜ SATIŞ',
+            description: 'Kendi bahçemizden hasat edilmiş 5 ton Çukurova limonunu satışa sunuyoruz. Kasalanmış ve sevke hazırdır.',
+            quantity: 5,
+            unit: 'ton',
+            city: 'Adana',
+            district: 'Seyhan',
+            delivery_address: 'Seyhan Hal Deposu, Adana',
+            delivery_date: '2026-08-12',
+            status: 'open',
+            expires_at: '2026-08-01',
+            winning_bid_id: null,
+            created_at: new Date(),
+            country: 'Türkiye',
+            neighborhood: 'Reşatbey',
+            file_url: '',
+            image_url: '',
+            type: 'Satış',
+            target_price: 150000
+        }
+    ],
+    bids: [
+        {
+            id: 'bid-1-1',
+            tender_id: 'tender-1',
+            company_id: 'mock-company-3',
+            price: 62000,
+            tax_included: false,
+            delivery_lead_time_days: 2,
+            note: 'Double A marka, ertesi gün teslimat garantisi.',
+            status: 'active',
+            created_at: new Date()
+        },
+        {
+            id: 'bid-1-2',
+            tender_id: 'tender-1',
+            company_id: 'mock-company-id',
+            price: 64000,
+            tax_included: true,
+            delivery_lead_time_days: 3,
+            note: 'KDV dahil en iyi fiyat.',
+            status: 'active',
+            created_at: new Date()
+        },
+        {
+            id: 'bid-1-3',
+            tender_id: 'tender-1',
+            company_id: 'mock-company-2-id',
+            price: 68000,
+            tax_included: false,
+            delivery_lead_time_days: 5,
+            note: 'Stoktan hemen teslim.',
+            status: 'active',
+            created_at: new Date()
+        },
+        {
+            id: 'bid-2-1',
+            tender_id: 'tender-2',
+            company_id: 'mock-company-2-id',
+            price: 43000,
+            tax_included: false,
+            delivery_lead_time_days: 4,
+            note: 'Leylandiler budanmış, saksılı teslim edilir.',
+            status: 'active',
+            created_at: new Date()
+        },
+        {
+            id: 'bid-4-1',
+            tender_id: 'tender-4',
+            company_id: 'mock-company-id',
+            price: 24000,
+            tax_included: true,
+            delivery_lead_time_days: 1,
+            note: 'Dış cephe asansörü firmamıza aittir.',
+            status: 'active',
+            created_at: new Date()
+        },
+        {
+            id: 'bid-4-2',
+            tender_id: 'tender-4',
+            company_id: 'mock-company-3',
+            price: 23000,
+            tax_included: false,
+            delivery_lead_time_days: 2,
+            note: 'Hafta sonu çalışma yapılabilir.',
+            status: 'active',
+            created_at: new Date()
+        }
+    ],
     company_categories: [],
     company_service_regions: []
 };
@@ -259,14 +525,18 @@ const runMockQuery = (text, params = []) => {
 
     // 17. İhale Oluşturma
     if (cleanText.includes('INSERT INTO tenders')) {
-        const [buyerId, categoryId, title, description, quantity, unit, city, district, delivery_address, delivery_date, expires_at] = params;
+        const [
+            buyerId, categoryId, title, description, quantity, unit,
+            city, district, delivery_address, delivery_date, expires_at,
+            country, neighborhood, file_url, image_url, type, target_price
+        ] = params;
         const newTender = {
             id: generateUUID(),
             buyer_id: buyerId,
-            category_id: categoryId,
+            category_id: parseInt(categoryId),
             title,
             description,
-            quantity,
+            quantity: parseFloat(quantity),
             unit,
             city,
             district,
@@ -275,7 +545,13 @@ const runMockQuery = (text, params = []) => {
             status: 'open',
             expires_at,
             winning_bid_id: null,
-            created_at: new Date()
+            created_at: new Date(),
+            country: country || 'Türkiye',
+            neighborhood: neighborhood || '',
+            file_url: file_url || '',
+            image_url: image_url || '',
+            type: type || 'Alış',
+            target_price: target_price ? parseFloat(target_price) : null
         };
         mockDb.tenders.push(newTender);
         return { rows: [newTender] };
@@ -283,12 +559,10 @@ const runMockQuery = (text, params = []) => {
 
     // 18. İhaleleri Listeleme
     if (cleanText.startsWith('SELECT t.*, c.name as category_name FROM tenders t JOIN categories c')) {
-        // Parametrelere göre filtrele
         let filtered = mockDb.tenders;
         
         // Basit filtre simülasyonu
         if (params.length > 0) {
-            // Durum filtresi kontrolü
             const statusVal = params.find(p => ['open', 'awarded', 'completed', 'cancelled'].includes(p));
             if (statusVal) {
                 filtered = filtered.filter(t => t.status === statusVal);
@@ -297,7 +571,13 @@ const runMockQuery = (text, params = []) => {
 
         const mapped = filtered.map(t => {
             const cat = mockDb.categories.find(c => c.id === t.category_id) || {};
-            return { ...t, category_name: cat.name };
+            const bids = mockDb.bids.filter(b => b.tender_id === t.id);
+            return {
+                ...t,
+                category_name: cat.name,
+                teklif_sayisi: bids.length,
+                bid_count: bids.length
+            };
         });
         return { rows: mapped };
     }
@@ -309,12 +589,15 @@ const runMockQuery = (text, params = []) => {
         if (t) {
             const cat = mockDb.categories.find(c => c.id === t.category_id) || {};
             const u = mockDb.users.find(user => user.id === t.buyer_id) || {};
+            const bids = mockDb.bids.filter(b => b.tender_id === t.id);
             return {
                 rows: [{
                     ...t,
                     category_name: cat.name,
                     buyer_first_name: u.first_name,
-                    buyer_last_name: u.last_name
+                    buyer_last_name: u.last_name,
+                    teklif_sayisi: bids.length,
+                    bid_count: bids.length
                 }]
             };
         }
@@ -459,8 +742,30 @@ const runMockQuery = (text, params = []) => {
                 total_users: totalUsers,
                 total_companies: totalCompanies,
                 active_tenders: activeTenders
-            }]
         };
+    }
+
+    // 31. Teklif Reddetme
+    if (cleanText.includes("UPDATE bids SET status = 'rejected'")) {
+        const bidId = params[0];
+        const index = mockDb.bids.findIndex(b => b.id === bidId);
+        if (index > -1) {
+            mockDb.bids[index].status = 'rejected';
+            return { rows: [mockDb.bids[index]] };
+        }
+        return { rows: [] };
+    }
+
+    // 32. Teklif Pazarlık Durumuna Çekme
+    if (cleanText.includes("UPDATE bids SET status = 'negotiating'")) {
+        const [note, bidId] = params;
+        const index = mockDb.bids.findIndex(b => b.id === bidId);
+        if (index > -1) {
+            mockDb.bids[index].status = 'negotiating';
+            mockDb.bids[index].note = note;
+            return { rows: [mockDb.bids[index]] };
+        }
+        return { rows: [] };
     }
 
     // fallback varsayılan boş satır

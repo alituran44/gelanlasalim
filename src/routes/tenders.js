@@ -10,7 +10,8 @@ router.post('/', authenticateToken, requireRole(['buyer']), async (req, res, nex
     try {
         const {
             category_id, title, description, quantity, unit,
-            city, district, delivery_address, delivery_date, expires_at
+            city, district, delivery_address, delivery_date, expires_at,
+            country, neighborhood, file_url, image_url, type, target_price
         } = req.body;
         const buyerId = req.user.id;
 
@@ -25,13 +26,15 @@ router.post('/', authenticateToken, requireRole(['buyer']), async (req, res, nex
         const result = await db.query(
             `INSERT INTO tenders (
                 buyer_id, category_id, title, description, quantity, unit,
-                city, district, delivery_address, delivery_date, status, expires_at
+                city, district, delivery_address, delivery_date, status, expires_at,
+                country, neighborhood, file_url, image_url, type, target_price
              )
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'open', $11)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'open', $11, $12, $13, $14, $15, $16, $17)
              RETURNING *`,
             [
                 buyerId, category_id, title, description, quantity, unit,
-                city, district, delivery_address, delivery_date, expires_at
+                city, district, delivery_address, delivery_date, expires_at,
+                country || 'Türkiye', neighborhood || '', file_url || '', image_url || '', type || 'Alış', target_price || null
             ]
         );
 
@@ -47,7 +50,7 @@ router.post('/', authenticateToken, requireRole(['buyer']), async (req, res, nex
 // 2. İhaleleri Listeleme & Filtreleme
 router.get('/', async (req, res, next) => {
     try {
-        const { category_id, city, district, status } = req.query;
+        const { category_id, city, district, status, q } = req.query;
 
         let queryText = `
             SELECT t.*, c.name as category_name
@@ -76,11 +79,21 @@ router.get('/', async (req, res, next) => {
             count++;
         }
 
-        // Durum filtresi (varsayılan olarak sadece 'open' olanları getir)
-        const targetStatus = status || 'open';
-        queryText += ` AND t.status = $${count}`;
-        params.push(targetStatus);
-        count++;
+        if (q) {
+            queryText += ` AND (t.title ILIKE $${count} OR t.description ILIKE $${count})`;
+            params.push(`%${q}%`);
+            count++;
+        }
+
+        // Durum filtresi
+        if (status && status !== 'all') {
+            queryText += ` AND t.status = $${count}`;
+            params.push(status);
+            count++;
+        } else if (!status) {
+            // Varsayılan olarak açık olanları getir
+            queryText += ` AND t.status = 'open'`;
+        }
 
         queryText += ` ORDER BY t.created_at DESC`;
 

@@ -162,4 +162,70 @@ router.patch('/:id/retract', authenticateToken, requireRole(['seller']), async (
     }
 });
 
+// 4. Teklifi Reddet (Alıcı tarafından)
+router.patch('/:id/reject', authenticateToken, requireRole(['buyer']), async (req, res, next) => {
+    try {
+        const bidId = req.params.id;
+        const buyerId = req.user.id;
+
+        // Teklifi ve ihaleyi kontrol et
+        const bidRes = await db.query('SELECT b.*, t.buyer_id FROM bids b JOIN tenders t ON b.tender_id = t.id WHERE b.id = $1', [bidId]);
+        if (bidRes.rows.length === 0) {
+            return res.status(404).json({ error: 'Teklif bulunamadı.' });
+        }
+
+        const bid = bidRes.rows[0];
+        if (bid.buyer_id !== buyerId) {
+            return res.status(403).json({ error: 'Bu ihale üzerinde işlem yapma yetkiniz yok.' });
+        }
+
+        await db.query("UPDATE bids SET status = 'rejected', updated_at = CURRENT_TIMESTAMP WHERE id = $1", [bidId]);
+
+        // WebSocket yayını yapalım
+        try {
+            const io = getIO();
+            io.to(bid.tender_id).emit('bid_status_change', { bid_id: bidId, status: 'rejected' });
+        } catch (e) {}
+
+        res.json({ message: 'Teklif reddedildi.', bid_id: bidId });
+    } catch (err) {
+        next(err);
+    }
+});
+
+// 5. Teklif Üzerinde Pazarlık Et (Alıcı tarafından)
+router.patch('/:id/negotiate', authenticateToken, requireRole(['buyer']), async (req, res, next) => {
+    try {
+        const bidId = req.params.id;
+        const buyerId = req.user.id;
+        const { target_price, message } = req.body;
+
+        const bidRes = await db.query('SELECT b.*, t.buyer_id FROM bids b JOIN tenders t ON b.tender_id = t.id WHERE b.id = $1', [bidId]);
+        if (bidRes.rows.length === 0) {
+            return res.status(404).json({ error: 'Teklif bulunamadı.' });
+        }
+
+        const bid = bidRes.rows[0];
+        if (bid.buyer_id !== buyerId) {
+            return res.status(403).json({ error: 'Bu ihale üzerinde işlem yapma yetkiniz yok.' });
+        }
+
+        const note = `Pazarlık Talebi (Hedef Fiyat: ${target_price} TL): ${message || ''}`;
+        await db.query(
+            "UPDATE bids SET status = 'negotiating', note = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2",
+            [note, bidId]
+        );
+
+        // WebSocket yayını yapalım
+        try {
+            const io = getIO();
+            io.to(bid.tender_id).emit('bid_status_change', { bid_id: bidId, status: 'negotiating', note });
+        } catch (e) {}
+
+        res.json({ message: 'Pazarlık talebi satıcıya iletildi.', bid_id: bidId, note });
+    } catch (err) {
+        next(err);
+    }
+});
+
 export default router;

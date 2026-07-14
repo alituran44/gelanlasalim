@@ -56,7 +56,13 @@ class App {
                 if (this.selectedTender && this.selectedTender.id === bid.tender_id) {
                     this.loadTenderDetails(bid.tender_id);
                 }
-                this.loadTenders(); // Refresh list to update bid counts
+                this.loadTenders().then(() => {
+                    const badge = document.getElementById(`bid-badge-${bid.tender_id}`);
+                    if (badge) {
+                        badge.classList.add('new-bid-pop');
+                        badge.addEventListener('animationend', () => badge.classList.remove('new-bid-pop'), { once: true });
+                    }
+                });
             });
 
             this.socket.on('bid_status_change', (data) => {
@@ -174,6 +180,17 @@ class App {
             this.renderCompanyInfoScreen(companyId);
         } else {
             this.renderDashboard();
+        }
+
+        this.animateView();
+    }
+
+    animateView() {
+        const layout = document.getElementById('main-content-layout');
+        if (layout) {
+            layout.classList.remove('fade-slide-in');
+            void layout.offsetWidth; // Force reflow
+            layout.classList.add('fade-slide-in');
         }
     }
 
@@ -327,7 +344,7 @@ class App {
             return;
         }
 
-        tbody.innerHTML = filtered.map(t => {
+        tbody.innerHTML = filtered.map((t, index) => {
             const imageThumb = t.image_url 
                 ? `<div class="img-thumb" style="background-image: url('${t.image_url}')"><i class="fa-solid fa-image"></i></div>` 
                 : `<div class="img-thumb empty"><i class="fa-solid fa-box"></i></div>`;
@@ -337,7 +354,7 @@ class App {
                 : `<span class="no-file-text">-</span>`;
 
             return `
-                <tr>
+                <tr class="stagger-item" style="animation-delay: ${index * 0.05}s">
                     <td><span class="cat-pill">${t.category_name}</span></td>
                     <td class="font-mono">#${t.id.substring(t.id.length - 4)}</td>
                     <td>
@@ -352,7 +369,7 @@ class App {
                     <td>${fileLink}</td>
                     <td><span class="date-badge">${new Date(t.expires_at).toLocaleDateString('tr-TR')}</span></td>
                     <td>
-                        <span class="bid-count-badge ${t.teklif_sayisi > 0 ? 'active' : ''}">
+                        <span class="bid-count-badge ${t.teklif_sayisi > 0 ? 'active' : ''}" id="bid-badge-${t.id}">
                             <i class="fa-solid fa-gavel"></i> ${t.teklif_sayisi || 0}
                         </span>
                     </td>

@@ -2464,4 +2464,143 @@ body {
     justify-content: center;
 }
 
+/* =================================================================
+   AMBIENT GLOWS, TRANSITIONS AND STAGGERED ROW ANIMATIONS
+   ================================================================= */
+
+/* Ambient Background Lights */
+.ambient-glow-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.glow-circle {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    filter: blur(160px);
+    opacity: 0.04;
+    mix-blend-mode: screen;
+    pointer-events: none;
+}
+
+.glow-circle.primary {
+    background: var(--clr-accent);
+    top: -10%;
+    right: -10%;
+    animation: floatingGlow 25s ease-in-out infinite alternate;
+}
+
+.glow-circle.secondary {
+    background: #3a86c8;
+    bottom: -15%;
+    left: -10%;
+    animation: floatingGlow 35s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes floatingGlow {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(50px, 80px) scale(1.1); }
+    100% { transform: translate(-30px, -50px) scale(0.9); }
+}
+
+/* Page transitions (Fade & Slide) */
+.fade-slide-in {
+    animation: fadeSlideUp 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Staggered row slide-in */
+.stagger-item {
+    opacity: 0;
+    animation: staggerSlideIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes staggerSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.99);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Real-time Counter pop */
+.new-bid-pop {
+    animation: popGreen 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes popGreen {
+    0% {
+        transform: scale(1);
+        background-color: var(--clr-success);
+        box-shadow: 0 0 15px var(--clr-success);
+        color: #fff;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Premium Navigation link highlights */
+.header-nav button {
+    position: relative;
+    overflow: hidden;
+}
+
+.header-nav button::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: var(--clr-accent);
+    transition: var(--transition-smooth);
+    transform: translateX(-50%);
+}
+
+.header-nav button:hover::after {
+    width: 80%;
+}
+
+/* Premium row hover interaction */
+.premium-table tbody tr {
+    transition: var(--transition-smooth);
+}
+
+.premium-table tbody tr:hover td {
+    background-color: rgba(226, 125, 96, 0.015) !important;
+}
+
+.premium-table tbody tr:hover .view-ad-btn {
+    background: var(--clr-accent) !important;
+    color: #fff !important;
+    box-shadow: var(--shadow-accent-glow) !important;
+    border-color: var(--clr-accent) !important;
+}
+
+
 

@@ -742,6 +742,7 @@ const runMockQuery = (text, params = []) => {
                 total_users: totalUsers,
                 total_companies: totalCompanies,
                 active_tenders: activeTenders
+            }]
         };
     }
 

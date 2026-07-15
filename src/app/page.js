@@ -217,6 +217,15 @@ export default function LandingPage() {
         if (selectedCat !== "all") {
           tenders = tenders.filter(t => t.category_name?.toLowerCase().includes(selectedCat.toLowerCase()) || String(t.category_id) === selectedCat);
         }
+        if (selectedSector !== "all") {
+          const sectorQuery = selectedSector.toLowerCase();
+          tenders = tenders.filter(t => {
+            const catName = t.category_name?.toLowerCase() || "";
+            const title = t.title?.toLowerCase() || "";
+            const desc = t.description?.toLowerCase() || "";
+            return catName.includes(sectorQuery) || title.includes(sectorQuery) || desc.includes(sectorQuery) || sectorQuery.includes(catName);
+          });
+        }
         if (selectedCity !== "all") {
           tenders = tenders.filter(t => t.city?.toLowerCase() === selectedCity.toLowerCase());
         }
@@ -812,48 +821,98 @@ export default function LandingPage() {
 
                           {/* Dynamic content tab drawers inside card */}
                           {activeDetailTab === `malzeme-${res.id}` && (
-                            <div className="mt-2 p-3 bg-white border border-[#cbd5e1] rounded-lg text-left">
-                              <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2 flex items-center gap-1">
-                                <i className="fa-solid fa-list-ol text-accent text-[11px]"></i> Malzeme & İhtiyaç Listesi
+                            <div className="mt-2 p-4 bg-white border border-[#cbd5e1] rounded-lg text-left">
+                              <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-2 mb-3 flex items-center gap-1.5">
+                                <i className="fa-solid fa-list-ol text-accent text-[12px]"></i> Malzeme & Birim Fiyat Teklif Formu
                               </h5>
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#334155]">
-                                {res.material_list ? (
-                                  res.material_list.split('\n').filter(line => line.trim()).map((m, idx) => {
-                                    const parts = m.split(/[-:]/);
-                                    return (
-                                      <div key={idx} className="flex justify-between border-b border-gray-100 py-1">
-                                        <span>{parts[0]?.trim()}</span>
-                                        <span className="font-bold text-slate-700">{parts[1]?.trim() || ""}</span>
-                                      </div>
-                                    );
-                                  })
-                                ) : (
-                                  <>
-                                    <div className="flex justify-between border-b border-gray-100 py-1">
-                                      <span>1. Hazır Beton (C30/37)</span>
-                                      <span className="font-bold text-slate-700">1.250 m³</span>
-                                    </div>
-                                    <div className="flex justify-between border-b border-gray-100 py-1">
-                                      <span>2. Nervürlü Çelik Boru</span>
-                                      <span className="font-bold text-slate-700">85 Ton</span>
-                                    </div>
-                                    <div className="flex justify-between border-b border-gray-100 py-1">
-                                      <span>3. Kazı ve Dolgu İşçiliği</span>
-                                      <span className="font-bold text-slate-700">3.400 m³</span>
-                                    </div>
-                                    <div className="flex justify-between border-b border-gray-100 py-1">
-                                      <span>4. Yol Asfalt Kaplama (Aşınma Tabakası)</span>
-                                      <span className="font-bold text-slate-700">18.500 m²</span>
-                                    </div>
-                                  </>
-                                )}
+                              <div className="overflow-x-auto">
+                                <table className="w-full text-xs text-slate-600 border-collapse">
+                                  <thead>
+                                    <tr className="bg-slate-50 border-b border-slate-200">
+                                      <th className="p-2 text-left font-bold text-slate-700">Malzeme/Hizmet Tanımı</th>
+                                      <th className="p-2 text-center font-bold text-slate-700 w-24">Miktar / Birim</th>
+                                      <th className="p-2 text-right font-bold text-slate-700 w-32">Birim Fiyat Teklifi (₺)</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {res.material_list ? (
+                                      res.material_list.split('\n').filter(line => line.trim()).map((m, idx) => {
+                                        const parts = m.split(/[-:]/);
+                                        const itemName = parts[0]?.trim() || "";
+                                        const itemQty = parts[1]?.trim() || "1 Adet";
+                                        return (
+                                          <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50/50">
+                                            <td className="p-2 font-medium text-slate-800">{itemName}</td>
+                                            <td className="p-2 text-center font-bold text-slate-600">{itemQty}</td>
+                                            <td className="p-2 text-right">
+                                              <input 
+                                                type="number" 
+                                                placeholder="0.00" 
+                                                className="w-28 text-right bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:border-accent"
+                                              />
+                                            </td>
+                                          </tr>
+                                        );
+                                      })
+                                    ) : (
+                                      <>
+                                        <tr className="border-b border-slate-100 hover:bg-slate-50/50">
+                                          <td className="p-2 font-medium text-slate-800">Hazır Beton (C30/37)</td>
+                                          <td className="p-2 text-center font-bold text-slate-600">1.250 m³</td>
+                                          <td className="p-2 text-right">
+                                            <input 
+                                              type="number" 
+                                              placeholder="0.00" 
+                                              className="w-28 text-right bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:border-accent"
+                                            />
+                                          </td>
+                                        </tr>
+                                        <tr className="border-b border-slate-100 hover:bg-slate-50/50">
+                                          <td className="p-2 font-medium text-slate-800">Nervürlü Çelik Boru</td>
+                                          <td className="p-2 text-center font-bold text-slate-600">85 Ton</td>
+                                          <td className="p-2 text-right">
+                                            <input 
+                                              type="number" 
+                                              placeholder="0.00" 
+                                              className="w-28 text-right bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:border-accent"
+                                            />
+                                          </td>
+                                        </tr>
+                                        <tr className="border-b border-slate-100 hover:bg-slate-50/50">
+                                          <td className="p-2 font-medium text-slate-800">Kazı ve Dolgu İşçiliği</td>
+                                          <td className="p-2 text-center font-bold text-slate-600">3.400 m³</td>
+                                          <td className="p-2 text-right">
+                                            <input 
+                                              type="number" 
+                                              placeholder="0.00" 
+                                              className="w-28 text-right bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:border-accent"
+                                            />
+                                          </td>
+                                        </tr>
+                                      </>
+                                    )}
+                                  </tbody>
+                                </table>
+                              </div>
+                              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between flex-wrap gap-3">
+                                <span className="text-[10px] text-slate-400">Teklifinizi göndermek ve canlı eksiltme arenasına katılmak için portaldan oturum açmalısınız.</span>
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    alert('Teklif vermek ve canlı eksiltme arenasına katılmak için kurumsal üye girişi yapmanız gerekmektedir. Portal giriş ve kayıt ekranına yönlendiriliyorsunuz.');
+                                    window.location.href = '/portal.html#/uyelik';
+                                  }}
+                                  className="px-4 py-2 bg-accent text-white font-bold rounded-lg hover:bg-accentLight transition-all text-xs flex items-center gap-1.5 shadow-sm"
+                                >
+                                  <i className="fa-solid fa-paper-plane"></i> Teklif Gönder ve Katıl
+                                </button>
                               </div>
                             </div>
                           )}
 
                           {activeDetailTab === `ilan-${res.id}` && (
                             <div className="mt-2 p-3 bg-white border border-[#cbd5e1] rounded-lg text-left text-xs text-[#475569] leading-relaxed">
-                              <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2">Resmi İhale İlan Metni (Özet)</h5>
+                              <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2 font-heading">Resmi İhale İlan Metni (Özet)</h5>
                               {res.description ? (
                                 <p>{res.description}</p>
                               ) : (
@@ -864,7 +923,7 @@ export default function LandingPage() {
 
                           {activeDetailTab === `idari-${res.id}` && (
                             <div className="mt-2 p-3 bg-white border border-[#cbd5e1] rounded-lg text-left text-xs text-[#475569]">
-                              <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2">İdari Şartname Maddeleri</h5>
+                              <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2 font-heading">İdari Şartname Maddeleri</h5>
                               {res.admin_spec ? (
                                 <div className="whitespace-pre-line">{res.admin_spec}</div>
                               ) : (
@@ -879,7 +938,7 @@ export default function LandingPage() {
 
                           {activeDetailTab === `teknik-${res.id}` && (
                             <div className="mt-2 p-3 bg-white border border-[#cbd5e1] rounded-lg text-left text-xs text-[#475569]">
-                              <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2">Teknik Yeterlilik Kriterleri</h5>
+                              <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2 font-heading">Teknik Yeterlilik Kriterleri</h5>
                               {res.tech_spec ? (
                                 <div className="whitespace-pre-line">{res.tech_spec}</div>
                               ) : (
@@ -893,7 +952,7 @@ export default function LandingPage() {
 
                           {activeDetailTab === `benzer-${res.id}` && (
                             <div className="mt-2 p-3 bg-white border border-[#cbd5e1] rounded-lg text-left text-xs text-[#475569]">
-                              <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2">Aynı Sektördeki Geçmiş Sonuçlar</h5>
+                              <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2 font-heading">Aynı Sektördeki Geçmiş Sonuçlar & Teklif Günlüğü</h5>
                               <div className="space-y-1.5">
                                 {res.similar_history ? (
                                   res.similar_history.split('\n').filter(line => line.trim()).map((item, idx) => {
@@ -917,6 +976,23 @@ export default function LandingPage() {
                                     </div>
                                   </>
                                 )}
+                              </div>
+                              <h6 className="font-bold text-[#1e293b] mt-4 mb-2 flex items-center gap-1.5 text-[11.5px] font-heading">
+                                <i className="fa-solid fa-clock-rotate-left text-accent"></i> Güncel Teklif Geçmişi (Audit Trail)
+                              </h6>
+                              <div className="bg-slate-50 border border-slate-100 rounded-lg p-2.5 space-y-1.5 font-mono text-[10px] text-slate-500">
+                                <div className="flex justify-between">
+                                  <span>[15:42:01] Tedarikçi #8 (Demir A.Ş.)</span>
+                                  <span className="text-red-500 font-semibold">- 8.500 ₺ indirim yaptı</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span>[15:39:12] Tedarikçi #3 (Öz Yapı)</span>
+                                  <span className="text-red-500 font-semibold">- 12.000 ₺ indirim yaptı</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span>[15:35:50] Sistem</span>
+                                  <span className="text-slate-400">İhale canlı eksiltme aşamasına geçti</span>
+                                </div>
                               </div>
                             </div>
                           )}

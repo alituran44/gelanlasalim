@@ -262,6 +262,30 @@ class App {
                 </div>
 
                 <div class="filter-group">
+                    <label class="filter-label">İL SEÇİNİZ</label>
+                    <select id="filter-city" class="filter-select" onchange="app.applyFilters()">
+                        <option value="all">Tüm Şehirler</option>
+                        <option value="İstanbul">İstanbul</option>
+                        <option value="Ankara">Ankara</option>
+                        <option value="İzmir">İzmir</option>
+                        <option value="Kocaeli">Kocaeli</option>
+                        <option value="Antalya">Antalya</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">İHALE TÜRÜ</label>
+                    <select id="filter-type" class="filter-select" onchange="app.applyFilters()">
+                        <option value="all">Tüm Türler</option>
+                        <option value="Yapım İşi">Yapım İşi</option>
+                        <option value="Mal Alımı">Mal Alımı</option>
+                        <option value="Hizmet Alımı">Hizmet Alımı</option>
+                        <option value="Kiralama">Kiralama</option>
+                        <option value="Satış">Satış</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
                     <label class="filter-label">İHALE DURUMU</label>
                     <select id="filter-status" class="filter-select" onchange="app.applyFilters()">
                         <option value="open">Aktif / Açık</option>
@@ -327,6 +351,8 @@ class App {
     applyFilters() {
         const searchVal = document.getElementById('filter-search')?.value.toLowerCase() || '';
         const selectedCats = Array.from(document.querySelectorAll('input[name="filter-category"]:checked')).map(el => parseInt(el.value));
+        const cityVal = document.getElementById('filter-city')?.value || 'all';
+        const typeVal = document.getElementById('filter-type')?.value || 'all';
         
         let filtered = this.tenders;
 
@@ -339,6 +365,14 @@ class App {
 
         if (selectedCats.length > 0) {
             filtered = filtered.filter(t => selectedCats.includes(t.category_id));
+        }
+
+        if (cityVal !== 'all') {
+            filtered = filtered.filter(t => t.city?.toLowerCase() === cityVal.toLowerCase());
+        }
+
+        if (typeVal !== 'all') {
+            filtered = filtered.filter(t => t.type?.toLowerCase() === typeVal.toLowerCase());
         }
 
         const tbody = document.getElementById('tenders-table-body');
@@ -400,6 +434,10 @@ class App {
         document.querySelectorAll('input[name="filter-category"]:checked').forEach(el => el.checked = false);
         const status = document.getElementById('filter-status');
         if (status) status.value = 'open';
+        const city = document.getElementById('filter-city');
+        if (city) city.value = 'all';
+        const type = document.getElementById('filter-type');
+        if (type) type.value = 'all';
         this.applyFilters();
     }
 

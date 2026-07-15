@@ -159,15 +159,26 @@ class App {
     handleRoute() {
         const hash = window.location.hash || '#/';
         const mainLayout = document.getElementById('main-content-layout');
+        const header = document.querySelector('.main-header');
+        const regContainer = document.getElementById('register-fullscreen-container');
+
+        // Hide overlays by default
+        if (regContainer) regContainer.style.display = 'none';
+        if (mainLayout) mainLayout.style.display = 'grid';
+        if (header) header.style.display = 'block';
         
-        // Parse simple path parameters (e.g., #/teklifler/tender-id)
         let path = hash.substring(1);
         if (path === '' || path === '/') {
             this.renderDashboard();
         } else if (path === '/ilan-ver') {
             this.renderAdPostScreen();
         } else if (path === '/uyelik') {
-            this.renderRegistrationScreen();
+            if (mainLayout) mainLayout.style.display = 'none';
+            if (header) header.style.display = 'none';
+            if (regContainer) {
+                regContainer.style.display = 'block';
+                this.renderRegistrationScreen();
+            }
         } else if (path === '/verilen-teklifler') {
             this.renderMyBidsScreen('sent');
         } else if (path === '/alinan-teklifler') {
@@ -742,133 +753,27 @@ class App {
 
     // View 4: Üyelik Kayıt (Screenshot 4)
     renderRegistrationScreen() {
-        const sidebar = document.getElementById('sidebar-content');
-        const panel = document.getElementById('panel-content');
-
-        // Sidebar: FAALİYET ALANI
-        sidebar.innerHTML = `
-            <div class="sidebar-box">
-                <h3 class="sidebar-title"><i class="fa-solid fa-briefcase"></i> FAALİYET ALANI</h3>
-                <p style="font-size: 12px; color: var(--clr-text-secondary); margin-bottom: 15px;">Firmanızın teklif vermek veya ihale açmak istediği ana sektörleri işaretleyin.</p>
-                <div class="categories-checkbox-list">
-                    ${this.categories.map(c => `
-                        <label class="checkbox-container">
-                            <input type="checkbox" name="reg-activity" value="${c.id}">
-                            <span>${c.name}</span>
-                        </label>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-
-        // Main Panel: Firma Kayıt (Screenshot 4)
-        panel.innerHTML = `
-            <div class="panel-header-section">
-                <h1>Üye Kayıt Formu</h1>
-                <p>Platforma dahil olarak anında ihale açın veya ihalelere canlı teklif vererek ciro hacminizi artırın.</p>
-            </div>
-
-            <div class="content-card">
-                <form class="styled-form" onsubmit="app.handleRegistrationNext(event)">
-                    
-                    <!-- Google Hızlı Giriş -->
-                    <div class="google-auth-box">
-                        <button type="button" class="google-btn-auth" onclick="app.simulateGoogleAuth()">
-                            <i class="fa-brands fa-google"></i> Google Bilgileri ile Otomatik Doldur
-                        </button>
-                        <span class="auth-hint">Google profil bilgilerinizi kullanarak formu anında doldurun.</span>
-                    </div>
-
-                    <div class="divider"><span>FİRMA VE KULLANICI BİLGİLERİ</span></div>
-
-                    <div class="form-row">
-                        <div class="form-field">
-                            <label>Kullanıcı Rolü</label>
-                            <select id="reg-role" class="filter-select">
-                                <option value="buyer">Alıcı (İhale açmak için)</option>
-                                <option value="seller">Satıcı / Tedarikçi (Teklif vermek için)</option>
-                            </select>
-                        </div>
-                        <div class="form-field">
-                            <label>FİRMA İSMİ / ADI</label>
-                            <input type="text" id="reg-company-name" required placeholder="Beta Hazır Beton Ltd. Şti.">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-field">
-                            <label>ADINIZ</label>
-                            <input type="text" id="reg-first-name" required placeholder="Ahmet">
-                        </div>
-                        <div class="form-field">
-                            <label>SOYADINIZ</label>
-                            <input type="text" id="reg-last-name" required placeholder="Yılmaz">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-field">
-                            <label>ÜLKE</label>
-                            <input type="text" id="reg-country" value="Türkiye" required>
-                        </div>
-                        <div class="form-field">
-                            <label>İL</label>
-                            <input type="text" id="reg-city" required placeholder="İstanbul">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-field">
-                            <label>İLÇE</label>
-                            <input type="text" id="reg-district" required placeholder="Kadıköy">
-                        </div>
-                        <div class="form-field">
-                            <label>KÖY / MAHALLE</label>
-                            <input type="text" id="reg-neighborhood" placeholder="Caferağa Mah.">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-field">
-                            <label>TEL (TELEFON)</label>
-                            <input type="text" id="reg-phone" required placeholder="05551112233">
-                        </div>
-                        <div class="form-field">
-                            <label>MAİL (E-POSTA)</label>
-                            <input type="email" id="reg-email" required placeholder="ornek@firma.com">
-                        </div>
-                    </div>
-
-                    <div class="form-field">
-                        <label>ŞİFRE</label>
-                        <input type="password" id="reg-password" required placeholder="••••••••">
-                    </div>
-
-                    <div class="action-buttons-row">
-                        <button type="submit" class="primary-btn">DEVAM ET (ÖDEME EKRANI) <i class="fa-solid fa-angle-right"></i></button>
-                    </div>
-                </form>
-            </div>
-        `;
-    }
-
-    simulateGoogleAuth() {
-        const first = document.getElementById('reg-first-name');
-        const last = document.getElementById('reg-last-name');
-        const email = document.getElementById('reg-email');
-        const firm = document.getElementById('reg-company-name');
-        
-        if (first && last && email && firm) {
-            first.value = "Kaya";
-            last.value = "Öztürk";
-            email.value = "kaya_ozturk@gmail.com";
-            firm.value = "Kaya Peyzaj ve Botanik A.Ş.";
-            alert('Google profil bilgileri başarıyla çekildi ve forma entegre edildi!');
+        const catList = document.getElementById('reg-categories-list');
+        if (catList) {
+            catList.innerHTML = this.categories.map(c => `
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; color: #475569;">
+                    <input type="checkbox" name="reg-activity" value="${c.id}" style="accent-color: #0d9488;">
+                    <span>${c.name}</span>
+                </label>
+            `).join('');
         }
     }
 
-    handleRegistrationNext(event) {
+    handleRegistrationSubmit(event) {
         event.preventDefault();
+
+        const password = document.getElementById('reg-password').value;
+        const confirmPassword = document.getElementById('reg-password-confirm').value;
+
+        if (password !== confirmPassword) {
+            alert('Şifreler uyuşmuyor.');
+            return;
+        }
 
         const selectedCats = Array.from(document.querySelectorAll('input[name="reg-activity"]:checked')).map(el => parseInt(el.value));
         if (selectedCats.length === 0) {
@@ -881,17 +786,43 @@ class App {
             company_name: document.getElementById('reg-company-name').value,
             first_name: document.getElementById('reg-first-name').value,
             last_name: document.getElementById('reg-last-name').value,
-            country: document.getElementById('reg-country').value,
+            country: 'Türkiye',
             city: document.getElementById('reg-city').value,
-            district: document.getElementById('reg-district').value,
-            neighborhood: document.getElementById('reg-neighborhood').value,
+            district: '',
+            neighborhood: '',
             phone: document.getElementById('reg-phone').value,
             email: document.getElementById('reg-email').value,
-            password: document.getElementById('reg-password').value,
+            password: password,
             category_ids: selectedCats
         };
 
+        // Reset views
+        const regContainer = document.getElementById('register-fullscreen-container');
+        const mainLayout = document.getElementById('main-content-layout');
+        const header = document.querySelector('.main-header');
+
+        if (regContainer) regContainer.style.display = 'none';
+        if (mainLayout) mainLayout.style.display = 'grid';
+        if (header) header.style.display = 'block';
+
         this.renderPaymentScreen();
+    }
+
+    acceptCookies(context) {
+        let isChecked = false;
+        if (context === 'login') {
+            isChecked = document.getElementById('login-cookie-checkbox').checked;
+        } else {
+            isChecked = document.getElementById('register-cookie-checkbox').checked;
+        }
+
+        if (isChecked) {
+            alert('Çerezler kabul edildi.');
+            const widgets = document.querySelectorAll('.cookie-consent-widget');
+            widgets.forEach(w => w.style.display = 'none');
+        } else {
+            alert('Lütfen çerezleri kabul edin.');
+        }
     }
 
     // View 5: Üyelik Ödeme Sayfası (Screenshot 5)
@@ -905,9 +836,9 @@ class App {
         const panel = document.getElementById('panel-content');
 
         sidebar.innerHTML = `
-            <div class="sidebar-box">
-                <h3 class="sidebar-title"><i class="fa-solid fa-gem"></i> PREMİUM ÜYELİK</h3>
-                <p style="font-size: 12px; color: var(--clr-text-secondary); line-height: 1.6;">
+            <div class="sidebar-box" style="background: #ffffff; border: 1px solid #e2e8f0;">
+                <h3 class="sidebar-title" style="color: #0f172a;"><i class="fa-solid fa-gem"></i> PREMİUM ÜYELİK</h3>
+                <p style="font-size: 12px; color: #64748b; line-height: 1.6;">
                     gelanlasalim.com'un ayrıcalıklı B2B ihale dünyasına katılarak, canlı eksiltme arenalarında yerinizi alın, tedarik maliyetlerinizi düşürün.
                 </p>
             </div>
@@ -915,73 +846,73 @@ class App {
 
         panel.innerHTML = `
             <div class="panel-header-section">
-                <h1>Üyelik Başvuru Paketleri</h1>
-                <p>İhtiyacınıza en uygun üyelik paketini seçerek canlı ihale arenasına katılın.</p>
+                <h1 style="color: #0f172a;">Üyelik Başvuru Paketleri</h1>
+                <p style="color: #64748b;">İhtiyacınıza en uygun üyelik paketini seçerek canlı ihale arenasına katılın.</p>
             </div>
 
-            <div class="subscription-plans-container" style="color: var(--clr-text); font-family: 'Inter', sans-serif;">
+            <div class="subscription-plans-container" style="color: #334155; font-family: 'Inter', sans-serif;">
                 
                 <div class="plans-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
                     <!-- Card 1 -->
-                    <div class="plan-card-item" style="background: #0d1117; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; text-align: center; transition: all 0.3s ease;">
+                    <div class="plan-card-item" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                         <div style="background: #0d9488; color: white; padding: 12px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 13px; text-transform: uppercase;">
                             » Üyelik başvurusu - 1 ay «
                         </div>
                         <div style="padding: 24px 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px;">
-                            <div style="font-size: 32px; font-weight: 800; color: white; font-family: 'Outfit', sans-serif;">₺900</div>
+                            <div style="font-size: 32px; font-weight: 800; color: #0f172a; font-family: 'Outfit', sans-serif;">₺900</div>
                             <button class="primary-btn" onclick="app.selectMembershipPackage('1 Ay', 900)" style="width: 100%; justify-content: center; border-radius: 6px; font-weight: 600; padding: 10px;">Seç <i class="fa-solid fa-arrow-right"></i></button>
                         </div>
                     </div>
                     <!-- Card 2 -->
-                    <div class="plan-card-item" style="background: #0d1117; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; text-align: center; transition: all 0.3s ease;">
+                    <div class="plan-card-item" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                         <div style="background: #0d9488; color: white; padding: 12px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 13px; text-transform: uppercase;">
                             » Üyelik başvurusu - 3 ay «
                         </div>
                         <div style="padding: 24px 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px;">
-                            <div style="font-size: 32px; font-weight: 800; color: white; font-family: 'Outfit', sans-serif;">₺1.800</div>
+                            <div style="font-size: 32px; font-weight: 800; color: #0f172a; font-family: 'Outfit', sans-serif;">₺1.800</div>
                             <button class="primary-btn" onclick="app.selectMembershipPackage('3 Ay', 1800)" style="width: 100%; justify-content: center; border-radius: 6px; font-weight: 600; padding: 10px;">Seç <i class="fa-solid fa-arrow-right"></i></button>
                         </div>
                     </div>
                     <!-- Card 3 -->
-                    <div class="plan-card-item" style="background: #0d1117; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; text-align: center; transition: all 0.3s ease;">
+                    <div class="plan-card-item" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                         <div style="background: #0d9488; color: white; padding: 12px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 13px; text-transform: uppercase;">
                             » Üyelik başvurusu - 6 ay «
                         </div>
                         <div style="padding: 24px 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px;">
-                            <div style="font-size: 32px; font-weight: 800; color: white; font-family: 'Outfit', sans-serif;">₺2.700</div>
+                            <div style="font-size: 32px; font-weight: 800; color: #0f172a; font-family: 'Outfit', sans-serif;">₺2.700</div>
                             <button class="primary-btn" onclick="app.selectMembershipPackage('6 Ay', 2700)" style="width: 100%; justify-content: center; border-radius: 6px; font-weight: 600; padding: 10px;">Seç <i class="fa-solid fa-arrow-right"></i></button>
                         </div>
                     </div>
                     <!-- Card 4 -->
-                    <div class="plan-card-item" style="background: #0d1117; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; text-align: center; transition: all 0.3s ease;">
+                    <div class="plan-card-item" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                         <div style="background: #0d9488; color: white; padding: 12px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 13px; text-transform: uppercase;">
                             » Üyelik başvurusu - 9 ay «
                         </div>
                         <div style="padding: 24px 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px;">
-                            <div style="font-size: 32px; font-weight: 800; color: white; font-family: 'Outfit', sans-serif;">₺3.600</div>
+                            <div style="font-size: 32px; font-weight: 800; color: #0f172a; font-family: 'Outfit', sans-serif;">₺3.600</div>
                             <button class="primary-btn" onclick="app.selectMembershipPackage('9 Ay', 3600)" style="width: 100%; justify-content: center; border-radius: 6px; font-weight: 600; padding: 10px;">Seç <i class="fa-solid fa-arrow-right"></i></button>
                         </div>
                     </div>
                 </div>
 
                 <!-- KDV Note -->
-                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; text-align: center; font-size: 12px; color: var(--clr-text-secondary); margin-bottom: 24px;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; text-align: center; font-size: 12px; color: #64748b; margin-bottom: 24px;">
                     Fiyatlara %20 KDV dahildir.
                 </div>
 
                 <!-- Features Tab Panel -->
-                <div class="features-section" style="border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; background: #0d1117; overflow: hidden; margin-bottom: 24px;">
-                    <div style="padding: 12px 16px; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.08);">
-                        <span style="font-size: 12px; font-weight: 700; color: white; border-bottom: 2px solid #0d9488; padding-bottom: 8px; display: inline-block;">» Özellikler</span>
+                <div class="features-section" style="border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff; overflow: hidden; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                    <div style="padding: 12px 16px; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                        <span style="font-size: 12px; font-weight: 700; color: #0f172a; border-bottom: 2px solid #0d9488; padding-bottom: 8px; display: inline-block;">» Özellikler</span>
                     </div>
                     
-                    <div style="background: rgba(13, 148, 216, 0.08); border-bottom: 1px solid rgba(13, 148, 216, 0.15); padding: 12px; font-size: 12px; text-align: center; font-weight: 600; color: #38bdf8;">
+                    <div style="background: #f0f9ff; border-bottom: 1px solid #e0f2fe; padding: 12px; font-size: 12px; text-align: center; font-weight: 600; color: #0284c7;">
                         Tüm paketler için geçerlidir
                     </div>
 
                     <div style="padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; text-align: left; font-size: 12px;">
                         <!-- Column 1 -->
-                        <div style="display: flex; flex-direction: column; gap: 10px; color: var(--clr-text-secondary);">
+                        <div style="display: flex; flex-direction: column; gap: 10px; color: #475569;">
                             <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Ekap ihaleleri</div>
                             <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Ekap ihale sonuçları</div>
                             <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Doğrudan teminler</div>
@@ -990,7 +921,7 @@ class App {
                             <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Sınır değer hesaplama</div>
                         </div>
                         <!-- Column 2 -->
-                        <div style="display: flex; flex-direction: column; gap: 10px; color: var(--clr-text-secondary);">
+                        <div style="display: flex; flex-direction: column; gap: 10px; color: #475569;">
                             <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Arama önerileri</div>
                             <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Yaklaşan ihale bildirimleri</div>
                             <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Kazanılan ihale bildirimleri</div>
@@ -999,7 +930,7 @@ class App {
                             <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Sınırsız raporlama (Excel)</div>
                         </div>
                         <!-- Column 3 -->
-                        <div style="display: flex; flex-direction: column; gap: 10px; color: var(--clr-text-secondary);">
+                        <div style="display: flex; flex-direction: column; gap: 10px; color: #475569;">
                             <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Yüklenici analizleri</div>
                             <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> İdare analizleri</div>
                             <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Sektör analizleri</div>
@@ -1010,15 +941,15 @@ class App {
                 </div>
 
                 <!-- Extension Banner -->
-                <div style="background: rgba(13, 148, 216, 0.03); border: 1px solid rgba(13, 148, 216, 0.1); border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 24px; display: flex; flex-direction: column; align-items: center; gap: 12px; justify-content: center;">
-                    <span style="font-size: 13px; color: var(--clr-text-secondary); font-weight: 500;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 24px; display: flex; flex-direction: column; align-items: center; gap: 12px; justify-content: center;">
+                    <span style="font-size: 13px; color: #64748b; font-weight: 500;">
                         Eğer üyeliğiniz varsa aşağıdaki bağlantıya tıklayıp %20 indirimli fiyatlarla üyeliğinizi uzatabilirsiniz
                     </span>
                     <button class="primary-btn" onclick="alert('Üyelik uzatma talebiniz alındı. Temsilcimiz sizinle iletişime geçecektir.')" style="border-radius: 6px; padding: 8px 20px; font-size: 12px;">Üyelik uzat <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
 
                 <!-- Footer Disclaimer -->
-                <div style="font-size: 11px; text-align: center; line-height: 1.6; margin-top: 32px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;">
+                <div style="font-size: 11px; text-align: center; line-height: 1.6; margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
                     <p style="color: #ef4444; margin-bottom: 4px; font-weight: 500;">
                         Bu hizmet Özgürsoft Bilişim A.Ş. tarafından sunulmaktadır. Şirketimizin Kamu İhale Kurumu (EKAP) veya başka bir kamu kurumu ile herhangi bir bağlantısı bulunmamaktadır.
                     </p>
@@ -1029,10 +960,10 @@ class App {
             <!-- Payment Modal (Hidden by Default) -->
             <div class="arena-modal" id="payment-modal" style="display: none;">
                 <div class="modal-backdrop" onclick="document.getElementById('payment-modal').style.display='none'"></div>
-                <div class="modal-body auth-modal-body" style="max-width: 500px; padding: 24px; border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; background: #0d1117;">
+                <div class="modal-body auth-modal-body" style="max-width: 500px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; background: #ffffff; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
                     <button class="close-modal-btn" onclick="document.getElementById('payment-modal').style.display='none'"><i class="fa-solid fa-xmark fa-lg"></i></button>
-                    <h2 style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 20px; color: white; margin-bottom: 8px;">Güvenli Ödeme Paneli</h2>
-                    <p style="font-size: 12px; color: var(--clr-text-secondary); margin-bottom: 20px;" id="payment-package-info">Seçilen Paket: 1 Ay - ₺900</p>
+                    <h2 style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 20px; color: #0f172a; margin-bottom: 8px;">Güvenli Ödeme Paneli</h2>
+                    <p style="font-size: 12px; color: #64748b; margin-bottom: 20px;" id="payment-package-info">Seçilen Paket: 1 Ay - ₺900</p>
                     
                     <form class="styled-form" onsubmit="app.submitRegistration(event)">
                         <div class="form-field">

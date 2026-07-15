@@ -83,41 +83,207 @@
         </section>
     </main>
 
-    <!-- Giriş Modalı -->
-    <div class="arena-modal" id="login-modal" style="display: none;">
-        <div class="modal-backdrop" onclick="app.closeLoginModal()"></div>
-        <div class="modal-body auth-modal-body">
-            <button class="close-modal-btn" onclick="app.closeLoginModal()"><i class="fa-solid fa-xmark fa-lg"></i></button>
-            <div class="auth-modal-content">
-                <h2>Üye Giriş Paneli</h2>
-                <p>Platform özelliklerini test etmek için demo hesaplarından birini seçebilir veya giriş yapabilirsiniz.</p>
-                
-                <!-- Hızlı Demo Girişleri -->
-                <div class="demo-login-strip">
-                    <h3>Hızlı Demo Hesap Seçimi:</h3>
-                    <div class="demo-buttons">
-                        <button class="demo-login-btn buyer" onclick="app.handleDemoLogin('buyer')">
-                            <i class="fa-solid fa-building"></i> Alıcı (İhale Açar)
-                        </button>
-                        <button class="demo-login-btn seller" onclick="app.handleDemoLogin('seller')">
-                            <i class="fa-solid fa-truck"></i> Satıcı (Teklif Verir)
-                        </button>
+    <!-- Giriş Modalı (Skyscraper Split Layout) -->
+    <div id="login-modal" style="display: none; position: fixed; inset: 0; z-index: 1000; overflow-y: auto;">
+        <div class="split-auth-container">
+            <!-- Sol Sütun -->
+            <div class="split-left">
+                <div class="auth-brand-logo" onclick="window.location.href = '/'" style="cursor: pointer;">
+                    <div class="logo-circle">GA</div>
+                    <span>gelanla<span class="logo-accent">salim</span></span>
+                </div>
+                <h1 class="auth-feature-title">Satın alma,<br>sandığından hızlı.</h1>
+                <div class="auth-feature-list">
+                    <div class="auth-feature-item">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Canlı tersine ihale altyapısı</span>
+                    </div>
+                    <div class="auth-feature-item">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Güvenli havuz ödeme sistemi</span>
+                    </div>
+                    <div class="auth-feature-item">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Tek tıkla teklif toplama</span>
                     </div>
                 </div>
+            </div>
+            <!-- Sağ Sütun -->
+            <div class="split-right">
+                <button class="split-close-btn" onclick="app.closeLoginModal()"><i class="fa-solid fa-xmark"></i></button>
+                
+                <div style="max-width: 420px; width: 100%; margin: auto;">
+                    <h2 class="auth-form-title">HESABINA DÖN</h2>
+                    <p class="auth-form-subtitle">Giriş yap.</p>
 
-                <div class="divider"><span>VEYA</span></div>
+                    <!-- Hızlı Demo Girişleri -->
+                    <div class="demo-login-strip" style="margin-bottom: 24px; padding: 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <h3 style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px;">Hızlı Demo Girişi:</h3>
+                        <div class="demo-buttons" style="display: flex; gap: 12px;">
+                            <button class="demo-login-btn buyer" onclick="app.handleDemoLogin('buyer')" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: #0d9488; color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: 600; font-size: 12px; cursor: pointer;">
+                                <i class="fa-solid fa-building"></i> Alıcı
+                            </button>
+                            <button class="demo-login-btn seller" onclick="app.handleDemoLogin('seller')" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: #3b82f6; color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: 600; font-size: 12px; cursor: pointer;">
+                                <i class="fa-solid fa-truck"></i> Tedarikçi
+                            </button>
+                        </div>
+                    </div>
 
-                <form class="styled-form" id="login-form" onsubmit="app.handleLogin(event)">
-                    <div class="form-field">
-                        <label>E-POSTA ADRESİ</label>
-                        <input type="email" id="login-email" required placeholder="ornek@firma.com">
+                    <form class="styled-form" id="login-form" onsubmit="app.handleLogin(event)" style="display: flex; flex-direction: column; gap: 16px;">
+                        <div class="form-field" style="display: flex; flex-direction: column; gap: 6px;">
+                            <label style="font-size: 11px; font-weight: 700; color: #475569;">E-POSTA ADRESİ</label>
+                            <input type="email" id="login-email" required placeholder="ornek@sirket.com" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s;">
+                        </div>
+                        <div class="form-field" style="display: flex; flex-direction: column; gap: 6px;">
+                            <label style="font-size: 11px; font-weight: 700; color: #475569;">ŞİFRE</label>
+                            <input type="password" id="login-password" required placeholder="••••••••" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s;">
+                        </div>
+                        <button type="submit" class="primary-btn w-full" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #3b82f6; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 8px;">Giriş Yap <i class="fa-solid fa-arrow-right"></i></button>
+                    </form>
+                </div>
+
+                <!-- Cookie Widget for Login -->
+                <div class="cookie-consent-widget">
+                    <label class="cookie-label">
+                        <input type="checkbox" id="login-cookie-checkbox" checked>
+                        <span>Çerezler</span>
+                    </label>
+                    <div class="cookie-links">
+                        <a href="#" onclick="alert('Çerez politikası detayları.')">Gerekli</a>
+                        <a href="#" onclick="alert('Çerez ayarları.')">Ayarlar</a>
                     </div>
-                    <div class="form-field">
-                        <label>ŞİFRE</label>
-                        <input type="password" id="login-password" required placeholder="••••••••">
+                    <button type="button" onclick="app.acceptCookies('login')">Kabul</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kayıt Sayfası (Skyscraper Split Layout) -->
+    <div id="register-fullscreen-container" style="display: none; position: fixed; inset: 0; z-index: 999; overflow-y: auto;">
+        <div class="split-auth-container">
+            <!-- Sol Sütun -->
+            <div class="split-left">
+                <div class="auth-brand-logo" onclick="window.location.href = '/'" style="cursor: pointer;">
+                    <div class="logo-circle">GA</div>
+                    <span>gelanla<span class="logo-accent">salim</span></span>
+                </div>
+                <h1 class="auth-feature-title">Profesyonel plan<br>lansman döneminde ücretsiz.</h1>
+                <div class="auth-feature-list">
+                    <div class="auth-feature-item">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>KVKK ilkeleriyle uyumlu, şifreli bağlantı</span>
                     </div>
-                    <button type="submit" class="primary-btn w-full">GİRİŞ YAP</button>
-                </form>
+                    <div class="auth-feature-item">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Canlı eksiltme arenaları ile yüksek tasarruf</span>
+                    </div>
+                    <div class="auth-feature-item">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Nitelikli B2B tedarikçi ağı</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Sağ Sütun -->
+            <div class="split-right">
+                <button class="split-close-btn" onclick="window.location.hash = '#/'"><i class="fa-solid fa-xmark"></i></button>
+                
+                <div style="max-width: 500px; width: 100%; margin: auto; padding: 20px 0;">
+                    <h2 class="auth-form-title">YENİ HESAP OLUŞTUR</h2>
+                    <p class="auth-form-subtitle">B2B İhale arenasına katılın.</p>
+
+                    <form class="styled-form" id="register-split-form" onsubmit="app.handleRegistrationSubmit(event)" style="display: flex; flex-direction: column; gap: 16px;">
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="form-field" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label style="font-size: 11px; font-weight: 700; color: #475569;">ADINIZ</label>
+                                <input type="text" id="reg-first-name" required placeholder="Ad" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px;">
+                            </div>
+                            <div class="form-field" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label style="font-size: 11px; font-weight: 700; color: #475569;">SOYADINIZ</label>
+                                <input type="text" id="reg-last-name" required placeholder="Soyad" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px;">
+                            </div>
+                        </div>
+
+                        <div class="form-field" style="display: flex; flex-direction: column; gap: 6px;">
+                            <label style="font-size: 11px; font-weight: 700; color: #475569;">FİRMA ADI</label>
+                            <input type="text" id="reg-company-name" required placeholder="Firma Ünvanı A.Ş." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px;">
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="form-field" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label style="font-size: 11px; font-weight: 700; color: #475569;">KULLANICI ROLÜ</label>
+                                <select id="reg-role" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; background: #fff; outline: none;">
+                                    <option value="buyer">Alıcı (İhale Açar)</option>
+                                    <option value="seller">Satıcı / Tedarikçi (Teklif Verir)</option>
+                                </select>
+                            </div>
+                            <div class="form-field" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label style="font-size: 11px; font-weight: 700; color: #475569;">ŞEHİR</label>
+                                <input type="text" id="reg-city" required placeholder="İstanbul" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px;">
+                            </div>
+                        </div>
+
+                        <div class="form-field" style="display: flex; flex-direction: column; gap: 6px;">
+                            <label style="font-size: 11px; font-weight: 700; color: #475569;">KURUMSAL E-POSTA</label>
+                            <input type="email" id="reg-email" required placeholder="ad.soyad@firma.com.tr" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px;">
+                        </div>
+
+                        <div class="form-field" style="display: flex; flex-direction: column; gap: 6px;">
+                            <label style="font-size: 11px; font-weight: 700; color: #475569;">TELEFON</label>
+                            <input type="tel" id="reg-phone" required placeholder="+90 5__ ___ __ __" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px;">
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="form-field" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label style="font-size: 11px; font-weight: 700; color: #475569;">ŞİFRE</label>
+                                <input type="password" id="reg-password" required placeholder="••••••••" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px;">
+                            </div>
+                            <div class="form-field" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label style="font-size: 11px; font-weight: 700; color: #475569;">ŞİFRE TEKRARI</label>
+                                <input type="password" id="reg-password-confirm" required placeholder="••••••••" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px;">
+                            </div>
+                        </div>
+
+                        <!-- Faaliyet Alanları Checkbox List -->
+                        <div class="form-field" style="display: flex; flex-direction: column; gap: 6px;">
+                            <label style="font-size: 11px; font-weight: 700; color: #475569;">FAALİYET ALANLARI</label>
+                            <div id="reg-categories-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-h: 120px; overflow-y: auto; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc;">
+                                <!-- Will be dynamically populated by app.js -->
+                            </div>
+                        </div>
+
+                        <!-- Zorunlu Sözleşmeler checklist -->
+                        <div class="auth-check-group">
+                            <div class="auth-check-item">
+                                <input type="checkbox" id="check-terms" required>
+                                <label for="check-terms"><a href="#" target="_blank">Kullanım Koşullarını ve Üyelik Sözleşmesini</a> okudum, kabul ediyorum.</label>
+                            </div>
+                            <div class="auth-check-item">
+                                <input type="checkbox" id="check-kvkk" required>
+                                <label for="check-kvkk"><a href="#" target="_blank">KVKK Aydınlatma Metnini</a> okudum, kabul ediyorum.</label>
+                            </div>
+                            <div class="auth-check-item">
+                                <input type="checkbox" id="check-consent">
+                                <label for="check-consent">Ticari elektronik ileti gönderilmesini onaylıyorum. (Açık Rıza)</label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="primary-btn w-full" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #0d9488; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s;">Kayıt Ol ve Devam Et <i class="fa-solid fa-arrow-right"></i></button>
+                    </form>
+                </div>
+
+                <!-- Cookie Widget for Register -->
+                <div class="cookie-consent-widget">
+                    <label class="cookie-label">
+                        <input type="checkbox" id="register-cookie-checkbox" checked>
+                        <span>Çerezler</span>
+                    </label>
+                    <div class="cookie-links">
+                        <a href="#" onclick="alert('Çerez politikası detayları.')">Gerekli</a>
+                        <a href="#" onclick="alert('Çerez ayarları.')">Ayarlar</a>
+                    </div>
+                    <button type="button" onclick="app.acceptCookies('register')">Kabul</button>
+                </div>
             </div>
         </div>
     </div>

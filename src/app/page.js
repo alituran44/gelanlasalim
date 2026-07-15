@@ -380,26 +380,26 @@ export default function LandingPage() {
 
   // ---------- RENDER ----------
   return (
-    <div className="min-h-screen bg-[#070a13] text-gray-200 overflow-x-hidden">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-700 overflow-x-hidden">
 
       {/* ===================== HEADER ===================== */}
-      <header className={`sticky top-0 z-50 w-full transition-all duration-500 ${scrolled ? 'bg-[#070a13]/90 backdrop-blur-xl border-b border-white/5 shadow-lg shadow-black/20' : 'bg-transparent border-b border-transparent'}`}>
+      <header className={`sticky top-0 z-50 w-full transition-all duration-500 ${scrolled ? 'bg-white/95 backdrop-blur-xl border-b border-slate-200/80 shadow-sm shadow-slate-100/10' : 'bg-transparent border-b border-transparent'}`}>
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.location.href = '/'}>
             <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center font-heading font-black text-white text-lg shadow-accentGlow">GA</div>
-            <span className="font-heading font-bold text-xl tracking-tight text-white">gelanla<span className="text-accent">salim</span></span>
+            <span className="font-heading font-bold text-xl tracking-tight text-slate-800">gelanla<span className="text-accent">salim</span></span>
           </div>
-          <nav className="hidden lg:flex items-center gap-1 nav-capsule px-2 py-1.5">
-            <a href="#nasil-calisir" className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-accent hover:bg-white/[0.03] rounded-full transition-all">Nasıl Çalışır</a>
-            <a href="#ozellikler" className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-accent hover:bg-white/[0.03] rounded-full transition-all">Özellikler</a>
-            <a href="#pazar-yeri" className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-accent hover:bg-white/[0.03] rounded-full transition-all">Pazar Yeri</a>
-            <a href="#faq" className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-accent hover:bg-white/[0.03] rounded-full transition-all">SSS</a>
+          <nav className="hidden lg:flex items-center gap-1 nav-capsule px-2 py-1.5 bg-slate-100/60 border border-slate-200/50">
+            <a href="#nasil-calisir" className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-accent hover:bg-white rounded-full transition-all">Nasıl Çalışır</a>
+            <a href="#ozellikler" className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-accent hover:bg-white rounded-full transition-all">Özellikler</a>
+            <a href="#pazar-yeri" className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-accent hover:bg-white rounded-full transition-all">Pazar Yeri</a>
+            <a href="#faq" className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-accent hover:bg-white rounded-full transition-all">SSS</a>
           </nav>
           <div className="flex items-center gap-3">
-            <button className="hidden md:inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors" onClick={() => window.location.href = '/portal.html#/uyelik'}>
+            <button className="hidden md:inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors" onClick={() => window.location.href = '/portal.html#/uyelik'}>
               <i className="fa-solid fa-globe text-accent/60 text-xs"></i> TR
             </button>
-            <button className="hidden sm:inline-flex text-sm font-medium text-gray-300 hover:text-white transition-colors px-4 py-2" onClick={() => window.location.href = '/portal.html#/uyelik'}>Giriş Yap</button>
+            <button className="hidden sm:inline-flex text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors px-4 py-2" onClick={() => window.location.href = '/portal.html#/uyelik'}>Giriş Yap</button>
             <button onClick={enterPortal} className="px-5 py-2.5 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accentLight hover:scale-[1.02] active:scale-95 transition-all shadow-accentGlow">Kayıt Ol</button>
           </div>
         </div>
@@ -412,23 +412,23 @@ export default function LandingPage() {
             <span className="w-1.5 h-1.5 rounded-full bg-accent pulse-dot"></span>
             {content.hero.badge}
           </motion.div>
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }} className="font-heading font-black text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[1.08] text-white">
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }} className="font-heading font-black text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[1.08] text-slate-900">
             {content.hero.title.includes('Canlı Eksiltme') ? (
               <>Tedarik Maliyetlerinizi{' '}<span className="text-accent relative">Canlı Eksiltme<svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 8" fill="none"><path d="M2 6C50 2 150 2 198 6" stroke="#0d9488" strokeWidth="2" strokeLinecap="round" opacity="0.5"/></svg></span>{' '}ile Düşürün</>
             ) : content.hero.title}
           </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="text-base md:text-lg text-gray-400 max-w-xl leading-relaxed">
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="text-base md:text-lg text-slate-600 max-w-xl leading-relaxed">
             {content.hero.description}
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="flex flex-wrap gap-4 mt-2">
             <button onClick={() => window.location.href = '/portal.html#/uyelik'} className="px-7 py-3.5 rounded-xl bg-accent text-white font-bold text-base hover:bg-accentLight hover:scale-[1.02] active:scale-95 transition-all shadow-accentGlow flex items-center gap-2">
               <i className="fa-solid fa-rocket"></i> {content.hero.cta1}
             </button>
-            <button onClick={() => setShowVideoModal(true)} className="px-7 py-3.5 rounded-xl bg-transparent border border-white/10 text-white font-bold text-base hover:bg-white/5 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
+            <button onClick={() => setShowVideoModal(true)} className="px-7 py-3.5 rounded-xl bg-white border border-slate-200 text-slate-800 font-bold text-base hover:bg-slate-50 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2 shadow-sm">
               <i className="fa-solid fa-circle-play text-accent"></i> {content.hero.cta2}
             </button>
           </motion.div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.4 }} className="flex flex-wrap gap-x-6 gap-y-3 mt-4 pt-6 border-t border-white/5 text-xs text-gray-400">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.4 }} className="flex flex-wrap gap-x-6 gap-y-3 mt-4 pt-6 border-t border-slate-200 text-xs text-slate-500">
             {[{ icon: "fa-shield-halved", text: "KVKK Uyumlu" }, { icon: "fa-clock", text: "Zaman Damgalı İşlemler" }, { icon: "fa-lock", text: "256-bit Şifreli Aktarım" }, { icon: "fa-percent", text: "Sıfır Alıcı Komisyonu" }].map((item, i) => (
               <div key={i} className="flex items-center gap-2"><i className={`fa-solid ${item.icon} text-accent`}></i><span>{item.text}</span></div>
             ))}
@@ -437,18 +437,18 @@ export default function LandingPage() {
 
         {/* Live Auction Widget */}
         <div className="lg:col-span-5 relative w-full flex flex-col items-center">
-          <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="w-full max-w-[440px] rounded-2xl glass-card teal-border-glow p-6 shadow-premium relative overflow-hidden">
+          <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="w-full max-w-[440px] rounded-2xl bg-white border border-slate-200/80 p-6 shadow-lg relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent"></div>
-            <div className="flex items-center justify-between mb-5 pb-4 border-b border-white/5">
+            <div className="flex items-center justify-between mb-5 pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2 text-xs font-extrabold text-accent"><span className="w-2 h-2 rounded-full bg-accent pulse-dot"></span>CANLI İHALE</div>
-              <span className="text-[10px] text-gray-500 uppercase font-mono tracking-wider">#GLS-4812</span>
+              <span className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">#GLS-4812</span>
             </div>
             <div className="text-left mb-5">
-              <h4 className="text-sm font-bold text-white mb-1">500 Paket A4 Fotokopi Kağıdı Alımı</h4>
-              <p className="text-xs text-gray-500">Peyzaj & Kırtasiye Hizmetleri A.Ş. • İstanbul</p>
+              <h4 className="text-sm font-bold text-slate-800 mb-1">500 Paket A4 Fotokopi Kağıdı Alımı</h4>
+              <p className="text-xs text-slate-400">Peyzaj & Kırtasiye Hizmetleri A.Ş. • İstanbul</p>
             </div>
-            <div className="flex items-center gap-3 mb-5 p-3 rounded-xl bg-black/30 border border-white/5">
-              <div className="flex items-center gap-1.5 text-xs text-gray-400"><i className="fa-regular fa-clock text-accent"></i><span>Kalan Süre:</span></div>
+            <div className="flex items-center gap-3 mb-5 p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <div className="flex items-center gap-1.5 text-xs text-slate-500"><i className="fa-regular fa-clock text-accent"></i><span>Kalan Süre:</span></div>
               <div className="flex items-center gap-1 ml-auto">
                 {[pad(countdown.h), pad(countdown.m), pad(countdown.s)].map((val, i) => (
                   <span key={i} className="flex items-center gap-1">
@@ -461,26 +461,26 @@ export default function LandingPage() {
             <div className="flex flex-col gap-2.5">
               <AnimatePresence mode="popLayout">
                 {simulatedBids.map((bid) => (
-                  <motion.div key={bid.id} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0, borderColor: bid.justUpdated ? "rgba(13,148,136,0.4)" : "rgba(255,255,255,0.05)" }} exit={{ opacity: 0, scale: 0.9 }} transition={{ type: "spring", stiffness: 300, damping: 25 }} className="flex items-center justify-between p-3 rounded-lg border bg-black/30 text-xs">
+                  <motion.div key={bid.id} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0, borderColor: bid.justUpdated ? "rgba(13,148,136,0.4)" : "rgba(0,0,0,0.05)" }} exit={{ opacity: 0, scale: 0.9 }} transition={{ type: "spring", stiffness: 300, damping: 25 }} className="flex items-center justify-between p-3 rounded-lg border bg-white border-slate-100 text-xs">
                     <div className="flex items-center gap-3">
-                      <span className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] ${bid.rank === 1 ? 'bg-accent/20 text-accent' : bid.rank === 2 ? 'bg-white/10 text-white' : 'bg-white/5 text-gray-500'}`}>{bid.rank}</span>
-                      <div><span className="font-semibold text-gray-200 block">{bid.name}</span>{bid.rank === 1 && <span className="text-[9px] text-accent font-medium">En İyi Teklif</span>}</div>
+                      <span className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] ${bid.rank === 1 ? 'bg-accent/20 text-accent' : bid.rank === 2 ? 'bg-slate-100 text-slate-700' : 'bg-slate-50 text-slate-400'}`}>{bid.rank}</span>
+                      <div><span className="font-semibold text-slate-700 block">{bid.name}</span>{bid.rank === 1 && <span className="text-[9px] text-accent font-medium">En İyi Teklif</span>}</div>
                     </div>
-                    <span className="font-heading font-extrabold text-white font-mono">{bid.price.toLocaleString('tr-TR')} ₺</span>
+                    <span className="font-heading font-extrabold text-slate-800 font-mono">{bid.price.toLocaleString('tr-TR')} ₺</span>
                   </motion.div>
                 ))}
               </AnimatePresence>
             </div>
-            <div className="flex items-center justify-between mt-5 pt-4 border-t border-white/5">
-              <div className="text-[11px] text-gray-500">Açılış: <strong className="text-gray-300 font-mono">75.000 ₺</strong></div>
-              <div className="text-[11px] text-gray-500">Tasarruf: <strong className="text-accent font-mono">~%17</strong></div>
+            <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100">
+              <div className="text-[11px] text-slate-500">Açılış: <strong className="text-slate-700 font-mono">75.000 ₺</strong></div>
+              <div className="text-[11px] text-slate-500">Tasarruf: <strong className="text-accent font-mono">~%17</strong></div>
             </div>
-            <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between text-[10px] font-medium">
+            <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between text-[10px] font-medium">
               {["Talep", "Teklif", "Karar", "Teslimat"].map((step, i) => (
                 <div key={i} className="flex items-center gap-1.5">
-                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-black ${i < 2 ? 'bg-accent text-white' : 'bg-white/5 text-gray-500'}`}>{i < 2 ? <i className="fa-solid fa-check"></i> : i + 1}</span>
-                  <span className={i < 2 ? 'text-accent' : 'text-gray-500'}>{step}</span>
-                  {i < 3 && <span className="text-gray-700 ml-1.5">—</span>}
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-black ${i < 2 ? 'bg-accent text-white' : 'bg-slate-100 text-slate-400'}`}>{i < 2 ? <i className="fa-solid fa-check"></i> : i + 1}</span>
+                  <span className={i < 2 ? 'text-accent' : 'text-slate-400'}>{step}</span>
+                  {i < 3 && <span className="text-slate-200 ml-1.5">—</span>}
                 </div>
               ))}
             </div>
@@ -489,11 +489,11 @@ export default function LandingPage() {
       </section>
 
       {/* ===================== TRUST IDENTITY STRIP ===================== */}
-      <section className="border-y border-white/5 bg-[#0a0d14]">
+      <section className="border-y border-slate-200 bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-4 md:gap-8 text-[11px] text-gray-400">
-            <div className="flex items-center gap-2"><i className="fa-solid fa-building-columns text-accent/60"></i><span>MERSİS No: <strong className="text-gray-300">{content.trustStrip.mersis}</strong></span></div>
-            <div className="flex items-center gap-2"><i className="fa-solid fa-envelope text-accent/60"></i><span>KEP: <strong className="text-gray-300">{content.trustStrip.kep}</strong></span></div>
+          <div className="flex flex-wrap items-center gap-4 md:gap-8 text-[11px] text-slate-500">
+            <div className="flex items-center gap-2"><i className="fa-solid fa-building-columns text-accent/60"></i><span>MERSİS No: <strong className="text-slate-700">{content.trustStrip.mersis}</strong></span></div>
+            <div className="flex items-center gap-2"><i className="fa-solid fa-envelope text-accent/60"></i><span>KEP: <strong className="text-slate-700">{content.trustStrip.kep}</strong></span></div>
           </div>
           <a href={content.trustStrip.etbisLink} className="flex items-center gap-2 text-[11px] font-semibold text-accent hover:text-accentLight transition-colors">
             <i className="fa-solid fa-certificate"></i>ETBİS Kaydını Doğrula<i className="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
@@ -502,13 +502,13 @@ export default function LandingPage() {
       </section>
 
       {/* ===================== B2B EXPLORER SECTION ===================== */}
-      <section className="py-24 max-w-7xl mx-auto px-6 border-b border-white/5" id="ihale-gezgini">
+      <section className="py-24 max-w-7xl mx-auto px-6 border-b border-slate-200" id="ihale-gezgini">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="text-[11px] font-bold text-accent uppercase tracking-widest">ARŞİV VE ARAMA MOTORU</span>
-          <h2 className="font-heading font-black text-3xl md:text-4xl tracking-tight text-white mt-3 mb-4">
+          <h2 className="font-heading font-black text-3xl md:text-4xl tracking-tight text-slate-900 mt-3 mb-4">
             {content.explorer?.title || DEFAULT_CONTENT.explorer.title}
           </h2>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-slate-600">
             {content.explorer?.subtitle || DEFAULT_CONTENT.explorer.subtitle}
           </p>
         </div>
@@ -516,25 +516,25 @@ export default function LandingPage() {
         {/* Live Stat Bar (Bugün Yayınlananlar, vb.) */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           {(content.explorer?.dailyStats || DEFAULT_CONTENT.explorer.dailyStats).map((stat, idx) => (
-            <div key={idx} className="flex items-center gap-3 p-4 rounded-xl bg-[#0d1117] border border-white/5">
+            <div key={idx} className="flex items-center gap-3 p-4 rounded-xl bg-white border border-slate-200/80 shadow-sm">
               <span className="w-2.5 h-2.5 rounded-full bg-accent pulse-dot"></span>
               <div className="text-left">
-                <span className="text-[10px] text-gray-500 block font-medium uppercase">{stat.label}</span>
-                <span className="text-sm font-bold text-white">{stat.count}</span>
+                <span className="text-[10px] text-slate-400 block font-medium uppercase">{stat.label}</span>
+                <span className="text-sm font-bold text-slate-800">{stat.count}</span>
               </div>
             </div>
           ))}
         </div>
 
         {/* Search & Filter Form */}
-        <div className="p-6 rounded-2xl bg-[#0d1117] border border-white/5 shadow-premium mb-8">
+        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm mb-8">
           <form onSubmit={handleExplorerSearch} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
             <div className="flex flex-col gap-1.5 text-left">
-              <label className="text-[10px] font-bold text-gray-400 uppercase">Kategori</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase">Kategori</label>
               <select 
                 value={selectedCat} 
                 onChange={(e) => setSelectedCat(e.target.value)}
-                className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-accent/40"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-accent"
               >
                 <option value="all">Tüm Kategoriler</option>
                 {(content.explorer?.categories || DEFAULT_CONTENT.explorer.categories).map((cat, i) => (
@@ -544,11 +544,11 @@ export default function LandingPage() {
             </div>
 
             <div className="flex flex-col gap-1.5 text-left">
-              <label className="text-[10px] font-bold text-gray-400 uppercase">Sektör</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase">Sektör</label>
               <select 
                 value={selectedSector} 
                 onChange={(e) => setSelectedSector(e.target.value)}
-                className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-accent/40"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-accent"
               >
                 <option value="all">Tüm Sektörler</option>
                 {(content.explorer?.sectors || DEFAULT_CONTENT.explorer.sectors).map((sect, i) => (
@@ -558,11 +558,11 @@ export default function LandingPage() {
             </div>
 
             <div className="flex flex-col gap-1.5 text-left">
-              <label className="text-[10px] font-bold text-gray-400 uppercase">Şehir</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase">Şehir</label>
               <select 
                 value={selectedCity} 
                 onChange={(e) => setSelectedCity(e.target.value)}
-                className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-accent/40"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-accent"
               >
                 <option value="all">Tüm Şehirler</option>
                 {(content.explorer?.cities || DEFAULT_CONTENT.explorer.cities).map((city, i) => (
@@ -572,11 +572,11 @@ export default function LandingPage() {
             </div>
 
             <div className="flex flex-col gap-1.5 text-left">
-              <label className="text-[10px] font-bold text-gray-400 uppercase">İhale Türü</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase">İhale Türü</label>
               <select 
                 value={selectedType} 
                 onChange={(e) => setSelectedType(e.target.value)}
-                className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-accent/40"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-accent"
               >
                 <option value="all">Tüm Türler</option>
                 {(content.explorer?.types || DEFAULT_CONTENT.explorer.types).map((t, i) => (
@@ -586,13 +586,13 @@ export default function LandingPage() {
             </div>
 
             <div className="flex flex-col gap-1.5 text-left">
-              <label className="text-[10px] font-bold text-gray-400 uppercase">İçerikte Ara</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase">İçerikte Ara</label>
               <input 
                 type="text" 
                 placeholder="Kelime yazın..." 
                 value={explorerSearch}
                 onChange={(e) => setExplorerSearch(e.target.value)}
-                className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-accent/40"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-accent"
               />
             </div>
 
@@ -614,36 +614,36 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 10 }} 
               animate={{ opacity: 1, y: 0 }} 
               exit={{ opacity: 0, y: 10 }}
-              className="p-6 rounded-2xl bg-[#0a0d14] border border-white/5 mb-8"
+              className="p-6 rounded-2xl bg-white border border-slate-200 shadow-md mb-8"
             >
-              <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-3">
+              <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
                 <span className="text-xs font-bold text-accent">ARAMA SONUÇLARI</span>
-                <button onClick={() => setHasSearched(false)} className="text-xs text-gray-500 hover:text-white">Kapat</button>
+                <button onClick={() => setHasSearched(false)} className="text-xs text-slate-400 hover:text-slate-600">Kapat</button>
               </div>
               {isSearching ? (
                 <div className="py-8 flex flex-col items-center justify-center gap-3">
                   <i className="fa-solid fa-circle-notch fa-spin text-accent text-2xl"></i>
-                  <span className="text-xs text-gray-500">İhale arşivi taranıyor...</span>
+                  <span className="text-xs text-slate-500">İhale arşivi taranıyor...</span>
                 </div>
               ) : searchResults.length > 0 ? (
                 <div className="flex flex-col gap-3">
                   {searchResults.map((res) => (
-                    <div key={res.id} className="p-4 rounded-xl bg-black/20 border border-white/5 flex flex-col text-left">
+                    <div key={res.id} className="p-4 rounded-xl bg-slate-50/50 border border-slate-200/60 flex flex-col text-left">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                           <span className="text-[9px] bg-accent/10 border border-accent/20 text-accent font-bold px-2 py-0.5 rounded-full uppercase tracking-wider mb-2 inline-block">
                             {res.source}
                           </span>
-                          <h4 className="text-sm font-bold text-white mb-1">{res.title}</h4>
-                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+                          <h4 className="text-sm font-bold text-slate-800 mb-1">{res.title}</h4>
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
                             <span><i className="fa-solid fa-location-dot text-accent/60 mr-1"></i>{res.city}</span>
                             <span><i className="fa-solid fa-list text-accent/60 mr-1"></i>{res.type}</span>
                             <span><i className="fa-solid fa-clock text-accent/60 mr-1"></i>{res.date}</span>
                           </div>
                         </div>
                         <div className="flex flex-col items-start sm:items-end justify-center">
-                          <span className="text-[10px] text-gray-500">Yaklaşık Maliyet</span>
-                          <strong className="text-sm font-heading font-extrabold text-white font-mono">{res.value}</strong>
+                          <span className="text-[10px] text-slate-400">Yaklaşık Maliyet</span>
+                          <strong className="text-sm font-heading font-extrabold text-slate-800 font-mono">{res.value}</strong>
                           <button 
                             type="button"
                             onClick={() => setExpandedTenderId(expandedTenderId === res.id ? null : res.id)} 
@@ -934,26 +934,26 @@ export default function LandingPage() {
 
         {/* Categories & Metadata Grid (EKAP style from screenshot) */}
         <div className="mb-10">
-          <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-2 text-left">
-            <span className="text-xs font-bold text-white flex items-center gap-2">
+          <div className="flex items-center justify-between mb-4 border-b border-slate-200 pb-2 text-left">
+            <span className="text-xs font-bold text-slate-800 flex items-center gap-2">
               <i className="fa-solid fa-folder-open text-accent"></i> Sektörel İhale Kategorileri
             </span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {(content.explorer?.categories || DEFAULT_CONTENT.explorer.categories).map((cat, idx) => (
-              <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-[#0d1117] border border-white/5 hover:border-accent/15 transition-all">
+              <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-white border border-slate-200 shadow-sm hover:border-accent/30 transition-all">
                 <div className="flex items-center gap-3 text-left">
                   <i className="fa-solid fa-folder-open text-accent/60 text-sm"></i>
                   <div>
-                    <span className="text-xs font-bold text-white block leading-tight">{cat.name}</span>
-                    <span className="text-[10px] text-gray-500 font-mono mt-1 block">{cat.count} İhale</span>
+                    <span className="text-xs font-bold text-slate-700 block leading-tight">{cat.name}</span>
+                    <span className="text-[10px] text-slate-500 font-mono mt-1 block">{cat.count} İhale</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => { setSelectedCat(cat.slug); handleExplorerSearch(); }} className="text-xs font-bold text-accent hover:text-accentLight px-2.5 py-1.5 rounded-lg bg-accent/5 hover:bg-accent/10 border border-accent/10 transition-all">
                     İhaleler
                   </button>
-                  <select className="bg-black/30 border border-white/5 rounded px-2 py-1 text-[10px] text-gray-400 focus:outline-none">
+                  <select className="bg-slate-50 border border-slate-200 rounded px-2 py-1 text-[10px] text-slate-600 focus:outline-none">
                     <option>Günlük</option>
                     <option>Haftalık</option>
                     <option>Aylık</option>
@@ -966,10 +966,10 @@ export default function LandingPage() {
 
         {/* 1. İhale Usulleri Block */}
         <div className="mb-10 text-left">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#0d1117] border border-white/5 border-b-0 rounded-t-xl text-xs font-bold text-white">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 border-b-0 rounded-t-xl text-xs font-bold text-slate-800">
             <i className="fa-solid fa-book-open text-accent"></i> İhale usulleri
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-b-xl rounded-r-xl bg-[#0d1117] border border-white/5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-b-xl rounded-r-xl bg-white border border-slate-200 shadow-sm">
             {[
               { name: "Açık ihale usulü ihaleleri", count: "5.461" },
               { name: "Doğrudan temin ihaleleri", count: "3.958" },
@@ -978,11 +978,11 @@ export default function LandingPage() {
               { name: "Pazarlık usulü ihaleleri", count: "151" },
               { name: "İstisna ihaleleri", count: "576" }
             ].map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-[#070a13] border border-white/5 hover:border-accent/15 transition-all">
-                <span className="text-[11px] text-gray-300 font-medium">{item.name}</span>
+              <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100 hover:border-accent/30 transition-all">
+                <span className="text-[11px] text-slate-700 font-medium">{item.name}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-gray-500 font-mono">{item.count}</span>
-                  <select className="bg-black/40 border border-white/5 rounded px-1.5 py-0.5 text-[9px] text-gray-400 focus:outline-none">
+                  <span className="text-[10px] text-slate-400 font-mono">{item.count}</span>
+                  <select className="bg-white border border-slate-200 rounded px-1.5 py-0.5 text-[9px] text-slate-600 focus:outline-none">
                     <option>Günlük</option>
                     <option>Haftalık</option>
                     <option>Aylık</option>
@@ -995,10 +995,10 @@ export default function LandingPage() {
 
         {/* 2. Teklif Türleri Block */}
         <div className="mb-10 text-left">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#0d1117] border border-white/5 border-b-0 rounded-t-xl text-xs font-bold text-white">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 border-b-0 rounded-t-xl text-xs font-bold text-slate-800">
             <i className="fa-solid fa-tags text-accent"></i> Teklif türleri
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-b-xl rounded-r-xl bg-[#0d1117] border border-white/5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-b-xl rounded-r-xl bg-white border border-slate-200 shadow-sm">
             {[
               { name: "E-ihale ihaleleri", count: "4.704" },
               { name: "E-eksiltme ihaleleri", count: "98" },
@@ -1009,11 +1009,11 @@ export default function LandingPage() {
               { name: "Sadece yerli istekliler ihaleleri", count: "2.707" },
               { name: "Yerli ve yabancı istekliler ihaleleri", count: "1.268" }
             ].map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-[#070a13] border border-white/5 hover:border-accent/15 transition-all">
-                <span className="text-[11px] text-gray-300 font-medium">{item.name}</span>
+              <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100 hover:border-accent/30 transition-all">
+                <span className="text-[11px] text-slate-700 font-medium">{item.name}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-gray-500 font-mono">{item.count}</span>
-                  <select className="bg-black/40 border border-white/5 rounded px-1.5 py-0.5 text-[9px] text-gray-400 focus:outline-none">
+                  <span className="text-[10px] text-slate-400 font-mono">{item.count}</span>
+                  <select className="bg-white border border-slate-200 rounded px-1.5 py-0.5 text-[9px] text-slate-600 focus:outline-none">
                     <option>Günlük</option>
                     <option>Haftalık</option>
                     <option>Aylık</option>
@@ -1026,20 +1026,20 @@ export default function LandingPage() {
 
         {/* 3. İçerik Türleri Block */}
         <div className="mb-6 text-left">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#0d1117] border border-white/5 border-b-0 rounded-t-xl text-xs font-bold text-white">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 border-b-0 rounded-t-xl text-xs font-bold text-slate-800">
             <i className="fa-solid fa-file-lines text-accent"></i> İçerik türleri
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-b-xl rounded-r-xl bg-[#0d1117] border border-white/5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-b-xl rounded-r-xl bg-white border border-slate-200 shadow-sm">
             {[
               { name: "Düzeltme ilanı", count: "115" },
               { name: "İptal ilanı", count: "27" },
               { name: "Zeyilname", count: "482" }
             ].map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-[#070a13] border border-white/5 hover:border-accent/15 transition-all">
-                <span className="text-[11px] text-gray-300 font-medium">{item.name}</span>
+              <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100 hover:border-accent/30 transition-all">
+                <span className="text-[11px] text-slate-700 font-medium">{item.name}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-gray-500 font-mono">{item.count}</span>
-                  <select className="bg-black/40 border border-white/5 rounded px-1.5 py-0.5 text-[9px] text-gray-400 focus:outline-none">
+                  <span className="text-[10px] text-slate-400 font-mono">{item.count}</span>
+                  <select className="bg-white border border-slate-200 rounded px-1.5 py-0.5 text-[9px] text-slate-600 focus:outline-none">
                     <option>Günlük</option>
                     <option>Haftalık</option>
                     <option>Aylık</option>
@@ -1077,24 +1077,24 @@ export default function LandingPage() {
       <section className="py-24 max-w-7xl mx-auto px-6" id="nasil-calisir">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-[11px] font-bold text-accent uppercase tracking-widest">PLATFORM SÜRECİ</span>
-          <h2 className="font-heading font-black text-3xl md:text-4xl tracking-tight text-white mb-4 mt-3">Nasıl Çalışır?</h2>
-          <p className="text-sm md:text-base text-gray-400">Alıcı veya tedarikçi olarak platformu kullanma sürecinizi adım adım keşfedin.</p>
+          <h2 className="font-heading font-black text-3xl md:text-4xl tracking-tight text-slate-900 mb-4 mt-3">Nasıl Çalışır?</h2>
+          <p className="text-sm md:text-base text-slate-600">Alıcı veya tedarikçi olarak platformu kullanma sürecinizi adım adım keşfedin.</p>
         </div>
         <div className="flex justify-center mb-12">
-          <div className="inline-flex p-1 rounded-full bg-white/[0.03] border border-white/5">
-            <button onClick={() => setActiveProcessTab("buyer")} className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${activeProcessTab === "buyer" ? 'bg-accent text-white shadow-accentGlow' : 'text-gray-400 hover:text-white'}`}><i className="fa-solid fa-building mr-2"></i>Alıcı Ekip</button>
-            <button onClick={() => setActiveProcessTab("supplier")} className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${activeProcessTab === "supplier" ? 'bg-accent text-white shadow-accentGlow' : 'text-gray-400 hover:text-white'}`}><i className="fa-solid fa-truck mr-2"></i>Tedarikçi</button>
+          <div className="inline-flex p-1 rounded-full bg-slate-100/60 border border-slate-200">
+            <button onClick={() => setActiveProcessTab("buyer")} className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${activeProcessTab === "buyer" ? 'bg-accent text-white shadow-accentGlow' : 'text-slate-500 hover:text-slate-800'}`}><i className="fa-solid fa-building mr-2"></i>Alıcı Ekip</button>
+            <button onClick={() => setActiveProcessTab("supplier")} className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${activeProcessTab === "supplier" ? 'bg-accent text-white shadow-accentGlow' : 'text-slate-500 hover:text-slate-800'}`}><i className="fa-solid fa-truck mr-2"></i>Tedarikçi</button>
           </div>
         </div>
         <AnimatePresence mode="wait">
           <motion.div key={activeProcessTab} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.35 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {(activeProcessTab === "buyer" ? buyerSteps : supplierSteps).map((step, idx) => (
-              <div key={idx} className="relative p-7 rounded-2xl bg-[#0d1117] border border-white/5 flex flex-col gap-4 text-left group hover:border-accent/20 transition-all duration-300">
-                <div className="absolute top-5 right-5 font-heading font-black text-5xl text-white/[0.02] group-hover:text-accent/[0.06] transition-all duration-300">{String(idx + 1).padStart(2, '0')}</div>
+              <div key={idx} className="relative p-7 rounded-2xl bg-white border border-slate-200/80 flex flex-col gap-4 text-left group hover:border-accent/20 transition-all duration-300 shadow-sm">
+                <div className="absolute top-5 right-5 font-heading font-black text-5xl text-slate-100 group-hover:text-accent/[0.06] transition-all duration-300">{String(idx + 1).padStart(2, '0')}</div>
                 <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent text-lg"><i className={`fa-solid ${step.icon}`}></i></div>
-                <h3 className="font-heading font-bold text-base text-white">{step.title}</h3>
-                <p className="text-xs text-gray-400 leading-relaxed">{step.desc}</p>
-                {idx < 3 && <div className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-6 h-6 rounded-full bg-[#0d1117] border border-white/5 items-center justify-center text-accent text-[10px]"><i className="fa-solid fa-chevron-right"></i></div>}
+                <h3 className="font-heading font-bold text-base text-slate-800">{step.title}</h3>
+                <p className="text-xs text-slate-500 leading-relaxed">{step.desc}</p>
+                {idx < 3 && <div className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-6 h-6 rounded-full bg-white border border-slate-200 items-center justify-center text-accent text-[10px]"><i className="fa-solid fa-chevron-right"></i></div>}
               </div>
             ))}
           </motion.div>
@@ -1102,25 +1102,25 @@ export default function LandingPage() {
       </section>
 
       {/* ===================== VIDEO GUIDES CAROUSEL ===================== */}
-      <section className="py-20 bg-[#0a0d14] border-y border-white/5">
+      <section className="py-20 bg-slate-50 border-y border-slate-200">
         <div className="max-w-7xl mx-auto px-6">
           <div className="mb-12">
             <span className="text-[11px] font-bold text-accent uppercase tracking-widest">VİDEO REHBERLER</span>
-            <h2 className="font-heading font-black text-3xl md:text-4xl tracking-tight text-white mt-3 mb-2">gelanlasalim&apos;i kullanmaya başlayın.</h2>
-            <p className="text-sm text-gray-400">Platform süreçlerimizi adım adım anlatan video rehberlerimiz.</p>
+            <h2 className="font-heading font-black text-3xl md:text-4xl tracking-tight text-slate-900 mt-3 mb-2">gelanlasalim&apos;i kullanmaya başlayın.</h2>
+            <p className="text-sm text-slate-600">Platform süreçlerimizi adım adım anlatan video rehberlerimiz.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {content.videoGuides.map((guide, idx) => (
-              <div key={idx} className="video-guide-card rounded-2xl bg-[#0d1117] border border-white/5 overflow-hidden group" onClick={enterPortal}>
+              <div key={idx} className="video-guide-card rounded-2xl bg-white border border-slate-200/80 overflow-hidden group shadow-sm" onClick={enterPortal}>
                 <div className="aspect-video bg-gradient-to-br from-accent/5 to-accent/10 flex items-center justify-center relative">
-                  <div className="w-14 h-14 rounded-full bg-accent/20 border-2 border-accent/40 flex items-center justify-center text-accent text-xl group-hover:scale-110 transition-transform duration-300">
+                   <div className="w-14 h-14 rounded-full bg-accent/20 border-2 border-accent/40 flex items-center justify-center text-accent text-xl group-hover:scale-110 transition-transform duration-300">
                     <i className="fa-solid fa-play ml-0.5"></i>
                   </div>
                   <div className="absolute bottom-3 left-3 text-[10px] bg-black/60 text-white px-2 py-1 rounded font-mono">0{idx + 1}</div>
                 </div>
                 <div className="p-5">
-                  <h4 className="font-heading font-bold text-sm text-white mb-2">{guide.title}</h4>
-                  <p className="text-xs text-gray-400 leading-relaxed">{guide.desc}</p>
+                  <h4 className="font-heading font-bold text-sm text-slate-800 mb-2">{guide.title}</h4>
+                  <p className="text-xs text-slate-500 leading-relaxed">{guide.desc}</p>
                 </div>
               </div>
             ))}
@@ -1132,21 +1132,21 @@ export default function LandingPage() {
       <section className="py-24 max-w-7xl mx-auto px-6" id="pazar-yeri">
         <div className="mb-16">
           <span className="text-[11px] font-bold text-accent uppercase tracking-widest">PAZAR YERİ MODELLERİ</span>
-          <h2 className="font-heading font-black text-3xl md:text-4xl tracking-tight text-white mt-3 mb-4">Her ölçek için doğru çözüm.</h2>
-          <p className="text-sm md:text-base text-gray-400 max-w-2xl">İhtiyacınıza ve üretim büyüklüğünüze uygun segmentteki ihaleleri keşfedin, tedarik akışınızı doğru kanaldan yönetin.</p>
+          <h2 className="font-heading font-black text-3xl md:text-4xl tracking-tight text-slate-900 mt-3 mb-4">Her ölçek için doğru çözüm.</h2>
+          <p className="text-sm md:text-base text-slate-600 max-w-2xl">İhtiyacınıza ve üretim büyüklüğünüze uygun segmentteki ihaleleri keşfedin, tedarik akışınızı doğru kanaldan yönetin.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {marketSegments.map((seg, idx) => (
-            <div key={idx} onClick={enterPortal} className="relative p-8 rounded-2xl bg-[#0d1117] border border-white/5 hover:border-accent/20 cursor-pointer flex flex-col gap-5 text-left group hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+            <div key={idx} onClick={enterPortal} className="relative p-8 rounded-2xl bg-white border border-slate-200/80 hover:border-accent/30 cursor-pointer flex flex-col gap-5 text-left group hover:-translate-y-1 transition-all duration-300 overflow-hidden shadow-sm">
               <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="w-14 h-14 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent text-2xl group-hover:scale-110 transition-transform duration-300"><i className={`fa-solid ${seg.icon}`}></i></div>
               <div>
-                <h3 className="font-heading font-bold text-lg text-white mb-0.5">{seg.title}</h3>
+                <h3 className="font-heading font-bold text-lg text-slate-800 mb-0.5">{seg.title}</h3>
                 <span className="text-[11px] text-accent font-semibold uppercase tracking-wider">{seg.subtitle}</span>
               </div>
-              <p className="text-xs text-gray-400 leading-relaxed">{seg.desc}</p>
-              <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-white/5">
-                {seg.categories.map((cat, ci) => (<span key={ci} className="text-[10px] px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/5 text-gray-400 font-medium">{cat}</span>))}
+              <p className="text-xs text-slate-600 leading-relaxed">{seg.desc}</p>
+              <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-slate-100">
+                {seg.categories.map((cat, ci) => (<span key={ci} className="text-[10px] px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200 text-slate-500 font-medium">{cat}</span>))}
               </div>
             </div>
           ))}
@@ -1154,13 +1154,13 @@ export default function LandingPage() {
       </section>
 
       {/* ===================== FEATURES — UÇTAN UCA YÖNETİM ===================== */}
-      <section className="py-24 bg-[#0a0d14] border-y border-white/5" id="ozellikler">
+      <section className="py-24 bg-slate-50 border-y border-slate-200" id="ozellikler">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-16 items-start">
             <div className="lg:col-span-2">
               <span className="text-[11px] font-bold text-accent uppercase tracking-widest">PLATFORM ÖZELLİKLERİ</span>
-              <h2 className="font-heading font-black text-3xl md:text-4xl tracking-tight text-white mt-3 mb-4 leading-tight">Tek platformda uçtan uca yönetim.</h2>
-              <p className="text-sm text-gray-400 leading-relaxed">İhale oluşturmadan tedarikçi değerlendirmesine, teklif sürecinden nihai teslimat onayına kadar tüm akışı tek çatı altında yönetin.</p>
+              <h2 className="font-heading font-black text-3xl md:text-4xl tracking-tight text-slate-900 mt-3 mb-4 leading-tight">Tek platformda uçtan uca yönetim.</h2>
+              <p className="text-sm text-slate-600 leading-relaxed">İhale oluşturmadan tedarikçi değerlendirmesine, teklif sürecinden nihai teslimat onayına kadar tüm akışı tek çatı altında yönetin.</p>
             </div>
             <div className="lg:col-span-3">
               {content.features.map((feat, idx) => (
@@ -1169,8 +1169,8 @@ export default function LandingPage() {
                     <i className={`fa-solid ${feat.icon}`}></i>
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-heading font-bold text-base text-white mb-1.5">{feat.title}</h4>
-                    <p className="text-xs text-gray-400 leading-relaxed">{feat.desc}</p>
+                    <h4 className="font-heading font-bold text-base text-slate-800 mb-1.5">{feat.title}</h4>
+                    <p className="text-xs text-slate-500 leading-relaxed">{feat.desc}</p>
                   </div>
                 </div>
               ))}
@@ -1183,39 +1183,39 @@ export default function LandingPage() {
       <section className="py-24 max-w-7xl mx-auto px-6">
         <div className="mb-16">
           <span className="text-[11px] font-bold text-accent uppercase tracking-widest">GÜVENLİK STANDARTLARI</span>
-          <h2 className="font-heading font-black text-3xl md:text-4xl tracking-tight text-white mt-3 mb-4 leading-tight">Güven ve kayıt standartları.</h2>
-          <p className="text-sm text-gray-400 max-w-2xl">Platforma dahil her işlem şifreli aktarım, yetkilik belgesi, kayıt izi ve uluslararası kurumsal standartlar ile korunmaktadır.</p>
+          <h2 className="font-heading font-black text-3xl md:text-4xl tracking-tight text-slate-900 mt-3 mb-4 leading-tight">Güven ve kayıt standartları.</h2>
+          <p className="text-sm text-slate-600 max-w-2xl">Platforma dahil her işlem şifreli aktarım, yetkilik belgesi, kayıt izi ve uluslararası kurumsal standartlar ile korunmaktadır.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {content.trustStandards.map((ts, idx) => (
             <div key={idx} className="trust-standard-card">
               <span className="text-[10px] font-bold text-accent/60 uppercase tracking-widest block mb-3">{ts.subtitle}</span>
               <h3 className="trust-title mb-4">{ts.title}</h3>
-              <p className="text-xs text-gray-400 leading-relaxed">{ts.desc}</p>
+              <p className="text-xs text-slate-500 leading-relaxed">{ts.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* ===================== 3 PROBLEMS — YATAY DÜZEN ===================== */}
-      <section className="py-24 bg-[#0a0d14] border-y border-white/5">
+      <section className="py-24 bg-slate-50 border-y border-slate-200">
         <div className="max-w-7xl mx-auto px-6">
           <div className="mb-16">
             <span className="text-[11px] font-bold text-accent uppercase tracking-widest">NEDEN GELANLASALİM?</span>
-            <h2 className="font-heading font-black text-3xl md:text-4xl tracking-tight text-white mt-3 mb-4 leading-tight">Geleneksel satın almanın<br />üç temel sorunu.</h2>
-            <p className="text-sm text-gray-400 max-w-2xl">E-posta, telefon ve elektronik tablolarla yürütülen tedarik süreçlerinin kontrollü bir çalışma alanıyla buluşması gerekiyor.</p>
+            <h2 className="font-heading font-black text-3xl md:text-4xl tracking-tight text-slate-900 mt-3 mb-4 leading-tight">Geleneksel satın almanın<br />üç temel sorunu.</h2>
+            <p className="text-sm text-slate-600 max-w-2xl">E-posta, telefon ve elektronik tablolarla yürütülen tedarik süreçlerinin kontrollü bir çalışma alanıyla buluşması gerekiyor.</p>
           </div>
           <div className="flex flex-col gap-0">
             {content.problems.map((prob, idx) => (
-              <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-8 py-8 border-b border-white/5 last:border-b-0 group hover:bg-white/[0.01] transition-colors px-4 -mx-4 rounded-xl">
+              <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-8 py-8 border-b border-slate-200/60 last:border-b-0 group hover:bg-slate-100/30 transition-colors px-4 -mx-4 rounded-xl">
                 <div className="md:col-span-1 flex items-start">
-                  <span className="text-[10px] font-bold text-accent/40 uppercase tracking-widest font-mono">SORUN {String(idx + 1).padStart(2, '0')}</span>
+                  <span className="text-[10px] font-bold text-accent/60 uppercase tracking-widest font-mono">SORUN {String(idx + 1).padStart(2, '0')}</span>
                 </div>
                 <div className="md:col-span-4">
-                  <h4 className="font-heading font-bold text-base text-white leading-snug">{prob.title}</h4>
+                  <h4 className="font-heading font-bold text-base text-slate-800 leading-snug">{prob.title}</h4>
                 </div>
                 <div className="md:col-span-7">
-                  <p className="text-sm text-gray-400 leading-relaxed">{prob.desc}</p>
+                  <p className="text-sm text-slate-600 leading-relaxed">{prob.desc}</p>
                 </div>
               </div>
             ))}
@@ -1248,59 +1248,59 @@ export default function LandingPage() {
           {content.faqs.map((faq, index) => {
             const isOpen = activeFaq === index;
             return (
-              <div key={index} className={`rounded-xl border bg-[#0d1117] overflow-hidden transition-all duration-300 ${isOpen ? 'border-accent/20' : 'border-white/5'}`}>
-                <button onClick={() => setActiveFaq(isOpen ? null : index)} className="w-full px-6 py-5 flex items-center justify-between text-left font-heading font-bold text-sm md:text-base text-white hover:bg-white/[0.01] transition-colors">
+              <div key={index} className={`rounded-xl border bg-white overflow-hidden transition-all duration-300 ${isOpen ? 'border-accent/40 shadow-sm' : 'border-slate-200'}`}>
+                <button onClick={() => setActiveFaq(isOpen ? null : index)} className="w-full px-6 py-5 flex items-center justify-between text-left font-heading font-bold text-sm md:text-base text-slate-800 hover:bg-slate-50 transition-colors">
                   <span>{faq.q}</span>
-                  <span className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ml-4 transition-all duration-300 ${isOpen ? 'bg-accent text-white rotate-180' : 'bg-white/5 text-accent'}`}><i className="fa-solid fa-chevron-down text-xs"></i></span>
+                  <span className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ml-4 transition-all duration-300 ${isOpen ? 'bg-accent text-white rotate-180' : 'bg-slate-100 text-accent'}`}><i className="fa-solid fa-chevron-down text-xs"></i></span>
                 </button>
-                <div className={`px-6 overflow-hidden transition-all duration-300 text-sm text-gray-400 leading-relaxed ${isOpen ? 'py-5 border-t border-white/5 max-h-48' : 'max-h-0'}`}>{faq.a}</div>
+                <div className={`px-6 overflow-hidden transition-all duration-300 text-sm text-slate-600 leading-relaxed ${isOpen ? 'py-5 border-t border-slate-100 max-h-48' : 'max-h-0'}`}>{faq.a}</div>
               </div>
             );
           })}
         </div>
         {/* Hâlâ sorunuz mu var? */}
-        <div className="mt-8 p-6 rounded-2xl bg-[#0d1117] border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-8 p-6 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h4 className="font-heading font-bold text-base text-white mb-1">Hâlâ sorunuz mu var?</h4>
-            <p className="text-xs text-gray-400">Bize her zaman ulaşabilirsiniz.</p>
+            <h4 className="font-heading font-bold text-base text-slate-800 mb-1">Hâlâ sorunuz mu var?</h4>
+            <p className="text-xs text-slate-500">Bize her zaman ulaşabilirsiniz.</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => setShowChat(true)} className="px-5 py-2.5 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accentLight transition-all">Yardım merkezine git</button>
-            <span className="text-xs text-gray-500">{content.footer.email}</span>
+            <span className="text-xs text-slate-500">{content.footer.email}</span>
           </div>
         </div>
       </section>
 
       {/* ===================== REGISTRATION CTA ===================== */}
-      <section className="py-24 registration-cta border-y border-white/5 relative">
+      <section className="py-24 registration-cta border-y border-slate-200 bg-slate-50 relative">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
             <span className="text-[11px] font-bold text-accent uppercase tracking-widest">HEMEN BAŞLAYIN</span>
-            <h2 className="font-heading font-black text-3xl md:text-4xl text-white mt-3 mb-4 leading-tight">
+            <h2 className="font-heading font-black text-3xl md:text-4xl text-slate-900 mt-3 mb-4 leading-tight">
               Satın alma süreçlerinizi<br /><span className="text-accent">tek panelde toplayın.</span>
             </h2>
-            <p className="text-sm text-gray-400 mb-6 max-w-md">gelanlasalim satın alma süreçlerinizin tüm yapıtaşlarını dijital ortamda, hızlı ve güvenli şekilde birleştiren bir B2B platformudur.</p>
-            <div className="flex flex-wrap gap-x-6 gap-y-3 text-xs text-gray-400">
+            <p className="text-sm text-slate-600 mb-6 max-w-md">gelanlasalim satın alma süreçlerinizin tüm yapıtaşlarını dijital ortamda, hızlı ve güvenli şekilde birleştiren bir B2B platformudur.</p>
+            <div className="flex flex-wrap gap-x-6 gap-y-3 text-xs text-slate-500">
               <div className="flex items-center gap-2"><i className="fa-solid fa-shield-halved text-accent"></i>Güvenli altyapı</div>
               <div className="flex items-center gap-2"><i className="fa-solid fa-certificate text-accent"></i>KVKK doğrulanmış altyapı</div>
               <div className="flex items-center gap-2"><i className="fa-solid fa-wallet text-accent"></i>Fırsat maliyetlendirme</div>
             </div>
           </div>
           <div className="w-full max-w-md mx-auto lg:ml-auto">
-            <div className="rounded-2xl bg-[#0d1117] border border-white/5 p-8 shadow-premium">
-              <div className="flex mb-6 p-1 rounded-full bg-white/[0.03] border border-white/5">
-                <button onClick={() => setRegTab("buyer")} className={`flex-1 py-2.5 rounded-full text-sm font-semibold transition-all ${regTab === "buyer" ? 'bg-accent text-white' : 'text-gray-400'}`}>Alıcı</button>
-                <button onClick={() => setRegTab("supplier")} className={`flex-1 py-2.5 rounded-full text-sm font-semibold transition-all ${regTab === "supplier" ? 'bg-accent text-white' : 'text-gray-400'}`}>Tedarikçi</button>
+            <div className="rounded-2xl bg-white border border-slate-200 p-8 shadow-lg">
+              <div className="flex mb-6 p-1 rounded-full bg-slate-100/60 border border-slate-200">
+                <button onClick={() => setRegTab("buyer")} className={`flex-1 py-2.5 rounded-full text-sm font-semibold transition-all ${regTab === "buyer" ? 'bg-accent text-white' : 'text-slate-500'}`}>Alıcı</button>
+                <button onClick={() => setRegTab("supplier")} className={`flex-1 py-2.5 rounded-full text-sm font-semibold transition-all ${regTab === "supplier" ? 'bg-accent text-white' : 'text-slate-500'}`}>Tedarikçi</button>
               </div>
               <form onSubmit={(e) => { e.preventDefault(); window.location.href = '/portal.html#/uyelik'; }} className="flex flex-col gap-4">
-                <input type="text" placeholder="Firma adınız" className="w-full bg-black/30 border border-white/5 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-accent/40 transition-colors" />
-                <input type="email" placeholder="Kurumsal e-posta adresiniz" className="w-full bg-black/30 border border-white/5 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-accent/40 transition-colors" />
-                <input type="password" placeholder="Şifre oluşturun (en az 8 karakter)" className="w-full bg-black/30 border border-white/5 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-accent/40 transition-colors" />
+                <input type="text" placeholder="Firma adınız" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-accent transition-colors" />
+                <input type="email" placeholder="Kurumsal e-posta adresiniz" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-accent transition-colors" />
+                <input type="password" placeholder="Şifre oluşturun (en az 8 karakter)" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-accent transition-colors" />
                 <button type="submit" className="w-full py-3.5 rounded-xl bg-accent text-white font-bold text-sm hover:bg-accentLight transition-all shadow-accentGlow mt-2">
                   {regTab === "buyer" ? "Alıcı Olarak Kayıt Ol" : "Tedarikçi Olarak Kayıt Ol"}
                 </button>
               </form>
-              <p className="text-[10px] text-gray-500 mt-4 text-center leading-relaxed">
+              <p className="text-[10px] text-slate-500 mt-4 text-center leading-relaxed">
                 Kayıt olarak <a href="#" className="text-accent underline">Kullanım koşullarını</a>, <a href="#" className="text-accent underline">Gizlilik Politikasını</a> ve <a href="#" className="text-accent underline">Aydınlatma Metnini</a> kabul etmiş olursunuz.
               </p>
             </div>
@@ -1309,19 +1309,19 @@ export default function LandingPage() {
       </section>
 
       {/* ===================== FOOTER ===================== */}
-      <footer className="bg-[#070a13] border-t border-white/5 py-16">
+      <footer className="bg-white border-t border-slate-200 py-16">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div className="md:col-span-1 flex flex-col gap-4">
               <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.location.href = '/'}>
                 <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center font-heading font-black text-white text-sm">GA</div>
-                <span className="font-heading font-bold text-lg tracking-tight text-white">gelanla<span className="text-accent">salim</span></span>
+                <span className="font-heading font-bold text-lg tracking-tight text-slate-900">gelanla<span className="text-accent">salim</span></span>
               </div>
-              <p className="text-xs text-gray-500 leading-relaxed">Kurumsal B2B satın alma ekipleri için canlı tersine ihale ve güvenli tedarik platformu.</p>
+              <p className="text-xs text-slate-500 leading-relaxed">Kurumsal B2B satın alma ekipleri için canlı tersine ihale ve güvenli tedarik platformu.</p>
             </div>
             <div>
-              <h4 className="text-xs font-bold text-gray-300 uppercase tracking-wider mb-4">Platform</h4>
-              <ul className="space-y-3 text-xs text-gray-500">
+              <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4">Platform</h4>
+              <ul className="space-y-3 text-xs text-slate-500">
                 <li><a href="#nasil-calisir" className="hover:text-accent transition-colors">Nasıl Çalışır</a></li>
                 <li><a href="#pazar-yeri" className="hover:text-accent transition-colors">Pazar Yeri</a></li>
                 <li><a href="/portal.html" className="hover:text-accent transition-colors">İhale Arenası</a></li>
@@ -1329,8 +1329,8 @@ export default function LandingPage() {
               </ul>
             </div>
             <div>
-              <h4 className="text-xs font-bold text-gray-300 uppercase tracking-wider mb-4">Şirket</h4>
-              <ul className="space-y-3 text-xs text-gray-500">
+              <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4">Şirket</h4>
+              <ul className="space-y-3 text-xs text-slate-500">
                 <li><a href="#" className="hover:text-accent transition-colors">Hakkımızda</a></li>
                 <li><a href="#" className="hover:text-accent transition-colors">Gizlilik Politikası</a></li>
                 <li><a href="#" className="hover:text-accent transition-colors">Kullanım Koşulları</a></li>
@@ -1338,15 +1338,15 @@ export default function LandingPage() {
               </ul>
             </div>
             <div>
-              <h4 className="text-xs font-bold text-gray-300 uppercase tracking-wider mb-4">İletişim</h4>
-              <ul className="space-y-3 text-xs text-gray-500">
+              <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4">İletişim</h4>
+              <ul className="space-y-3 text-xs text-slate-500">
                 <li className="flex items-center gap-2"><i className="fa-solid fa-envelope text-accent/60"></i>{content.footer.email}</li>
                 <li className="flex items-center gap-2"><i className="fa-brands fa-whatsapp text-accent/60"></i>{content.footer.phone}</li>
                 <li className="flex items-center gap-2"><i className="fa-solid fa-location-dot text-accent/60"></i>{content.footer.address}</li>
               </ul>
             </div>
           </div>
-          <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-gray-600">
+          <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-slate-400">
             <span>© 2026 gelanlasalim.com — Tüm hakları saklıdır.</span>
             <div className="flex items-center gap-6">
               <span className="flex items-center gap-1.5"><i className="fa-solid fa-building-columns text-accent/40"></i>MERSİS Kayıtlı</span>
@@ -1370,27 +1370,27 @@ export default function LandingPage() {
 
         <AnimatePresence>
           {showChat && (
-            <motion.div initial={{ opacity: 0, y: 30, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 30, scale: 0.95 }} className="w-80 md:w-96 h-[460px] glass-card rounded-2xl shadow-premium flex flex-col overflow-hidden text-left">
-              <div className="bg-[#0d1117] px-5 py-4 border-b border-white/5 flex items-center justify-between">
+            <motion.div initial={{ opacity: 0, y: 30, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 30, scale: 0.95 }} className="w-80 md:w-96 h-[460px] bg-white border border-slate-200 rounded-2xl shadow-xl flex flex-col overflow-hidden text-left">
+              <div className="bg-slate-50 px-5 py-4 border-b border-slate-100 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center text-white font-black text-sm">GA</div>
-                  <div><h4 className="text-xs font-bold text-white leading-tight">Yapay Zeka Destek Asistanı</h4><span className="text-[9px] text-green-400 font-semibold flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-400 pulse-dot"></span> Online</span></div>
+                  <div><h4 className="text-xs font-bold text-slate-800 leading-tight">Yapay Zeka Destek Asistanı</h4><span className="text-[9px] text-green-400 font-semibold flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-400 pulse-dot"></span> Online</span></div>
                 </div>
-                <button onClick={() => setShowChat(false)} className="text-gray-400 hover:text-white"><i className="fa-solid fa-xmark"></i></button>
+                <button onClick={() => setShowChat(false)} className="text-slate-400 hover:text-slate-600"><i className="fa-solid fa-xmark"></i></button>
               </div>
               <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 text-xs">
                 {messages.map((m, idx) => (
-                  <div key={idx} className={`max-w-[80%] p-3 rounded-xl leading-relaxed ${m.sender === 'user' ? 'bg-accent text-white font-semibold self-end rounded-tr-none' : 'bg-white/5 border border-white/5 text-gray-300 self-start rounded-tl-none'}`}>{m.text}</div>
+                  <div key={idx} className={`max-w-[80%] p-3 rounded-xl leading-relaxed ${m.sender === 'user' ? 'bg-accent text-white font-semibold self-end rounded-tr-none' : 'bg-slate-50 border border-slate-200/80 text-slate-700 self-start rounded-tl-none'}`}>{m.text}</div>
                 ))}
                 <div ref={messagesEndRef} />
               </div>
-              <div className="px-4 py-2 flex flex-wrap gap-2 border-t border-white/5 bg-black/20">
+              <div className="px-4 py-2 flex flex-wrap gap-2 border-t border-slate-100 bg-slate-50/50">
                 {[{ label: "Havuz Nedir?", q: "Güvenli Havuz nedir?" }, { label: "Nasıl Üye Olunur?", q: "Nasıl üye olurum?" }, { label: "İhale Açmak", q: "Nasıl ihale ilanı açarım?" }].map((item, i) => (
-                  <button key={i} onClick={() => handleSendChat(item.q)} className="text-[10px] bg-white/5 hover:bg-accent/10 border border-white/10 hover:border-accent/20 px-2.5 py-1 rounded-full text-gray-300 hover:text-accent transition-all">{item.label}</button>
+                  <button key={i} onClick={() => handleSendChat(item.q)} className="text-[10px] bg-white hover:bg-accent/5 border border-slate-200 hover:border-accent/20 px-2.5 py-1 rounded-full text-slate-600 hover:text-accent transition-all">{item.label}</button>
                 ))}
               </div>
-              <form onSubmit={(e) => { e.preventDefault(); handleSendChat(); }} className="p-3 bg-[#0d1117] border-t border-white/5 flex gap-2">
-                <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Sorunuzu buraya yazın..." className="flex-1 bg-black/40 border border-white/5 rounded-lg px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-accent/40" />
+              <form onSubmit={(e) => { e.preventDefault(); handleSendChat(); }} className="p-3 bg-slate-50 border-t border-slate-200 flex gap-2">
+                <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Sorunuzu buraya yazın..." className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-accent" />
                 <button type="submit" className="w-8 h-8 rounded-lg bg-accent text-white flex items-center justify-center hover:bg-accentLight hover:scale-105 active:scale-95 transition-all"><i className="fa-solid fa-paper-plane text-xs"></i></button>
               </form>
             </motion.div>

@@ -4,13 +4,13 @@
 
 @layer base {
   body {
-    background-color: #070a13;
-    color: #e5e7eb;
+    background-color: #f8fafc;
+    color: #334155;
     font-family: var(--font-inter), sans-serif;
   }
 
   ::selection {
-    background-color: rgba(13, 148, 136, 0.3);
+    background-color: rgba(13, 148, 136, 0.2);
     color: #fff;
   }
 
@@ -18,7 +18,7 @@
     width: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #070a13;
+    background: #f8fafc;
   }
   ::-webkit-scrollbar-thumb {
     background: rgba(13, 148, 136, 0.25);
@@ -47,8 +47,8 @@
   pointer-events: none;
   z-index: -1;
   background-image:
-    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    linear-gradient(rgba(0,0,0,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.015) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 75%);
   -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 75%);
@@ -60,32 +60,32 @@
   height: 700px;
   border-radius: 50%;
   filter: blur(180px);
-  opacity: 0.04;
-  mix-blend-mode: screen;
+  opacity: 0.08;
+  mix-blend-mode: multiply;
   pointer-events: none;
 }
 
 .glow-circle.primary {
-  background: #0d9488;
+  background: #ccfbf1;
   top: -15%;
   right: -10%;
   animation: floatingGlow 30s ease-in-out infinite alternate;
 }
 
 .glow-circle.secondary {
-  background: #1e40af;
+  background: #dbeafe;
   bottom: -20%;
   left: -15%;
   animation: floatingGlow 40s ease-in-out infinite alternate-reverse;
 }
 
 .glow-circle.tertiary {
-  background: #14b8a6;
+  background: #ccfbf1;
   top: 40%;
   left: 50%;
   width: 500px;
   height: 500px;
-  opacity: 0.02;
+  opacity: 0.05;
   animation: floatingGlow 35s ease-in-out infinite alternate;
 }
 
@@ -157,15 +157,16 @@
    ============================================ */
 
 .glass-card {
-  background: rgba(13, 17, 23, 0.7);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.04), 0 8px 10px -6px rgba(0,0,0,0.04);
 }
 
 .nav-capsule {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 9999px;
 }
 
@@ -178,7 +179,7 @@
   inset: -1px;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(13,148,136,0.3), transparent 50%, rgba(13,148,136,0.15));
+  background: linear-gradient(135deg, rgba(13,148,136,0.25), transparent 50%, rgba(13,148,136,0.1));
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
   -webkit-mask-composite: xor;
@@ -191,11 +192,11 @@
   gap: 6px;
   padding: 4px 12px;
   border-radius: 9999px;
-  background: rgba(13, 148, 136, 0.08);
-  border: 1px solid rgba(13, 148, 136, 0.15);
+  background: rgba(13, 148, 136, 0.06);
+  border: 1px solid rgba(13, 148, 136, 0.12);
   font-size: 11px;
   font-weight: 600;
-  color: #14b8a6;
+  color: #0f766e;
 }
 
 /* ============================================
@@ -211,6 +212,7 @@
 
 .video-guide-card:hover {
   transform: translateY(-4px);
+  box-shadow: 0 12px 20px -8px rgba(0,0,0,0.08);
 }
 
 .video-guide-card::before {
@@ -236,7 +238,7 @@
 .feature-item {
   position: relative;
   padding: 24px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
   transition: all 0.3s ease;
 }
 
@@ -269,21 +271,23 @@
   position: relative;
   padding: 32px;
   border-radius: 16px;
-  background: #0d1117;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
 }
 
 .trust-standard-card:hover {
   border-color: rgba(13, 148, 136, 0.15);
-  background: #0f1419;
+  background: #fafafa;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.03);
 }
 
 .trust-standard-card .trust-title {
   font-family: var(--font-outfit), sans-serif;
   font-weight: 900;
   font-size: 2rem;
-  color: #fff;
+  color: #0f172a;
   letter-spacing: -0.02em;
   line-height: 1;
 }
@@ -296,20 +300,22 @@
   position: relative;
   padding: 32px;
   border-radius: 16px;
-  background: #0d1117;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
 }
 
 .problem-card:hover {
   border-color: rgba(239, 68, 68, 0.15);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.03);
 }
 
 .problem-card .problem-number {
   font-family: var(--font-outfit), sans-serif;
   font-weight: 900;
   font-size: 3rem;
-  color: rgba(239, 68, 68, 0.08);
+  color: rgba(239, 68, 68, 0.06);
   line-height: 1;
 }
 

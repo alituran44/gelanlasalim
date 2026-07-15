@@ -102,6 +102,16 @@ CREATE TABLE tenders (
     status tender_status NOT NULL DEFAULT 'draft',
     expires_at TIMESTAMPTZ NOT NULL,   -- İhalenin canlı teklif almaya kapanacağı zaman
     winning_bid_id UUID,                -- Kazanan teklif atandığında güncellenir (aşağıda foreign key eklenecek)
+    country VARCHAR(100),
+    neighborhood VARCHAR(100),
+    file_url VARCHAR(512),
+    image_url VARCHAR(512),
+    type VARCHAR(50) DEFAULT 'Alış',
+    target_price NUMERIC(12, 2),
+    material_list TEXT,
+    admin_spec TEXT,
+    tech_spec TEXT,
+    similar_history TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT check_quantity_positive CHECK (quantity > 0)

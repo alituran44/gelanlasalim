@@ -14,6 +14,7 @@ import categoriesRouter from './routes/categories.js';
 import tendersRouter from './routes/tenders.js';
 import bidsRouter from './routes/bids.js';
 import adminRouter from './routes/admin.js';
+import cmsRouter from './routes/cms.js';
 
 // Hata middleware'i
 import { errorHandler } from './middleware/errorHandler.js';
@@ -62,6 +63,7 @@ app.use('/api/categories', categoriesRouter);
 app.use('/api/tenders', tendersRouter);
 app.use('/api/bids', bidsRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/cms', cmsRouter);
 
 // Hata yönetimi (Tüm routerlardan sonra gelmeli)
 app.use(errorHandler);

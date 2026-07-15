@@ -480,6 +480,26 @@ class App {
                         <textarea id="post-description" rows="4" required placeholder="Malzeme detayları, teslimat şartları, marka tercihleri vb. detayları yazınız..."></textarea>
                     </div>
 
+                    <div class="form-field">
+                        <label>MALZEME LİSTESİ (Her satıra bir malzeme ve miktar yazın)</label>
+                        <textarea id="post-material-list" rows="4" placeholder="Örn:&#10;1. Hazır Beton (C30/37) - 1.250 m³&#10;2. Nervürlü Çelik Boru - 85 Ton"></textarea>
+                    </div>
+
+                    <div class="form-field">
+                        <label>İDARİ ŞARTNAME</label>
+                        <textarea id="post-admin-spec" rows="4" placeholder="Örn: Teklif geçerlilik süresi 90 gündür. Geçici teminat %3'tür."></textarea>
+                    </div>
+
+                    <div class="form-field">
+                        <label>TEKNİK ŞARTNAME</label>
+                        <textarea id="post-tech-spec" rows="4" placeholder="Örn: Betonlar TSE C30/37 standardında olmalıdır. Borular korozyona dayanıklı olmalıdır."></textarea>
+                    </div>
+
+                    <div class="form-field">
+                        <label>BENZER İHALE GEÇMİŞİ</label>
+                        <textarea id="post-similar-history" rows="4" placeholder="Örn:&#10;2025/8902 - Asfalt Alımı İhalesi (Sonuç: 8.420.000 ₺)&#10;2025/1102 - Hazır Beton Alımı (Sonuç: 1.150.000 ₺)"></textarea>
+                    </div>
+
                     <div class="form-row">
                         <div class="form-field">
                             <label>Miktar & Birim</label>
@@ -568,7 +588,11 @@ class App {
             type: document.getElementById('post-type').value,
             expires_at: document.getElementById('post-expires-at').value,
             file_name: document.getElementById('post-file').files[0]?.name || 'Sartname_Tedarik.rar',
-            image_name: document.getElementById('post-image').files[0]?.name || ''
+            image_name: document.getElementById('post-image').files[0]?.name || '',
+            material_list: document.getElementById('post-material-list').value,
+            admin_spec: document.getElementById('post-admin-spec').value,
+            tech_spec: document.getElementById('post-tech-spec').value,
+            similar_history: document.getElementById('post-similar-history').value
         };
 
         this.renderAdPreviewScreen();
@@ -616,6 +640,26 @@ class App {
                     <strong>AÇIKLAMA:</strong>
                     <p>${this.tempTender.description}</p>
                 </div>
+                ${this.tempTender.material_list ? `
+                <div class="preview-desc-box" style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+                    <strong>MALZEME LİSTESİ:</strong>
+                    <pre style="white-space: pre-wrap; font-family: inherit; margin: 5px 0 0 0; color: var(--clr-text-secondary);">${this.tempTender.material_list}</pre>
+                </div>` : ''}
+                ${this.tempTender.admin_spec ? `
+                <div class="preview-desc-box" style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+                    <strong>İDARİ ŞARTNAME:</strong>
+                    <pre style="white-space: pre-wrap; font-family: inherit; margin: 5px 0 0 0; color: var(--clr-text-secondary);">${this.tempTender.admin_spec}</pre>
+                </div>` : ''}
+                ${this.tempTender.tech_spec ? `
+                <div class="preview-desc-box" style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+                    <strong>TEKNİK ŞARTNAME:</strong>
+                    <pre style="white-space: pre-wrap; font-family: inherit; margin: 5px 0 0 0; color: var(--clr-text-secondary);">${this.tempTender.tech_spec}</pre>
+                </div>` : ''}
+                ${this.tempTender.similar_history ? `
+                <div class="preview-desc-box" style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+                    <strong>BENZER İHALE GEÇMİŞİ:</strong>
+                    <pre style="white-space: pre-wrap; font-family: inherit; margin: 5px 0 0 0; color: var(--clr-text-secondary);">${this.tempTender.similar_history}</pre>
+                </div>` : ''}
             </div>
 
             <div class="content-card">
@@ -674,7 +718,11 @@ class App {
                     file_url: this.tempTender.file_name,
                     image_url: this.tempTender.image_name,
                     type: this.tempTender.type,
-                    target_price: this.tempTender.target_price
+                    target_price: this.tempTender.target_price,
+                    material_list: this.tempTender.material_list,
+                    admin_spec: this.tempTender.admin_spec,
+                    tech_spec: this.tempTender.tech_spec,
+                    similar_history: this.tempTender.similar_history
                 })
             });
 
@@ -858,36 +906,149 @@ class App {
 
         sidebar.innerHTML = `
             <div class="sidebar-box">
-                <h3 class="sidebar-title"><i class="fa-solid fa-credit-card"></i> GÜVENLİK</h3>
-                <p style="font-size: 12px; color: var(--clr-text-secondary);">3D Secure ödeme altyapısı aktiftir. Kredi kartı verileriniz asla sistemlerimizde saklanmaz.</p>
+                <h3 class="sidebar-title"><i class="fa-solid fa-gem"></i> PREMİUM ÜYELİK</h3>
+                <p style="font-size: 12px; color: var(--clr-text-secondary); line-height: 1.6;">
+                    gelanlasalim.com'un ayrıcalıklı B2B ihale dünyasına katılarak, canlı eksiltme arenalarında yerinizi alın, tedarik maliyetlerinizi düşürün.
+                </p>
             </div>
         `;
 
         panel.innerHTML = `
             <div class="panel-header-section">
-                <h1>Üyelik Ödeme Sayfası</h1>
-                <p>Platform üyelik aktivasyon ücretini güvenle tamamlayın.</p>
+                <h1>Üyelik Başvuru Paketleri</h1>
+                <p>İhtiyacınıza en uygun üyelik paketini seçerek canlı ihale arenasına katılın.</p>
             </div>
 
-            <div class="dashboard-grid">
-                <!-- Sol Taraf: Kart Formu -->
-                <div class="content-card">
-                    <h3 class="card-title">Kart Bilgileri</h3>
+            <div class="subscription-plans-container" style="color: var(--clr-text); font-family: 'Inter', sans-serif;">
+                
+                <div class="plans-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
+                    <!-- Card 1 -->
+                    <div class="plan-card-item" style="background: #0d1117; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; text-align: center; transition: all 0.3s ease;">
+                        <div style="background: #0d9488; color: white; padding: 12px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 13px; text-transform: uppercase;">
+                            » Üyelik başvurusu - 1 ay «
+                        </div>
+                        <div style="padding: 24px 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px;">
+                            <div style="font-size: 32px; font-weight: 800; color: white; font-family: 'Outfit', sans-serif;">₺900</div>
+                            <button class="primary-btn" onclick="app.selectMembershipPackage('1 Ay', 900)" style="width: 100%; justify-content: center; border-radius: 6px; font-weight: 600; padding: 10px;">Seç <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="plan-card-item" style="background: #0d1117; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; text-align: center; transition: all 0.3s ease;">
+                        <div style="background: #0d9488; color: white; padding: 12px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 13px; text-transform: uppercase;">
+                            » Üyelik başvurusu - 3 ay «
+                        </div>
+                        <div style="padding: 24px 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px;">
+                            <div style="font-size: 32px; font-weight: 800; color: white; font-family: 'Outfit', sans-serif;">₺1.800</div>
+                            <button class="primary-btn" onclick="app.selectMembershipPackage('3 Ay', 1800)" style="width: 100%; justify-content: center; border-radius: 6px; font-weight: 600; padding: 10px;">Seç <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="plan-card-item" style="background: #0d1117; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; text-align: center; transition: all 0.3s ease;">
+                        <div style="background: #0d9488; color: white; padding: 12px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 13px; text-transform: uppercase;">
+                            » Üyelik başvurusu - 6 ay «
+                        </div>
+                        <div style="padding: 24px 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px;">
+                            <div style="font-size: 32px; font-weight: 800; color: white; font-family: 'Outfit', sans-serif;">₺2.700</div>
+                            <button class="primary-btn" onclick="app.selectMembershipPackage('6 Ay', 2700)" style="width: 100%; justify-content: center; border-radius: 6px; font-weight: 600; padding: 10px;">Seç <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="plan-card-item" style="background: #0d1117; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; text-align: center; transition: all 0.3s ease;">
+                        <div style="background: #0d9488; color: white; padding: 12px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 13px; text-transform: uppercase;">
+                            » Üyelik başvurusu - 9 ay «
+                        </div>
+                        <div style="padding: 24px 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px;">
+                            <div style="font-size: 32px; font-weight: 800; color: white; font-family: 'Outfit', sans-serif;">₺3.600</div>
+                            <button class="primary-btn" onclick="app.selectMembershipPackage('9 Ay', 3600)" style="width: 100%; justify-content: center; border-radius: 6px; font-weight: 600; padding: 10px;">Seç <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KDV Note -->
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; text-align: center; font-size: 12px; color: var(--clr-text-secondary); margin-bottom: 24px;">
+                    Fiyatlara %20 KDV dahildir.
+                </div>
+
+                <!-- Features Tab Panel -->
+                <div class="features-section" style="border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; background: #0d1117; overflow: hidden; margin-bottom: 24px;">
+                    <div style="padding: 12px 16px; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.08);">
+                        <span style="font-size: 12px; font-weight: 700; color: white; border-bottom: 2px solid #0d9488; padding-bottom: 8px; display: inline-block;">» Özellikler</span>
+                    </div>
+                    
+                    <div style="background: rgba(13, 148, 216, 0.08); border-bottom: 1px solid rgba(13, 148, 216, 0.15); padding: 12px; font-size: 12px; text-align: center; font-weight: 600; color: #38bdf8;">
+                        Tüm paketler için geçerlidir
+                    </div>
+
+                    <div style="padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; text-align: left; font-size: 12px;">
+                        <!-- Column 1 -->
+                        <div style="display: flex; flex-direction: column; gap: 10px; color: var(--clr-text-secondary);">
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Ekap ihaleleri</div>
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Ekap ihale sonuçları</div>
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Doğrudan teminler</div>
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Satış ve Kiralamalar</div>
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> KİK Kararları</div>
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Sınır değer hesaplama</div>
+                        </div>
+                        <!-- Column 2 -->
+                        <div style="display: flex; flex-direction: column; gap: 10px; color: var(--clr-text-secondary);">
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Arama önerileri</div>
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Yaklaşan ihale bildirimleri</div>
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Kazanılan ihale bildirimleri</div>
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> İptal-Düzeltme-Sonuç bildirimleri</div>
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Sınırsız bildirim (Sms+Email)</div>
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Sınırsız raporlama (Excel)</div>
+                        </div>
+                        <!-- Column 3 -->
+                        <div style="display: flex; flex-direction: column; gap: 10px; color: var(--clr-text-secondary);">
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Yüklenici analizleri</div>
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> İdare analizleri</div>
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Sektör analizleri</div>
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Rakip analizleri</div>
+                            <div style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-check" style="color: #0d9488;"></i> Mobil uyumluluk</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Extension Banner -->
+                <div style="background: rgba(13, 148, 216, 0.03); border: 1px solid rgba(13, 148, 216, 0.1); border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 24px; display: flex; flex-direction: column; align-items: center; gap: 12px; justify-content: center;">
+                    <span style="font-size: 13px; color: var(--clr-text-secondary); font-weight: 500;">
+                        Eğer üyeliğiniz varsa aşağıdaki bağlantıya tıklayıp %20 indirimli fiyatlarla üyeliğinizi uzatabilirsiniz
+                    </span>
+                    <button class="primary-btn" onclick="alert('Üyelik uzatma talebiniz alındı. Temsilcimiz sizinle iletişime geçecektir.')" style="border-radius: 6px; padding: 8px 20px; font-size: 12px;">Üyelik uzat <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+
+                <!-- Footer Disclaimer -->
+                <div style="font-size: 11px; text-align: center; line-height: 1.6; margin-top: 32px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;">
+                    <p style="color: #ef4444; margin-bottom: 4px; font-weight: 500;">
+                        Bu hizmet Özgürsoft Bilişim A.Ş. tarafından sunulmaktadır. Şirketimizin Kamu İhale Kurumu (EKAP) veya başka bir kamu kurumu ile herhangi bir bağlantısı bulunmamaktadır.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Payment Modal (Hidden by Default) -->
+            <div class="arena-modal" id="payment-modal" style="display: none;">
+                <div class="modal-backdrop" onclick="document.getElementById('payment-modal').style.display='none'"></div>
+                <div class="modal-body auth-modal-body" style="max-width: 500px; padding: 24px; border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; background: #0d1117;">
+                    <button class="close-modal-btn" onclick="document.getElementById('payment-modal').style.display='none'"><i class="fa-solid fa-xmark fa-lg"></i></button>
+                    <h2 style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 20px; color: white; margin-bottom: 8px;">Güvenli Ödeme Paneli</h2>
+                    <p style="font-size: 12px; color: var(--clr-text-secondary); margin-bottom: 20px;" id="payment-package-info">Seçilen Paket: 1 Ay - ₺900</p>
+                    
                     <form class="styled-form" onsubmit="app.submitRegistration(event)">
                         <div class="form-field">
                             <label>KART SAHİBİ ADI SOYADI</label>
-                            <input type="text" id="card-holder" required placeholder="Kaya Öztürk" oninput="app.updateCardPreview()">
+                            <input type="text" id="card-holder" required placeholder="Kaya Öztürk">
                         </div>
 
                         <div class="form-field">
                             <label>KART NUMARASI</label>
-                            <input type="text" id="card-number" required placeholder="4355 8899 7711 2233" maxlength="19" oninput="app.updateCardPreview()">
+                            <input type="text" id="card-number" required placeholder="4355 8899 7711 2233" maxlength="19">
                         </div>
 
                         <div class="form-row">
                             <div class="form-field">
                                 <label>SON KULLANMA TARİHİ</label>
-                                <input type="text" id="card-expiry" required placeholder="MM/YY" maxlength="5" oninput="app.updateCardPreview()">
+                                <input type="text" id="card-expiry" required placeholder="MM/YY" maxlength="5">
                             </div>
                             <div class="form-field">
                                 <label>CVC (GÜVENLİK KODU)</label>
@@ -895,40 +1056,31 @@ class App {
                             </div>
                         </div>
 
-                        <div class="action-buttons-row" style="margin-top: 24px;">
-                            <button type="button" class="secondary-btn" onclick="app.navigateTo('/uyelik')"><i class="fa-solid fa-angle-left"></i> Geri Dön</button>
-                            <button type="submit" class="primary-btn">ÖDEMEYİ TAMAMLA VE KAYDET ▷</button>
+                        <div class="checkbox-group" style="margin: 15px 0;">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="contract-agree-payment" required>
+                                <span style="font-size: 11px;">Mesafeli satış sözleşmesini ve ödeme koşullarını onaylıyorum.</span>
+                            </label>
                         </div>
-                    </form>
-                </div>
 
-                <!-- Sağ Taraf: Kart Ön İzleme (Klasik Premium Demo) -->
-                <div class="content-card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #252a37 0%, #151923 100%); min-height: 240px; border-color: rgba(226, 125, 96, 0.2);">
-                    <div class="credit-card-preview">
-                        <div class="card-chip"><i class="fa-solid fa-microchip fa-2x"></i></div>
-                        <div class="card-num-view" id="card-preview-num">•••• •••• •••• ••••</div>
-                        <div class="card-bottom-row">
-                            <div class="card-holder-view" id="card-preview-holder">KART SAHİBİ</div>
-                            <div class="card-expiry-view" id="card-preview-expiry">MM/YY</div>
-                        </div>
-                    </div>
+                        <button type="submit" class="primary-btn w-full" style="justify-content: center; padding: 12px; font-weight: 700;">ÖDEMEYİ TAMAMLA VE GİRİŞ YAP ▷</button>
+                    </form>
                 </div>
             </div>
         `;
     }
 
-    updateCardPreview() {
-        const holder = document.getElementById('card-holder')?.value || 'KART SAHİBİ';
-        const num = document.getElementById('card-number')?.value || '•••• •••• •••• ••••';
-        const exp = document.getElementById('card-expiry')?.value || 'MM/YY';
-
-        const pNum = document.getElementById('card-preview-num');
-        const pHolder = document.getElementById('card-preview-holder');
-        const pExp = document.getElementById('card-preview-expiry');
-
-        if (pNum) pNum.textContent = num;
-        if (pHolder) pHolder.textContent = holder.toUpperCase();
-        if (pExp) pExp.textContent = exp;
+    selectMembershipPackage(packageName, price) {
+        this.selectedPackageName = packageName;
+        this.selectedPackagePrice = price;
+        const infoEl = document.getElementById('payment-package-info');
+        if (infoEl) {
+            infoEl.innerHTML = `Seçilen Paket: <strong>${packageName}</strong> - <strong>₺${price.toLocaleString('tr-TR')}</strong>`;
+        }
+        const modal = document.getElementById('payment-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
     }
 
     async submitRegistration(event) {
@@ -1002,6 +1154,11 @@ class App {
                         'Authorization': `Bearer ${this.token}`
                     }
                 });
+            }
+
+            const modal = document.getElementById('payment-modal');
+            if (modal) {
+                modal.style.display = 'none';
             }
 
             alert('Üyelik ödemeniz onaylandı ve kaydınız başarıyla tamamlandı!');
@@ -1119,6 +1276,10 @@ class App {
                     <div class="tender-spec-item"><strong>BİTİŞ:</strong> ${new Date(tender.expires_at).toLocaleDateString('tr-TR')}</div>
                     ${tender.file_url ? `<div class="tender-spec-item"><strong>ŞARTNAME:</strong> <a href="#" class="file-rar-link" onclick="alert('Demo dosya indiriliyor')"><i class="fa-solid fa-file-zipper"></i> RAR İndir</a></div>` : ''}
                     <div class="tender-spec-desc"><strong>AÇIKLAMA:</strong><br>${tender.description}</div>
+                    ${tender.material_list ? `<div class="tender-spec-desc" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: 10px;"><strong>MALZEME LİSTESİ:</strong><br>${tender.material_list.replace(/\n/g, '<br>')}</div>` : ''}
+                    ${tender.admin_spec ? `<div class="tender-spec-desc" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: 10px;"><strong>İDARİ ŞARTNAME:</strong><br>${tender.admin_spec.replace(/\n/g, '<br>')}</div>` : ''}
+                    ${tender.tech_spec ? `<div class="tender-spec-desc" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: 10px;"><strong>TEKNİK ŞARTNAME:</strong><br>${tender.tech_spec.replace(/\n/g, '<br>')}</div>` : ''}
+                    ${tender.similar_history ? `<div class="tender-spec-desc" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: 10px;"><strong>BENZER İHALE GEÇMİŞİ:</strong><br>${tender.similar_history.replace(/\n/g, '<br>')}</div>` : ''}
                 `;
             }
 

@@ -11,7 +11,8 @@ router.post('/', authenticateToken, requireRole(['buyer']), async (req, res, nex
         const {
             category_id, title, description, quantity, unit,
             city, district, delivery_address, delivery_date, expires_at,
-            country, neighborhood, file_url, image_url, type, target_price
+            country, neighborhood, file_url, image_url, type, target_price,
+            material_list, admin_spec, tech_spec, similar_history
         } = req.body;
         const buyerId = req.user.id;
 
@@ -27,14 +28,16 @@ router.post('/', authenticateToken, requireRole(['buyer']), async (req, res, nex
             `INSERT INTO tenders (
                 buyer_id, category_id, title, description, quantity, unit,
                 city, district, delivery_address, delivery_date, status, expires_at,
-                country, neighborhood, file_url, image_url, type, target_price
+                country, neighborhood, file_url, image_url, type, target_price,
+                material_list, admin_spec, tech_spec, similar_history
              )
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'open', $11, $12, $13, $14, $15, $16, $17)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'open', $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
              RETURNING *`,
             [
                 buyerId, category_id, title, description, quantity, unit,
                 city, district, delivery_address, delivery_date, expires_at,
-                country || 'Türkiye', neighborhood || '', file_url || '', image_url || '', type || 'Alış', target_price || null
+                country || 'Türkiye', neighborhood || '', file_url || '', image_url || '', type || 'Alış', target_price || null,
+                material_list || '', admin_spec || '', tech_spec || '', similar_history || ''
             ]
         );
 

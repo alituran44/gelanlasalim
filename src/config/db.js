@@ -350,7 +350,8 @@ const mockDb = {
         }
     ],
     company_categories: [],
-    company_service_regions: []
+    company_service_regions: [],
+    site_content: []
 };
 
 // UUID Benzeri Benzersiz ID Üretici
@@ -528,7 +529,8 @@ const runMockQuery = (text, params = []) => {
         const [
             buyerId, categoryId, title, description, quantity, unit,
             city, district, delivery_address, delivery_date, expires_at,
-            country, neighborhood, file_url, image_url, type, target_price
+            country, neighborhood, file_url, image_url, type, target_price,
+            material_list, admin_spec, tech_spec, similar_history
         ] = params;
         const newTender = {
             id: generateUUID(),
@@ -551,7 +553,11 @@ const runMockQuery = (text, params = []) => {
             file_url: file_url || '',
             image_url: image_url || '',
             type: type || 'Alış',
-            target_price: target_price ? parseFloat(target_price) : null
+            target_price: target_price ? parseFloat(target_price) : null,
+            material_list: material_list || '',
+            admin_spec: admin_spec || '',
+            tech_spec: tech_spec || '',
+            similar_history: similar_history || ''
         };
         mockDb.tenders.push(newTender);
         return { rows: [newTender] };
@@ -769,6 +775,29 @@ const runMockQuery = (text, params = []) => {
         return { rows: [] };
     }
 
+    // CMS: site_content SELECT
+    if (cleanText.includes('SELECT content_json FROM site_content WHERE section_key')) {
+        const key = params[0];
+        const row = mockDb.site_content.find(r => r.section_key === key);
+        return { rows: row ? [row] : [] };
+    }
+
+    // CMS: site_content UPSERT (INSERT ... ON CONFLICT)
+    if (cleanText.includes('INSERT INTO site_content')) {
+        const key = 'landing';
+        const contentJson = typeof params[0] === 'string' ? JSON.parse(params[0]) : params[0];
+        const existing = mockDb.site_content.find(r => r.section_key === key);
+        if (existing) {
+            existing.content_json = contentJson;
+            existing.updated_at = new Date();
+            return { rows: [{ id: existing.id }] };
+        } else {
+            const newRow = { id: generateUUID(), section_key: key, content_json: contentJson, updated_at: new Date() };
+            mockDb.site_content.push(newRow);
+            return { rows: [{ id: newRow.id }] };
+        }
+    }
+
     // fallback varsayılan boş satır
     return { rows: [] };
 };
@@ -790,7 +819,26 @@ pool.connect((err, client, release) => {
         useInMemory = true;
     } else {
         console.log('📡 PostgreSQL bağlantısı başarıyla kuruldu.');
-        release();
+        client.query(`
+            ALTER TABLE tenders 
+            ADD COLUMN IF NOT EXISTS country VARCHAR(100),
+            ADD COLUMN IF NOT EXISTS neighborhood VARCHAR(100),
+            ADD COLUMN IF NOT EXISTS file_url VARCHAR(512),
+            ADD COLUMN IF NOT EXISTS image_url VARCHAR(512),
+            ADD COLUMN IF NOT EXISTS type VARCHAR(50) DEFAULT 'Alış',
+            ADD COLUMN IF NOT EXISTS target_price NUMERIC(12, 2),
+            ADD COLUMN IF NOT EXISTS material_list TEXT,
+            ADD COLUMN IF NOT EXISTS admin_spec TEXT,
+            ADD COLUMN IF NOT EXISTS tech_spec TEXT,
+            ADD COLUMN IF NOT EXISTS similar_history TEXT;
+        `, (alterErr) => {
+            if (alterErr) {
+                console.error('⚠️ DB şema güncelleme hatası:', alterErr.message);
+            } else {
+                console.log('✅ DB şeması başarıyla güncellendi (Yeni alanlar eklendi/kontrol edildi).');
+            }
+            release();
+        });
     }
 });
 

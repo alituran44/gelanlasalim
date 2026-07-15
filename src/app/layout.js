@@ -2,7 +2,7 @@ import './globals.css';
 
 export const metadata = {
   title: 'gelanlasalim.com | B2B Canlı Tersine İhale Arenası',
-  description: 'Tedarik taleplerinizi yayınlayın, tedarikçilerin canlı yarışmasını izleyin.',
+  description: 'Kurumsal satın alma ekipleri için B2B ters ihale platformu. Tedarik taleplerinizi yayınlayın, doğrulanmış tedarikçilerin canlı yarışmasını izleyin.',
 };
 
 export default function RootLayout({ children }) {
@@ -18,7 +18,9 @@ export default function RootLayout({ children }) {
         <div className="ambient-glow-wrapper">
           <div className="glow-circle primary"></div>
           <div className="glow-circle secondary"></div>
+          <div className="glow-circle tertiary"></div>
         </div>
+        <div className="grid-overlay"></div>
         {children}
       </body>
     </html>

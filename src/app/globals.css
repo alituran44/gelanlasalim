@@ -4,13 +4,32 @@
 
 @layer base {
   body {
-    background-color: #090a0f;
-    color: #f3f4f6;
+    background-color: #070a13;
+    color: #e5e7eb;
     font-family: var(--font-inter), sans-serif;
+  }
+
+  ::selection {
+    background-color: rgba(13, 148, 136, 0.3);
+    color: #fff;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #070a13;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(13, 148, 136, 0.25);
+    border-radius: 8px;
   }
 }
 
-/* Ambient Background Lights */
+/* ============================================
+   AMBIENT BACKGROUND / GRID
+   ============================================ */
+
 .ambient-glow-wrapper {
   position: fixed;
   top: 0;
@@ -22,43 +41,312 @@
   z-index: -1;
 }
 
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 75%);
+}
+
 .glow-circle {
   position: absolute;
-  width: 600px;
-  height: 600px;
+  width: 700px;
+  height: 700px;
   border-radius: 50%;
-  filter: blur(160px);
-  opacity: 0.05;
+  filter: blur(180px);
+  opacity: 0.04;
   mix-blend-mode: screen;
   pointer-events: none;
 }
 
 .glow-circle.primary {
-  background: #e27d60;
-  top: -10%;
+  background: #0d9488;
+  top: -15%;
   right: -10%;
-  animation: floatingGlow 25s ease-in-out infinite alternate;
+  animation: floatingGlow 30s ease-in-out infinite alternate;
 }
 
 .glow-circle.secondary {
-  background: #3a86c8;
-  bottom: -15%;
-  left: -10%;
-  animation: floatingGlow 35s ease-in-out infinite alternate-reverse;
+  background: #1e40af;
+  bottom: -20%;
+  left: -15%;
+  animation: floatingGlow 40s ease-in-out infinite alternate-reverse;
 }
+
+.glow-circle.tertiary {
+  background: #14b8a6;
+  top: 40%;
+  left: 50%;
+  width: 500px;
+  height: 500px;
+  opacity: 0.02;
+  animation: floatingGlow 35s ease-in-out infinite alternate;
+}
+
+/* ============================================
+   KEYFRAME ANIMATIONS
+   ============================================ */
 
 @keyframes floatingGlow {
   0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(50px, 80px) scale(1.15); }
-  100% { transform: translate(-30px, -50px) scale(0.9); }
+  50% { transform: translate(60px, 90px) scale(1.2); }
+  100% { transform: translate(-40px, -60px) scale(0.85); }
 }
 
 @keyframes statusPulse {
-  0% { transform: scale(0.95); opacity: 0.5; }
-  50% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(0.95); opacity: 0.5; }
+  0% { transform: scale(0.9); opacity: 0.4; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.4; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes countdownPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.2); }
+  50% { box-shadow: 0 0 0 8px rgba(13, 148, 136, 0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInFromLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .pulse-dot {
-  animation: statusPulse 1.8s infinite ease-in-out;
+  animation: statusPulse 2s infinite ease-in-out;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(13,148,136,0.06), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+.animate-countdown-pulse {
+  animation: countdownPulse 2s infinite;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* ============================================
+   COMPONENT UTILITIES
+   ============================================ */
+
+.glass-card {
+  background: rgba(13, 17, 23, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.nav-capsule {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 9999px;
+}
+
+.teal-border-glow {
+  position: relative;
+}
+.teal-border-glow::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(13,148,136,0.3), transparent 50%, rgba(13,148,136,0.15));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+.trust-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: rgba(13, 148, 136, 0.08);
+  border: 1px solid rgba(13, 148, 136, 0.15);
+  font-size: 11px;
+  font-weight: 600;
+  color: #14b8a6;
+}
+
+/* ============================================
+   VIDEO GUIDE CARDS
+   ============================================ */
+
+.video-guide-card {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.video-guide-card:hover {
+  transform: translateY(-4px);
+}
+
+.video-guide-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #0d9488, #14b8a6);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.video-guide-card:hover::before {
+  opacity: 1;
+}
+
+/* ============================================
+   FEATURE LIST ITEMS
+   ============================================ */
+
+.feature-item {
+  position: relative;
+  padding: 24px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+  padding-left: 8px;
+}
+
+.feature-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  background: #0d9488;
+  border-radius: 4px;
+  transition: height 0.3s ease;
+}
+
+.feature-item:hover::before {
+  height: 60%;
+}
+
+/* ============================================
+   TRUST STANDARD CARDS
+   ============================================ */
+
+.trust-standard-card {
+  position: relative;
+  padding: 32px;
+  border-radius: 16px;
+  background: #0d1117;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all 0.3s ease;
+}
+
+.trust-standard-card:hover {
+  border-color: rgba(13, 148, 136, 0.15);
+  background: #0f1419;
+}
+
+.trust-standard-card .trust-title {
+  font-family: var(--font-outfit), sans-serif;
+  font-weight: 900;
+  font-size: 2rem;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* ============================================
+   PROBLEM CARDS
+   ============================================ */
+
+.problem-card {
+  position: relative;
+  padding: 32px;
+  border-radius: 16px;
+  background: #0d1117;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all 0.3s ease;
+}
+
+.problem-card:hover {
+  border-color: rgba(239, 68, 68, 0.15);
+}
+
+.problem-card .problem-number {
+  font-family: var(--font-outfit), sans-serif;
+  font-weight: 900;
+  font-size: 3rem;
+  color: rgba(239, 68, 68, 0.08);
+  line-height: 1;
+}
+
+/* ============================================
+   LIGHT SECTIONS (gelanlasalim-style)
+   ============================================ */
+
+.section-light {
+  background: linear-gradient(180deg, #f0f4f8 0%, #e8ecf1 100%);
+  color: #1a202c;
+}
+
+.section-light h2,
+.section-light h3,
+.section-light h4,
+.section-light strong {
+  color: #0f172a;
+}
+
+.section-light p,
+.section-light span {
+  color: #475569;
+}
+
+/* ============================================
+   REGISTRATION FORM
+   ============================================ */
+
+.registration-cta {
+  position: relative;
+  overflow: hidden;
+}
+
+.registration-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(13, 148, 136, 0.08) 0%, transparent 60%);
+  pointer-events: none;
 }

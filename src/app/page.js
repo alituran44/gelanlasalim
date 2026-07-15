@@ -8,6 +8,419 @@ import { motion, AnimatePresence } from 'framer-motion';
    Navy-Teal | CMS API Entegrasyonu | 12 Bölüm
    ============================================================ */
 
+// 81 İl
+const CITIES_LIST = [
+  'Adana', 'Adıyaman', 'Afyonkarahisar', 'Ağrı', 'Aksaray', 'Amasya', 'Ankara', 'Antalya', 'Ardahan', 'Artvin', 'Aydın', 'Balıkesir', 'Bartın', 'Batman', 'Bayburt', 'Bilecik', 'Bingöl', 'Bitlis', 'Bolu', 'Burdur', 'Bursa', 'Çanakkale', 'Çankırı', 'Çorum', 'Denizli', 'Diyarbakır', 'Düzce', 'Edirne', 'Elazığ', 'Erzincan', 'Erzurum', 'Eskişehir', 'Gaziantep', 'Giresun', 'Gümüşhane', 'Hakkari', 'Hatay', 'Iğdır', 'Isparta', 'İstanbul', 'İzmir', 'Kahramanmaraş', 'Karabük', 'Karaman', 'Kars', 'Kastamonu', 'Kayseri', 'Kırıkkale', 'Kırklareli', 'Kırşehir', 'Kilis', 'Kocaeli', 'Konya', 'Kütahya', 'Malatya', 'Manisa', 'Mardin', 'Mersin', 'Muğla', 'Muş', 'Nevşehir', 'Niğde', 'Ordu', 'Osmaniye', 'Rize', 'Sakarya', 'Samsun', 'Siirt', 'Sinop', 'Sivas', 'Şanlıurfa', 'Şırnak', 'Tekirdağ', 'Tokat', 'Trabzon', 'Tunceli', 'Uşak', 'Van', 'Yalova', 'Yozgat', 'Zonguldak'
+];
+
+// Kategoriler & Alt Kategoriler
+const DETAILED_CATEGORIES = [
+  {
+    name: 'İnşaat, Altyapı ve Yapı İşleri',
+    count: 248,
+    children: [
+      'İnşaat Malzemeleri',
+      'Tadilat ve Renovasyon',
+      'Taahhüt İşleri',
+      'Yapı ve Yıkım İşleri'
+    ]
+  },
+  {
+    name: 'Kanalizasyon, Boru ve Tesisat',
+    count: 61,
+    children: [
+      'Boru ve Bağlantı Elemanları',
+      'Su Tesisatı',
+      'Doğalgaz Tesisatı',
+      'Sıhhi Tesisat'
+    ]
+  },
+  {
+    name: 'Kent Mobilyaları ve Prefabrik Yapılar',
+    count: 40,
+    children: [
+      'Kent Mobilyaları',
+      'Prefabrik Yapılar',
+      'Konteyner',
+      'Doğramacılık'
+    ]
+  },
+  {
+    name: 'Mühendislik, Mimarlık ve Danışmanlık',
+    count: 95,
+    children: [
+      'Mimarlık Hizmetleri',
+      'Mühendislik Hizmetleri',
+      'Proje ve Çizim',
+      'Teknik Danışmanlık'
+    ]
+  },
+  {
+    name: 'Madencilik, Sondaj ve Doğal Kaynaklar',
+    count: 24,
+    children: [
+      'Madencilik',
+      'Sondaj',
+      'Doğal Kaynaklar',
+      'Hammadde'
+    ]
+  },
+  {
+    name: 'Hırdavat, Metal ve Plastik Ürünler',
+    count: 106,
+    children: [
+      'Hırdavat',
+      'Nalbur Malzemeleri',
+      'Metal Ürünler',
+      'Plastik Ürünler'
+    ]
+  },
+  {
+    name: 'Enerji, Elektrik ve Aydınlatma',
+    count: 117,
+    children: [
+      'Elektrik Malzemeleri',
+      'Aydınlatma',
+      'Güneş Enerjisi',
+      'Elektrik Tesisatı'
+    ]
+  },
+  {
+    name: 'Yangın ve Güvenlik Sistemleri',
+    count: 94,
+    children: [
+      'Yangın Algılama',
+      'Yangın Söndürme',
+      'Alarm Sistemleri',
+      'Güvenlik Ekipmanları'
+    ]
+  },
+  {
+    name: 'Asansör ve Yapı Otomasyonu',
+    count: 75,
+    children: [
+      'Asansör',
+      'Yürüyen Merdiven',
+      'Bina Otomasyonu',
+      'Geçiş Sistemleri'
+    ]
+  },
+  {
+    name: 'Klima, Isıtma ve Havalandırma',
+    count: 207,
+    children: [
+      'Klima',
+      'Soğutma',
+      'Isıtma',
+      'Havalandırma'
+    ]
+  },
+  {
+    name: 'Endüstriyel Makine ve Üretim',
+    count: 323,
+    children: [
+      'Endüstriyel Makine',
+      'Motor ve Redüktör',
+      'Konveyör',
+      'Üretim Ekipmanları'
+    ]
+  },
+  {
+    name: 'Taşıt, İş Makinesi ve Yedek Parça',
+    count: 271,
+    children: [
+      'Otomobil',
+      'Ticari Araç',
+      'İş Makinesi',
+      'Yedek Parça'
+    ]
+  },
+  {
+    name: 'Nakliye, Lojistik ve Taşımacılık',
+    count: 169,
+    children: [
+      'Kara Taşımacılığı',
+      'Personel Taşıma',
+      'Depolama',
+      'Dağıtım'
+    ]
+  },
+  {
+    name: 'Turizm ve Organizasyon',
+    count: 68,
+    children: [
+      'Otel Hizmetleri',
+      'Organizasyon',
+      'Seyahat',
+      'Etkinlik'
+    ]
+  },
+  {
+    name: 'Reklam, Tanıtım ve Pazarlama',
+    count: 142,
+    children: [
+      'Dijital Reklam',
+      'Tabela ve Baskı',
+      'Organizasyon',
+      'Promosyon'
+    ]
+  },
+  {
+    name: 'Matbaa, Kırtasiye ve Ambalaj',
+    count: 337,
+    children: [
+      'Matbaa',
+      'Kırtasiye',
+      'Toner ve Kartuş',
+      'Ambalaj'
+    ]
+  },
+  {
+    name: 'Peyzaj, Bahçe ve Ormancılık',
+    count: 165,
+    children: [
+      'Peyzaj',
+      'Bahçe Bakımı',
+      'Bitki ve Fidan',
+      'Ormancılık'
+    ]
+  },
+  {
+    name: 'Sağlık, Medikal ve Tıbbi Cihaz',
+    count: 251,
+    children: [
+      'Medikal Ürünler',
+      'Tıbbi Cihazlar',
+      'Laboratuvar Ekipmanları',
+      'Sarf Malzemeleri'
+    ]
+  },
+  {
+    name: 'Akaryakıt, Yakıt ve Madeni Yağ',
+    count: 123,
+    children: [
+      'Akaryakıt',
+      'Madeni Yağ',
+      'Endüstriyel Yağ',
+      'Yakıt Ürünleri'
+    ]
+  },
+  {
+    name: 'Gıda, Tarım ve Catering',
+    count: 337,
+    children: [
+      'Gıda Ürünleri',
+      'Tarım Ürünleri',
+      'Hazır Yemek',
+      'Catering'
+    ]
+  },
+  {
+    name: 'Elektronik, Bilgisayar ve İletişim',
+    count: 352,
+    children: [
+      'Bilgisayar ve Laptop',
+      'Sunucu ve Veri Merkezi',
+      'Network Ürünleri',
+      'Elektronik Ekipmanlar'
+    ]
+  },
+  {
+    name: 'Yazılım, Bilişim ve Dijital Hizmetler',
+    count: 149,
+    children: [
+      'Web Yazılım',
+      'Mobil Uygulama',
+      'Kurumsal Yazılım',
+      'Bulut Hizmetleri'
+    ]
+  },
+  {
+    name: 'Kamera, Otomasyon ve Haberleşme',
+    count: 122,
+    children: [
+      'Kamera Sistemleri',
+      'Otomasyon',
+      'Takip Sistemleri',
+      'Haberleşme'
+    ]
+  },
+  {
+    name: 'Temizlik, İlaçlama ve Geri Dönüşüm',
+    count: 247,
+    children: [
+      'Temizlik Hizmetleri',
+      'Temizlik Malzemeleri',
+      'İlaçlama',
+      'Geri Dönüşüm'
+    ]
+  },
+  {
+    name: 'Kimyasal Maddeler ve Endüstriyel Ürünler',
+    count: 225,
+    children: [
+      'Endüstriyel Kimyasallar',
+      'Dezenfektan',
+      'Boya ve Kaplama',
+      'Hammadde'
+    ]
+  },
+  {
+    name: 'Tekstil, Giyim ve İş Kıyafetleri',
+    count: 273,
+    children: [
+      'Tekstil',
+      'Personel Kıyafeti',
+      'İş Elbiseleri',
+      'Ayakkabı'
+    ]
+  },
+  {
+    name: 'İş Sağlığı ve Güvenliği',
+    count: 131,
+    children: [
+      'İSG Ekipmanları',
+      'Koruyucu Ekipman',
+      'İSG Hizmetleri',
+      'İş Güvenliği Eğitimi'
+    ]
+  },
+  {
+    name: 'Mobilya, Ofis ve Dekorasyon',
+    count: 208,
+    children: [
+      'Ofis Mobilyaları',
+      'Ev Mobilyaları',
+      'Dekorasyon',
+      'Mutfak Ekipmanları'
+    ]
+  },
+  {
+    name: 'Özel Güvenlik ve Koruma',
+    count: 85,
+    children: [
+      'Özel Güvenlik',
+      'Koruma Hizmetleri',
+      'Bekçilik',
+      'Güvenlik Danışmanlığı'
+    ]
+  },
+  {
+    name: 'Eğitim ve Kurumsal Gelişim',
+    count: 76,
+    children: [
+      'Kurumsal Eğitim',
+      'Online Eğitim',
+      'Eğitim Materyalleri',
+      'Danışmanlık'
+    ]
+  },
+  {
+    name: 'İnsan Kaynakları ve Sosyal Hizmetler',
+    count: 163,
+    children: [
+      'İnsan Kaynakları',
+      'Personel Temini',
+      'Bordrolama',
+      'Kurumsal Hizmetler'
+    ]
+  },
+  {
+    name: 'Sigorta, Mali ve Hukuki Hizmetler',
+    count: 56,
+    children: [
+      'Sigorta',
+      'Mali Müşavirlik',
+      'Hukuk',
+      'Finansal Danışmanlık'
+    ]
+  },
+  {
+    name: 'Gayrimenkul ve İşyeri Hizmetleri',
+    count: 122,
+    children: [
+      'Gayrimenkul',
+      'İşyeri Kiralama',
+      'Tesis Yönetimi',
+      'Emlak Hizmetleri'
+    ]
+  }
+];
+
+// Sektörler
+const SECTORS_LIST = [
+  { name: 'Tarım, Çiftçilik, Balıkçılık ve Ormancılık', count: 84 },
+  { name: 'Petrol, Yakıt, Elektrik ve Enerji', count: 97 },
+  { name: 'Madencilik, Metal ve Hammaddeler', count: 64 },
+  { name: 'Gıda ve İçecek', count: 189 },
+  { name: 'Tarım Makineleri', count: 42 },
+  { name: 'Giyim, Ayakkabı ve Aksesuar', count: 73 },
+  { name: 'Tekstil, Plastik ve Kauçuk', count: 126 },
+  { name: 'Basılı Malzeme ve Matbaa', count: 58 },
+  { name: 'Kimyasal Ürünler', count: 91 },
+  { name: 'Mobilya, Ofis ve Bilgi İşlem Ekipmanları', count: 168 },
+  { name: 'Elektrikli Makine, Cihaz ve Aydınlatma', count: 144 },
+  { name: 'Radyo, TV, İletişim ve Telekomünikasyon', count: 76 },
+  { name: 'Tıbbi Cihaz, İlaç ve Kişisel Bakım', count: 112 },
+  { name: 'Nakliye Araçları ve Yardımcı Ürünler', count: 89 },
+  { name: 'Güvenlik ve Yangınla Mücadele', count: 61 },
+  { name: 'Spor, Oyun, Oyuncak ve Sanat', count: 34 },
+  { name: 'Laboratuvar, Optik ve Hassas Ekipman', count: 52 },
+  { name: 'Mobilya, Mefruşat ve Temizlik Ürünleri', count: 103 },
+  { name: 'Su ve Arıtma Sistemleri', count: 48 },
+  { name: 'Sanayi Tipi Makineler', count: 156 },
+  { name: 'İnşaat Makinesi ve Ekipmanları', count: 137 },
+  { name: 'İnşaat, Yapı ve Yapı Malzemeleri', count: 248 },
+  { name: 'İnşaat ve Taahhüt İşleri', count: 176 },
+  { name: 'Yazılım ve Bilgi Sistemleri', count: 149 },
+  { name: 'Onarım ve Bakım Hizmetleri', count: 118 },
+  { name: 'Kurulum ve Teknik Servis Hizmetleri', count: 96 },
+  { name: 'Otel, Restoran ve Perakende Hizmetleri', count: 67 },
+  { name: 'Nakliye ve Lojistik Hizmetleri', count: 169 },
+  { name: 'Seyahat ve Organizasyon Hizmetleri', count: 44 },
+  { name: 'Posta, Kurye ve Telekomünikasyon Hizmetleri', count: 39 },
+  { name: 'Finans ve Sigorta Hizmetleri', count: 56 },
+  { name: 'Gayrimenkul Hizmetleri', count: 42 },
+  { name: 'Mimarlık, Mühendislik ve Denetim', count: 95 },
+  { name: 'IT, Yazılım Geliştirme ve İnternet Hizmetleri', count: 183 },
+  { name: 'Araştırma, Geliştirme ve Danışmanlık', count: 71 },
+  { name: 'Yönetim ve Kurumsal Hizmetler', count: 63 },
+  { name: 'Enerji ve Petrol Endüstrisi Hizmetleri', count: 54 },
+  { name: 'Pazarlama, Hukuk ve İnsan Kaynakları', count: 81 },
+  { name: 'Eğitim ve Öğretim Hizmetleri', count: 76 },
+  { name: 'Sağlık ve Sosyal Hizmetler', count: 92 },
+  { name: 'Temizlik, Atık ve Çevre Hizmetleri', count: 114 },
+  { name: 'Kültür, Rekreasyon ve Spor Hizmetleri', count: 38 }
+];
+
+// İhale Türleri
+const TENDER_TYPES_LIST = [
+  { name: 'Mal Alımı', count: 578 },
+  { name: 'Hizmet Alımı', count: 207 },
+  { name: 'Yapım İşi', count: 180 },
+  { name: 'Fason Üretim', count: 92 },
+  { name: 'Kiralama', count: 85 },
+  { name: 'Satış Talebi', count: 39 }
+];
+
+// Teklif Yöntemleri
+const OFFER_METHODS_LIST = [
+  { name: 'Açık Teklif', count: 546 },
+  { name: 'Kapalı Teklif', count: 395 },
+  { name: 'Davetli İhale', count: 151 },
+  { name: 'Ters İhale', count: 98 },
+  { name: 'Fiyat Araştırması', count: 68 },
+  { name: 'Doğrudan Teklif Talebi', count: 57 }
+];
+
+// Fiyatlandırma Türleri
+const PRICING_TYPES_LIST = [
+  { name: 'Toplam / Götürü Bedel', count: 214 },
+  { name: 'Birim Fiyat', count: 323 },
+  { name: 'Kısmi Teklif Verilebilir', count: 115 },
+  { name: 'Kısmi Teklif Verilemez', count: 277 }
+];
+
 // Varsayılan içerik (API yoksa fallback)
 const DEFAULT_CONTENT = {
   hero: {
@@ -23,10 +436,10 @@ const DEFAULT_CONTENT = {
     etbisLink: "#"
   },
   stats: [
-    { value: "12.4M ₺+", label: "Toplam Ticaret Hacmi" },
-    { value: "150+", label: "Doğrulanmış B2B Üretici" },
-    { value: "%14.2", label: "Ortalama Tedarik Tasarrufu" },
-    { value: "0 ₺", label: "Alıcı Üyelik Komisyonu" }
+    { value: "1.248", label: "Aktif İhale" },
+    { value: "6.420", label: "Kayıtlı Firma" },
+    { value: "18.750", label: "Toplanan Teklif" },
+    { value: "₺2,4 Mr+", label: "İşlem Hacmi" }
   ],
   videoGuides: [
     { title: "Nasıl Kayıt Olunur?", desc: "Adım adım üyelik rehberi: firma bilgilerinizi girin, doğrulama sürecini tamamlayın ve ihale arenasına katılın.", videoUrl: "" },
@@ -48,7 +461,7 @@ const DEFAULT_CONTENT = {
   ],
   problems: [
     { title: "Şartname ve teklif penceresi herkes için ayrı zeminde kalır.", desc: "Tedarikçilere ayrı formlar gönderilir, gelen teklifler e-posta ve telefon trafiğinde kaybolur. Standart bir karşılaştırma zemini oluşturulamaz." },
-    { title: "Fiyat kıyaslaması manuel ve hataya açıktır.", desc: "Excel tabloları ve e-posta zincirleri üzerinden yapılan fiyat karşılaştırmaları zaman kaybettirir, hatalı karar riskini artırır." },
+    { title: "Fiyat kıyaslaması manuel ve hataya açıaktır.", desc: "Excel tabloları ve e-posta zincirleri üzerinden yapılan fiyat karşılaştırmaları zaman kaybettirir, hatalı karar riskini artırır." },
     { title: "Tedarikçi kalifikasyonu belgesizdir.", desc: "Referans kontrolü yapılmadan, firma doğrulaması olmadan tedarikçi seçilir. Bu durum teslimat kalitesi ve güvenilirlik sorunlarına yol açar." }
   ],
   faqs: [
@@ -76,97 +489,12 @@ const DEFAULT_CONTENT = {
       { label: "Bugün Yapılacaklar", count: "98 İhale" },
       { label: "Bugün Sonuçlananlar", count: "33 İhale" }
     ],
-    categories: [
-      { name: "İnşaat - Altyapı - Yapım işi ve Yıkım İhaleleri", count: "7.208", slug: "insaat-altyapi" },
-      { name: "Kanalizasyon - Boru - Su - Doğalgaz - Sıhhi Tesisat İhaleleri", count: "411", slug: "kanalizasyon" },
-      { name: "Kent Mobilyaları - Prefabrik Yapılar - Doğramacılık İhaleleri", count: "807", slug: "kent-mobilyalari" },
-      { name: "Mühendislik - Mimarlık - Danışmanlık İhaleleri", count: "199", slug: "muhendislik" },
-      { name: "Madencilik - Sondaj - Doğal Kaynaklar İhaleleri", count: "78", slug: "madencilik" },
-      { name: "Hırdavat - Nalburiye - Metal ve Plastik Ürünler İhaleleri", count: "608", slug: "hirdavat" },
-      { name: "Enerji - Aydınlatma - Elektrik Tesisatı İhaleleri", count: "737", slug: "enerji" },
-      { name: "Yangın Algılama - Söndürme - İhbar Sistemleri İhaleleri", count: "96", slug: "yangin" },
-      { name: "Asansör - Yapı otomasyon - Mekanik Güvenlik İhaleleri", count: "79", slug: "asansor" },
-      { name: "Klima - Soğutma - Isıtma - Havalandırma Tesisatı İhaleleri", count: "307", slug: "klima" },
-      { name: "Endüstriyel Makine - Motor - Konveyör İhaleleri", count: "609", slug: "endustriyel-makine" },
-      { name: "Savunma Sanayi, Silah - Denizcilik - Havacılık İhaleleri", count: "97", slug: "savunma-sanayi" },
-      { name: "Taşıt - İş Makinesi - Yedek Partça İhaleleri", count: "301", slug: "tasit-is-makinesi" },
-      { name: "Nakliye - Servis - Taşımacılık hizmetleri İhaleleri", count: "609", slug: "nakliye-tasimacilik" },
-      { name: "Turizm - Organizasyon - Ödüllendirme Hizmetleri İhaleleri", count: "88", slug: "turizm" },
-      { name: "Reklam - Tabela - Billboard - Tanıtım Materyalleri İhaleleri", count: "78", slug: "reklam" },
-      { name: "Matbaa - Kırtasiye - Toner - Kartuş - Ambalaj İhaleleri", count: "508", slug: "matbaa-kirtasiye" },
-      { name: "Ormancılık, Bahçıvanlık, Bitki, Kozalak - Peyzaj İhaleleri", count: "168", slug: "peyzaj-tarim" },
-      { name: "Hayvancılık - Veterinerlik - Hayvan Yemi İhaleleri", count: "86", slug: "hayvancilik" },
-      { name: "Sanat Eserleri - Müzik Aletleri - Heykel - Maket İhaleleri", count: "9", slug: "sanat" },
-      { name: "Sağlık - Medikal - İlaç - Kozmetik İhaleleri", count: "2.120", slug: "saglik-medikal" },
-      { name: "Tıbbi Cihaz - Laboratuvar - Hastane Ekipmanları İhaleleri", count: "1.737", slug: "tibbi-cihaz" },
-      { name: "Akaryakıt - Gazyağı - Madeni Yağ İhaleleri", count: "578", slug: "akaryakit-yag" },
-      { name: "Odun - Kömür - Katıyakıt İhaleleri", count: "50", slug: "katiyakit" },
-      { name: "Gıda - Tarım Ürünleri - Yiyecek - İçecek İhaleleri", count: "2.088", slug: "gida-tarim" },
-      { name: "Hazır Yemek - Lokantacılık İhaleleri", count: "608", slug: "hazir-yemek" },
-      { name: "Elektronik - Bilgisayar - İletişim - Ölçü Aletleri İhaleleri", count: "882", slug: "elektronik-bilgisayar" },
-      { name: "Yazılım - Bilişim - Bilgi Yönetimi Hizmetleri İhaleleri", count: "509", slug: "yazilim-bilisim" },
-      { name: "Uydu Takip - Kamera - Scada - Haberleşme Sistemleri İhaleleri", count: "121", slug: "uydu-takip" },
-      { name: "Temizlik - İlaçlama - Geri Dönüşüm İhaleleri", count: "787", slug: "temizlik-geri-donusum" },
-      { name: "Kimyasal Maddeler - Dezenfektan - Gübre İhaleleri", count: "376", slug: "kimyasal-maddeler" },
-      { name: "Tekstil - Giyim - Spor Ekipmanları İhaleleri", count: "771", slug: "tekstil-giyim" },
-      { name: "İş Sağlığı - İş Güvenliği ve Ekipmanları İhaleleri", count: "151", slug: "is-sagligi" },
-      { name: "Mobilya - Beyaz Eşya - Mutfak - Züccaciye İhaleleri", count: "308", slug: "mobilya-mutfak" },
-      { name: "Özel Güvenlik - Koruma - Bekçilik İhaleleri", count: "78", slug: "ozel-guvenlik" },
-      { name: "Eğitim - Araştırma - Anket - Tercümanlık İhaleleri", count: "78", slug: "egitim-arastirma" },
-      { name: "İşletmecilik - İşçilik - Sosyal Hizmetler İhaleleri", count: "168", slug: "isletmecilik-iscilik" },
-      { name: "Sigortacılık - Mali ve Hukuki Hizmetler İhaleleri", count: "90", slug: "sigortacilik" },
-      { name: "Menkul Mallar - Araç ve Hurda satışı İhaleleri", count: "87", slug: "menkul-mallar" },
-      { name: "Gayrimenkul, Arsa Satışı, İşyeri ve Kantin İhaleleri", count: "671", slug: "gayrimenkul" }
-    ],
-    cities: ["Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Amasya", "Ankara", "Antalya", "Artvin", "Aydın", "Balıkesir", "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur", "Bursa", "Çanakkale", "Çankırı", "Çorum", "Denizli", "Diyarbakır", "Edirne", "Elazığ", "Erzincan", "Erzurum", "Eskişehir", "Gaziantep", "Giresun", "Gümüşhane", "Hakkari", "Hatay", "Isparta", "Mersin", "İstanbul", "İzmir", "Kars", "Kastamonu", "Kayseri", "Kırklareli", "Kırşehir", "Kocaeli", "Konya", "Kütahya", "Malatya", "Manisa", "Kahramanmaraş", "Mardin", "Muğla", "Muş", "Nevşehir", "Niğde", "Ordu", "Rize", "Sakarya", "Samsun", "Siirt", "Sinop", "Sivas", "Tekirdağ", "Tokat", "Trabzon", "Tunceli", "Şanlıurfa", "Uşak", "Van", "Yozgat", "Zonguldak", "Aksaray", "Bayburt", "Karaman", "Kırıkkale", "Batman", "Şırnak", "Bartın", "Ardahan", "Iğdır", "Yalova", "Karabük", "Kilis", "Osmaniye", "Düzce"],
-    sectors: [
-      "Tarım, Çiftçilik, Balıkçılık, Ormancılık Ve İlgili Ürünler",
-      "Madencilik, Temel Metaller Ve İlgili Ürünler",
-      "Tarım Makineleri",
-      "Deri Ve Tekstil Kumaşlar, Plastik Ve Kauçuk Malzemeler",
-      "Kimyasal Ürünler",
-      "Elektrikli Makine, Cihaz, Ekipman Ve Sarf Malzemeleri; Aydınlatma",
-      "Tıbbi Cihazlar, İlaç Ve Kişisel Bakım Ürünleri",
-      "Güvenlik, Yangınla Mücadele, Polis Ve Savunma Teçhizatı",
-      "Laboratuvar, Optik Ve Hassas Ekipmanları (Gözlük Hariç)",
-      "Toplanmış Ve Arıtılmış Su",
-      "Madencilik, Taşocakçılığı, İnşaat Ekipmanları İçin Kullanılan Makineler",
-      "İnşaat İşleri",
-      "Onarım Ve Bakım Hizmetleri",
-      "Otel, Restoran Ve Perakende Ticaret Hizmetleri",
-      "Destek Ve Yardımcı Ulaştırmacılık Hizmetleri; Seyahat Acentası Hizmetleri",
-      "Kamu Yararına Hizmet Ve Tesisler",
-      "Emlakçılık Hizmetleri",
-      "It Hizmetleri: Danışmanlık, Yazılım Geliştirme, İnternet Ve Destek",
-      "Yönetim, Savunma Ve Sosyal Güvenlik Hizmetleri",
-      "Tarım, Ormancılık, Bahçecilik, Su Ürünleri Yetiştiriciliği Ve Arıcılık Hizmetleri",
-      "Eğitim Ve Öğrenim Hizmetleri",
-      "Kanalizasyon, Çöp Temizlik Ve Çevre Hizmetleri",
-      "Diğer Sosyal, Toplumsal Ve Kişisel Hizmetler",
-      "Petrol Ürünleri, Yakıt, Elektrik Ve Diğer Enerji Kaynakları",
-      "Gıda, İçecekler, Tütün Ve İlgili Ürünler",
-      "Giyim, Ayakkabı, Bavul Eşyaları Ve Aksesuarlar",
-      "Basılı Malzeme Ve İlgili Ürünler",
-      "Mobilya Ve Yazılım Paketleri Hariç, Ofis Ve Bilgi İşlem Makineleri, Ekipman Ve Malzemeleri",
-      "Radyo, Televizyon, İletişim, Telekomünikasyon Ve İlgili Ekipmanlar",
-      "Nakliye Araçları Ve Nakliye İçin Yardımcı Ürünler",
-      "Müzik Aletleri, Spor Ürünleri, Oyunlar, Oyuncaklar, El Sanatları, Sanat",
-      "Mobilya (Ofis Mobilyaları Dahil), Mefruşat, Ev Aletleri (Aydınlatma Hariç) Ve Temizlik Ürünleri",
-      "Sanayi Tipi Makineler",
-      "İnşaat Yapı Ve Malzemeleri; İnşaatlarda Kullanılan Yardımcı/Destek Ürünler",
-      "Yazılım Paketi Ve Bilgi Sistemleri",
-      "Kurulum Hizmetleri (Yazılım Hariç)",
-      "Nakliye Hizmetleri (Atık Taşımacılığı Hariç)",
-      "Posta Ve Telekomünikasyon Hizmetleri",
-      "Finans Ve Sigorta Hizmetleri",
-      "Mimarlık, İnşaat, Mühendislik Ve Teftiş Hizmetleri",
-      "Araştırma Ve Geliştirme Hizmetleri Ve İlgili Danışmanlık Hizmetleri",
-      "Petrol Ve Gaz Endüstrisi İle İlgili Hizmetler",
-      "Ticari Hizmetler: Hukuk, Pazarlama, Danışmanlık, İşe Alma Ve İstihdam, Baskı Ve Güvenlik",
-      "Sağlık Ve Sosyal Çalışma Hizmetleri",
-      "Rekreasyon, Kültür Ve Spor Amaçlı Hizmetler"
-    ],
-    types: ["Yapım İşi", "Mal Alımı", "Hizmet Alımı", "Kiralama", "Satış"]
+    categories: DETAILED_CATEGORIES,
+    cities: CITIES_LIST,
+    sectors: SECTORS_LIST,
+    types: TENDER_TYPES_LIST,
+    methods: OFFER_METHODS_LIST,
+    pricing: PRICING_TYPES_LIST
   },
   footer: {
     email: "info@gelanlasalim.com",
@@ -191,10 +519,16 @@ export default function LandingPage() {
   const messagesEndRef = useRef(null);
 
   // ---------- EXPLORER STATES ----------
-  const [selectedCat, setSelectedCat] = useState("all");
-  const [selectedSector, setSelectedSector] = useState("all");
-  const [selectedCity, setSelectedCity] = useState("all");
-  const [selectedType, setSelectedType] = useState("all");
+  const [selectedCat, setSelectedCat] = useState("");
+  const [selectedSubcategory, setSelectedSubcategory] = useState("");
+  const [selectedSector, setSelectedSector] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+  const [selectedMethod, setSelectedMethod] = useState("");
+  const [selectedPricingType, setSelectedPricingType] = useState("");
+  const [expandedFilterSection, setExpandedFilterSection] = useState("categories");
+  const [expandedCategory, setExpandedCategory] = useState(null);
+
   const [explorerSearch, setExplorerSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -212,79 +546,299 @@ export default function LandingPage() {
     fetch('/api/tenders?status=all')
       .then(res => res.ok ? res.json() : { tenders: [] })
       .then(data => {
-        let tenders = data.tenders || [];
+        let dbTenders = data.tenders || [];
         
-        if (selectedCat !== "all") {
-          tenders = tenders.filter(t => t.category_name?.toLowerCase().includes(selectedCat.toLowerCase()) || String(t.category_id) === selectedCat);
-        }
-        if (selectedSector !== "all") {
-          const sectorQuery = selectedSector.toLowerCase();
-          tenders = tenders.filter(t => {
-            const catName = t.category_name?.toLowerCase() || "";
-            const title = t.title?.toLowerCase() || "";
-            const desc = t.description?.toLowerCase() || "";
-            return catName.includes(sectorQuery) || title.includes(sectorQuery) || desc.includes(sectorQuery) || sectorQuery.includes(catName);
-          });
-        }
-        if (selectedCity !== "all") {
-          tenders = tenders.filter(t => t.city?.toLowerCase() === selectedCity.toLowerCase());
-        }
-        if (selectedType !== "all") {
-          tenders = tenders.filter(t => t.type?.toLowerCase() === selectedType.toLowerCase());
-        }
-        if (explorerSearch.trim()) {
-          const q = explorerSearch.toLowerCase();
-          tenders = tenders.filter(t => t.title?.toLowerCase().includes(q) || t.description?.toLowerCase().includes(q));
-        }
-
-        let mapped = tenders.map(t => ({
+        let mapped = dbTenders.map((t, idx) => ({
           id: t.id,
           title: t.title,
           city: t.city,
-          type: t.type || "Alış",
+          type: t.type || "Mal Alımı",
+          method: t.method || (idx % 2 === 0 ? "Açık Teklif" : "Kapalı Teklif"),
+          pricing: t.pricing || (idx % 2 === 0 ? "Birim Fiyat" : "Toplam / Götürü Bedel"),
           date: new Date(t.created_at).toLocaleDateString('tr-TR') + " yayınlandı",
           status: t.status === "open" ? "Açık" : t.status === "awarded" ? "Onaylandı" : "Tamamlandı",
           value: t.target_price ? `${parseFloat(t.target_price).toLocaleString('tr-TR')} ₺` : "Belirtilmedi",
           source: "GEL ANLAŞALIM",
-          sector: t.category_name || "Genel B2B Tedarik",
+          company: t.company_name || "GEL ANLAŞALIM Üyesi",
+          category: t.category_name || "Elektronik, Bilgisayar ve İletişim",
+          sector: t.sector_name || "IT, Yazılım Geliştirme ve İnternet Hizmetleri",
           material_list: t.material_list,
           admin_spec: t.admin_spec,
           tech_spec: t.tech_spec,
           similar_history: t.similar_history,
-          description: t.description,
-          idare_adi: "GEL ANLAŞALIM Üyesi"
+          description: t.description || "",
+          daysLeft: Math.max(1, Math.ceil((new Date(t.expires_at) - new Date()) / (1000 * 60 * 60 * 24))),
+          offers: t.offers_count || Math.floor(Math.random() * 15) + 3,
+          verified: true
         }));
 
         if (mapped.length === 0) {
-          const cats = content.explorer?.categories || DEFAULT_CONTENT.explorer.categories;
-          const catObj = cats.find(c => c.slug === selectedCat) || { name: "Genel B2B Tedarik ve Hizmet Alımı" };
-          const sector = selectedSector === "all" ? "Tüm Sektörler" : selectedSector;
-          const city = selectedCity === "all" ? "Tüm Türkiye" : selectedCity;
-          const type = selectedType === "all" ? "İhale Arşivi" : selectedType;
-
           mapped = [
-            { id: "res-1", title: `${catObj.name} İhalesi`, city: city, type: type, date: "Bugün yayınlandı", status: "Açık", value: "245.000 ₺", source: "Ekap İhale Arşivi", sector: sector },
-            { id: "res-2", title: `${catObj.name} Alım ve Dağıtım Talebi`, city: city, type: type, date: "Dün yayınlandı", status: "Açık", value: "1.200.000 ₺", source: "Gazete İhale Arşivi", sector: sector },
-            { id: "res-3", title: `${catObj.name} Altyapı Bakım ve Onarım İşi`, city: city, type: type, date: "3 gün önce sonuçlandı", status: "Tamamlandı", value: "540.000 ₺", source: "İstihbarat İhale Arşivi", sector: sector }
+            {
+              id: 1,
+              featured: true,
+              title: '500 Adet Kurumsal Dizüstü Bilgisayar Alımı',
+              company: 'Marmara Teknoloji Yatırımları A.Ş.',
+              verified: true,
+              category: 'Elektronik, Bilgisayar ve İletişim',
+              sector: 'IT, Yazılım Geliştirme ve İnternet Hizmetleri',
+              city: 'İstanbul',
+              type: 'Mal Alımı',
+              method: 'Kapalı Teklif',
+              pricing: 'Birim Fiyat',
+              date: "7 gün önce yayınlandı",
+              status: "Açık",
+              value: "5.500.000 ₺",
+              source: "Marmara Teknoloji",
+              description: 'Kurumsal kullanım için teknik şartnameye uygun 500 adet dizüstü bilgisayar alımı.',
+              daysLeft: 7,
+              offers: 14
+            },
+            {
+              id: 2,
+              featured: false,
+              title: 'Üretim Tesisi Çatı ve İzolasyon Yenileme İşi',
+              company: 'Bursa Endüstri Üretim A.Ş.',
+              verified: true,
+              category: 'İnşaat, Altyapı ve Yapı İşleri',
+              sector: 'İnşaat ve Taahhüt İşleri',
+              city: 'Bursa',
+              type: 'Yapım İşi',
+              method: 'Açık Teklif',
+              pricing: 'Toplam / Götürü Bedel',
+              date: "Bugün yayınlandı",
+              status: "Açık",
+              value: "1.250.000 ₺",
+              source: "Bursa Endüstri",
+              description: 'Fabrika üretim tesisi çatı kaplama ve ısı izolasyon yenileme işi.',
+              daysLeft: 10,
+              offers: 8
+            },
+            {
+              id: 3,
+              featured: false,
+              title: '12 Aylık Personel Taşıma Hizmeti',
+              company: 'Ege Gıda Sanayi Ltd. Şti.',
+              verified: true,
+              category: 'Nakliye, Lojistik ve Taşımacılık',
+              sector: 'Nakliye ve Lojistik Hizmetleri',
+              city: 'İzmir',
+              type: 'Hizmet Alımı',
+              method: 'Kapalı Teklif',
+              pricing: 'Toplam / Götürü Bedel',
+              date: "Dün yayınlandı",
+              status: "Açık",
+              value: "840.000 ₺",
+              source: "Ege Gıda",
+              description: 'Üretim tesisi çalışanları için 12 aylık personel servis taşımacılığı hizmeti.',
+              daysLeft: 4,
+              offers: 21
+            },
+            {
+              id: 4,
+              featured: true,
+              title: '100.000 Adet Özel Tasarım Ürün Kutusu Üretimi',
+              company: 'Anadolu E-Ticaret A.Ş.',
+              verified: true,
+              category: 'Matbaa, Kırtasiye ve Ambalaj',
+              sector: 'Basılı Malzeme ve Matbaa',
+              city: 'Ankara',
+              type: 'Fason Üretim',
+              method: 'Ters İhale',
+              pricing: 'Birim Fiyat',
+              date: "3 gün önce yayınlandı",
+              status: "Açık",
+              value: "350.000 ₺",
+              source: "Anadolu E-Ticaret",
+              description: 'Marka standartlarına uygun baskılı ürün kutularının fason üretimi.',
+              daysLeft: 3,
+              offers: 17
+            },
+            {
+              id: 5,
+              featured: false,
+              title: 'Kurumsal Web Yazılım ve Mobil Uygulama Projesi',
+              company: 'Atlas Holding A.Ş.',
+              verified: true,
+              category: 'Yazılım, Bilişim ve Dijital Hizmetler',
+              sector: 'IT, Yazılım Geliştirme ve İnternet Hizmetleri',
+              city: 'İstanbul',
+              type: 'Hizmet Alımı',
+              method: 'Davetli İhale',
+              pricing: 'Toplam / Götürü Bedel',
+              date: "5 gün önce yayınlandı",
+              status: "Açık",
+              value: "2.800.000 ₺",
+              source: "Atlas Holding",
+              description: 'Kurumsal portal, mobil uygulama ve yönetim paneli geliştirme hizmeti.',
+              daysLeft: 15,
+              offers: 6
+            }
           ];
         }
 
-        setSearchResults(mapped);
+        // Apply filters in memory
+        let filtered = mapped;
+        if (selectedCat) {
+          filtered = filtered.filter(t => t.category?.toLowerCase().includes(selectedCat.toLowerCase()));
+        }
+        if (selectedSubcategory) {
+          filtered = filtered.filter(t => t.description?.toLowerCase().includes(selectedSubcategory.toLowerCase()) || t.title?.toLowerCase().includes(selectedSubcategory.toLowerCase()));
+        }
+        if (selectedSector) {
+          filtered = filtered.filter(t => t.sector?.toLowerCase().includes(selectedSector.toLowerCase()));
+        }
+        if (selectedCity) {
+          filtered = filtered.filter(t => t.city?.toLowerCase() === selectedCity.toLowerCase());
+        }
+        if (selectedType) {
+          filtered = filtered.filter(t => t.type?.toLowerCase() === selectedType.toLowerCase());
+        }
+        if (selectedMethod) {
+          filtered = filtered.filter(t => t.method?.toLowerCase() === selectedMethod.toLowerCase());
+        }
+        if (selectedPricingType) {
+          filtered = filtered.filter(t => t.pricing?.toLowerCase() === selectedPricingType.toLowerCase());
+        }
+        if (explorerSearch.trim()) {
+          const q = explorerSearch.toLowerCase();
+          filtered = filtered.filter(t => t.title?.toLowerCase().includes(q) || t.description?.toLowerCase().includes(q) || t.company?.toLowerCase().includes(q));
+        }
+
+        setSearchResults(filtered);
         setIsSearching(false);
       })
       .catch(() => {
-        const cats = content.explorer?.categories || DEFAULT_CONTENT.explorer.categories;
-        const catObj = cats.find(c => c.slug === selectedCat) || { name: "Genel B2B Tedarik ve Hizmet Alımı" };
-        const sector = selectedSector === "all" ? "Tüm Sektörler" : selectedSector;
-        const city = selectedCity === "all" ? "Tüm Türkiye" : selectedCity;
-        const type = selectedType === "all" ? "İhale Arşivi" : selectedType;
-
         const fallbackList = [
-          { id: "res-1", title: `${catObj.name} İhalesi`, city: city, type: type, date: "Bugün yayınlandı", status: "Açık", value: "245.000 ₺", source: "Ekap İhale Arşivi", sector: sector },
-          { id: "res-2", title: `${catObj.name} Alım ve Dağıtım Talebi`, city: city, type: type, date: "Dün yayınlandı", status: "Açık", value: "1.200.000 ₺", source: "Gazete İhale Arşivi", sector: sector },
-          { id: "res-3", title: `${catObj.name} Altyapı Bakım ve Onarım İşi`, city: city, type: type, date: "3 gün önce sonuçlandı", status: "Tamamlandı", value: "540.000 ₺", source: "İstihbarat İhale Arşivi", sector: sector }
+          {
+            id: 1,
+            featured: true,
+            title: '500 Adet Kurumsal Dizüstü Bilgisayar Alımı',
+            company: 'Marmara Teknoloji Yatırımları A.Ş.',
+            verified: true,
+            category: 'Elektronik, Bilgisayar ve İletişim',
+            sector: 'IT, Yazılım Geliştirme ve İnternet Hizmetleri',
+            city: 'İstanbul',
+            type: 'Mal Alımı',
+            method: 'Kapalı Teklif',
+            pricing: 'Birim Fiyat',
+            date: "7 gün önce yayınlandı",
+            status: "Açık",
+            value: "5.500.000 ₺",
+            source: "Marmara Teknoloji",
+            description: 'Kurumsal kullanım için teknik şartnameye uygun 500 adet dizüstü bilgisayar alımı.',
+            daysLeft: 7,
+            offers: 14
+          },
+          {
+            id: 2,
+            featured: false,
+            title: 'Üretim Tesisi Çatı ve İzolasyon Yenileme İşi',
+            company: 'Bursa Endüstri Üretim A.Ş.',
+            verified: true,
+            category: 'İnşaat, Altyapı ve Yapı İşleri',
+            sector: 'İnşaat ve Taahhüt İşleri',
+            city: 'Bursa',
+            type: 'Yapım İşi',
+            method: 'Açık Teklif',
+            pricing: 'Toplam / Götürü Bedel',
+            date: "Bugün yayınlandı",
+            status: "Açık",
+            value: "1.250.000 ₺",
+            source: "Bursa Endüstri",
+            description: 'Fabrika üretim tesisi çatı kaplama ve ısı izolasyon yenileme işi.',
+            daysLeft: 10,
+            offers: 8
+          },
+          {
+            id: 3,
+            featured: false,
+            title: '12 Aylık Personel Taşıma Hizmeti',
+            company: 'Ege Gıda Sanayi Ltd. Şti.',
+            verified: true,
+            category: 'Nakliye, Lojistik ve Taşımacılık',
+            sector: 'Nakliye ve Lojistik Hizmetleri',
+            city: 'İzmir',
+            type: 'Hizmet Alımı',
+            method: 'Kapalı Teklif',
+            pricing: 'Toplam / Götürü Bedel',
+            date: "Dün yayınlandı",
+            status: "Açık",
+            value: "840.000 ₺",
+            source: "Ege Gıda",
+            description: 'Üretim tesisi çalışanları için 12 aylık personel servis taşımacılığı hizmeti.',
+            daysLeft: 4,
+            offers: 21
+          },
+          {
+            id: 4,
+            featured: true,
+            title: '100.000 Adet Özel Tasarım Ürün Kutusu Üretimi',
+            company: 'Anadolu E-Ticaret A.Ş.',
+            verified: true,
+            category: 'Matbaa, Kırtasiye ve Ambalaj',
+            sector: 'Basılı Malzeme ve Matbaa',
+            city: 'Ankara',
+            type: 'Fason Üretim',
+            method: 'Ters İhale',
+            pricing: 'Birim Fiyat',
+            date: "3 gün önce yayınlandı",
+            status: "Açık",
+            value: "350.000 ₺",
+            source: "Anadolu E-Ticaret",
+            description: 'Marka standartlarına uygun baskılı ürün kutularının fason üretimi.',
+            daysLeft: 3,
+            offers: 17
+          },
+          {
+            id: 5,
+            featured: false,
+            title: 'Kurumsal Web Yazılım ve Mobil Uygulama Projesi',
+            company: 'Atlas Holding A.Ş.',
+            verified: true,
+            category: 'Yazılım, Bilişim ve Dijital Hizmetler',
+            sector: 'IT, Yazılım Geliştirme ve İnternet Hizmetleri',
+            city: 'İstanbul',
+            type: 'Hizmet Alımı',
+            method: 'Davetli İhale',
+            pricing: 'Toplam / Götürü Bedel',
+            date: "5 gün önce yayınlandı",
+            status: "Açık",
+            value: "2.800.000 ₺",
+            source: "Atlas Holding",
+            description: 'Kurumsal portal, mobil uygulama ve yönetim paneli geliştirme hizmeti.',
+            daysLeft: 15,
+            offers: 6
+          }
         ];
-        setSearchResults(fallbackList);
+
+        let filtered = fallbackList;
+        if (selectedCat) {
+          filtered = filtered.filter(t => t.category?.toLowerCase().includes(selectedCat.toLowerCase()));
+        }
+        if (selectedSubcategory) {
+          filtered = filtered.filter(t => t.description?.toLowerCase().includes(selectedSubcategory.toLowerCase()) || t.title?.toLowerCase().includes(selectedSubcategory.toLowerCase()));
+        }
+        if (selectedSector) {
+          filtered = filtered.filter(t => t.sector?.toLowerCase().includes(selectedSector.toLowerCase()));
+        }
+        if (selectedCity) {
+          filtered = filtered.filter(t => t.city?.toLowerCase() === selectedCity.toLowerCase());
+        }
+        if (selectedType) {
+          filtered = filtered.filter(t => t.type?.toLowerCase() === selectedType.toLowerCase());
+        }
+        if (selectedMethod) {
+          filtered = filtered.filter(t => t.method?.toLowerCase() === selectedMethod.toLowerCase());
+        }
+        if (selectedPricingType) {
+          filtered = filtered.filter(t => t.pricing?.toLowerCase() === selectedPricingType.toLowerCase());
+        }
+        if (explorerSearch.trim()) {
+          const q = explorerSearch.toLowerCase();
+          filtered = filtered.filter(t => t.title?.toLowerCase().includes(q) || t.description?.toLowerCase().includes(q) || t.company?.toLowerCase().includes(q));
+        }
+        setSearchResults(filtered);
         setIsSearching(false);
       });
   };
@@ -535,478 +1089,732 @@ export default function LandingPage() {
           ))}
         </div>
 
-        {/* Search & Filter Form */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm mb-8">
-          <form onSubmit={handleExplorerSearch} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-            <div className="flex flex-col gap-1.5 text-left">
-              <label className="text-[10px] font-bold text-slate-500 uppercase">Kategori</label>
-              <select 
-                value={selectedCat} 
-                onChange={(e) => setSelectedCat(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-accent"
+        {/* Two Column Grid */}
+        <div className="grid grid-cols-1 xl:grid-cols-[330px_1fr] gap-8">
+          {/* ===================== SOL FİLTRE PANELİ ===================== */}
+          <aside className="h-fit overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm flex flex-col text-left">
+            {/* FİLTRE BAŞLIĞI */}
+            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-4">
+              <div className="flex items-center gap-2 font-black text-slate-800 text-xs uppercase tracking-wider">
+                <i className="fa-solid fa-sliders text-accent"></i> Detaylı Filtreleme
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedCat("");
+                  setSelectedSubcategory("");
+                  setSelectedSector("");
+                  setSelectedCity("");
+                  setSelectedType("");
+                  setSelectedMethod("");
+                  setSelectedPricingType("");
+                  setExplorerSearch("");
+                }}
+                className="text-[10px] font-black text-accent hover:text-accentLight uppercase"
               >
-                <option value="all">Tüm Kategoriler</option>
-                {(content.explorer?.categories || DEFAULT_CONTENT.explorer.categories).map((cat, i) => (
-                  <option key={i} value={cat.slug}>{cat.name}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex flex-col gap-1.5 text-left">
-              <label className="text-[10px] font-bold text-slate-500 uppercase">Sektör</label>
-              <select 
-                value={selectedSector} 
-                onChange={(e) => setSelectedSector(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-accent"
-              >
-                <option value="all">Tüm Sektörler</option>
-                {(content.explorer?.sectors || DEFAULT_CONTENT.explorer.sectors).map((sect, i) => (
-                  <option key={i} value={sect}>{sect}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex flex-col gap-1.5 text-left">
-              <label className="text-[10px] font-bold text-slate-500 uppercase">Şehir</label>
-              <select 
-                value={selectedCity} 
-                onChange={(e) => setSelectedCity(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-accent"
-              >
-                <option value="all">Tüm Şehirler</option>
-                {(content.explorer?.cities || DEFAULT_CONTENT.explorer.cities).map((city, i) => (
-                  <option key={i} value={city}>{city}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex flex-col gap-1.5 text-left">
-              <label className="text-[10px] font-bold text-slate-500 uppercase">İhale Türü</label>
-              <select 
-                value={selectedType} 
-                onChange={(e) => setSelectedType(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-accent"
-              >
-                <option value="all">Tüm Türler</option>
-                {(content.explorer?.types || DEFAULT_CONTENT.explorer.types).map((t, i) => (
-                  <option key={i} value={t}>{t}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex flex-col gap-1.5 text-left">
-              <label className="text-[10px] font-bold text-slate-500 uppercase">İçerikte Ara</label>
-              <input 
-                type="text" 
-                placeholder="Kelime yazın..." 
-                value={explorerSearch}
-                onChange={(e) => setExplorerSearch(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-accent"
-              />
-            </div>
-
-            <div className="flex items-end">
-              <button 
-                type="submit" 
-                className="w-full py-2.5 rounded-xl bg-accent text-white font-bold text-xs hover:bg-accentLight hover:scale-[1.01] active:scale-95 transition-all shadow-accentGlow flex items-center justify-center gap-2"
-              >
-                <i className="fa-solid fa-magnifying-glass"></i> İhaleleri Ara
+                Temizle
               </button>
             </div>
-          </form>
-        </div>
 
-        {/* Dynamic Search Results */}
-        <AnimatePresence>
-          {hasSearched && (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              exit={{ opacity: 0, y: 10 }}
-              className="p-6 rounded-2xl bg-white border border-slate-200 shadow-md mb-8"
-            >
-              <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
-                <span className="text-xs font-bold text-accent">ARAMA SONUÇLARI</span>
-                <button onClick={() => setHasSearched(false)} className="text-xs text-slate-400 hover:text-slate-600">Kapat</button>
-              </div>
-              {isSearching ? (
-                <div className="py-8 flex flex-col items-center justify-center gap-3">
-                  <i className="fa-solid fa-circle-notch fa-spin text-accent text-2xl"></i>
-                  <span className="text-xs text-slate-500">İhale arşivi taranıyor...</span>
-                </div>
-              ) : searchResults.length > 0 ? (
-                <div className="flex flex-col gap-3">
-                  {searchResults.map((res) => (
-                    <div key={res.id} className="p-4 rounded-xl bg-slate-50/50 border border-slate-200/60 flex flex-col text-left">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                          <span className="text-[9px] bg-accent/10 border border-accent/20 text-accent font-bold px-2 py-0.5 rounded-full uppercase tracking-wider mb-2 inline-block">
-                            {res.source}
-                          </span>
-                          <h4 className="text-sm font-bold text-slate-800 mb-1">{res.title}</h4>
-                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
-                            <span><i className="fa-solid fa-location-dot text-accent/60 mr-1"></i>{res.city}</span>
-                            <span><i className="fa-solid fa-list text-accent/60 mr-1"></i>{res.type}</span>
-                            <span><i className="fa-solid fa-clock text-accent/60 mr-1"></i>{res.date}</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-start sm:items-end justify-center">
-                          <span className="text-[10px] text-slate-400">Yaklaşık Maliyet</span>
-                          <strong className="text-sm font-heading font-extrabold text-slate-800 font-mono">{res.value}</strong>
-                          <button 
-                            type="button"
-                            onClick={() => setExpandedTenderId(expandedTenderId === res.id ? null : res.id)} 
-                            className="mt-2 text-xs font-bold text-accent hover:text-accentLight flex items-center gap-1"
-                          >
-                            {expandedTenderId === res.id ? "Detayları Gizle" : "Detayları Gör"}{" "}
-                            <i className={`fa-solid ${expandedTenderId === res.id ? "fa-chevron-up text-[8px]" : "fa-arrow-right text-[9px]"}`}></i>
-                          </button>
-                        </div>
+            {/* KATEGORİLER */}
+            <div className="border-b border-slate-200">
+              <button
+                type="button"
+                onClick={() => setExpandedFilterSection(expandedFilterSection === 'categories' ? null : 'categories')}
+                className="flex w-full items-center justify-between px-4 py-3.5 text-left font-bold text-slate-700 text-xs"
+              >
+                <span className="flex items-center gap-2">📂 Kategoriler</span>
+                <i className={`fa-solid fa-chevron-down transition-transform text-[10px] text-slate-400 ${expandedFilterSection === 'categories' ? 'rotate-180' : ''}`}></i>
+              </button>
+
+              {expandedFilterSection === 'categories' && (
+                <div className="max-h-[300px] overflow-y-auto border-t border-slate-100">
+                  {DETAILED_CATEGORIES.map((category) => (
+                    <div key={category.name} className="border-b border-slate-100 last:border-0">
+                      <div className={`flex items-center gap-2 px-3 py-2 hover:bg-slate-50 ${selectedCat === category.name ? 'bg-accent/5' : ''}`}>
+                        <button
+                          type="button"
+                          onClick={() => setExpandedCategory(expandedCategory === category.name ? null : category.name)}
+                          className="flex h-6 w-6 shrink-0 items-center justify-center text-slate-400 hover:text-accent"
+                        >
+                          <i className={`fa-solid fa-chevron-down transition-transform text-[10px] ${expandedCategory === category.name ? '' : '-rotate-90'}`}></i>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedCat(category.name);
+                            setSelectedSubcategory("");
+                          }}
+                          className={`min-w-0 flex-1 text-left text-[11px] font-bold hover:text-accent leading-5 ${selectedCat === category.name ? 'text-accent' : 'text-slate-700'}`}
+                        >
+                          {category.name}
+                        </button>
+                        <span className="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[9px] font-black text-slate-500">
+                          {category.count}
+                        </span>
                       </div>
 
-                      {expandedTenderId === res.id && (
-                        <div className="w-full mt-4 p-4 rounded-lg bg-[#f4f9fc] text-[#334155] border border-[#7dc6e6] text-[12px] font-sans flex flex-col gap-3 shadow-md">
-                          {/* Header */}
-                          <div className="flex items-center gap-2 pb-2 border-b border-[#d2e7f3]">
-                            <span className="bg-[#f0f9ff] text-[#0284c7] border border-[#7dc6e6] text-[10px] font-extrabold px-1.5 py-0.5 rounded">
-                              # 1
-                            </span>
-                            <span className="font-bold text-[#1e293b] text-xs">
-                              {res.id === "res-1" ? "2026/184920" : res.id === "res-2" ? "2026/492019" : "2026/902811"} - {res.title}
-                            </span>
-                          </div>
-
-                          {/* Row 1: Nitellik, Süre, Yaklaşık Maliyet */}
-                          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
-                            <div className="md:col-span-6 flex items-start gap-1">
-                              <span className="text-[#0284c7] font-bold mr-1">→</span>
-                              <div>
-                                <span className="font-bold text-[#475569]">İşin niteliği:</span>{" "}
-                                {res.id === "res-1" 
-                                  ? `${res.sector || "Genel B2B Tedarik"} kapsamında, ${res.city} bölge sınırlarında teknik şartnameye ve malzeme listesine uygun olarak tedarik, nakliye ve saha montaj yapım işi.`
-                                  : res.id === "res-2"
-                                  ? `${res.sector || "Genel B2B Tedarik"} alımı, paketlenmesi ve dağıtımı işi.`
-                                  : `${res.sector || "Genel B2B Tedarik"} altyapı bakım, onarım ve destek hizmet alımı.`
-                                }
-                              </div>
-                            </div>
-                            <div className="md:col-span-3 flex items-center gap-1.5">
-                              <span className="text-[#0284c7]"><i className="fa-solid fa-calendar-days text-[11px]"></i></span>
-                              <div>
-                                <span className="font-bold text-[#475569]">İşin süresi:</span>{" "}
-                                {res.id === "res-1" ? "2 Ay 21 Gün" : res.id === "res-2" ? "1 Yıl" : "6 Ay"}
-                              </div>
-                            </div>
-                            <div className="md:col-span-3 flex items-center gap-1.5">
-                              <span className="text-[#0284c7]"><i className="fa-solid fa-arrows-up-down text-[11px]"></i></span>
-                              <div>
-                                <span className="font-bold text-[#475569]">Yaklaşık maliyet:</span>{" "}
-                                {res.id === "res-1" ? "10.785.492 TL'ye kadar" : res.id === "res-2" ? "4.800.000 TL'ye kadar" : "890.000 TL'ye kadar"}
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Row 2: İdare Adı & Konum */}
-                          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start border-t border-dashed border-[#e2eff7] pt-2">
-                            <div className="md:col-span-8 flex items-start gap-1">
-                              <span className="text-[#0284c7]"><i className="fa-solid fa-building text-[11px]"></i></span>
-                              <div>
-                                <span className="font-bold text-[#475569]">İdare adı:</span>{" "}
-                                {res.id === "res-1" 
-                                  ? `T.C. ${res.city} Yatırım İzleme ve Koordinasyon Başkanlığı (YİKOB)` 
-                                  : res.id === "res-2"
-                                  ? `T.C. ${res.city} İl Sağlık Müdürlüğü`
-                                  : `T.C. ${res.city} Gençlik ve Spor İl Müdürlüğü`
-                                }
-                              </div>
-                            </div>
-                            <div className="md:col-span-4 flex justify-start md:justify-end gap-3 text-right">
-                              <div className="flex items-center gap-1 text-[#475569]">
-                                <i className="fa-solid fa-location-arrow text-[10px] text-[#0284c7]"></i>
-                                <span>Kozan / Merkez</span>
-                              </div>
-                              <div className="flex items-center gap-1 text-[#475569]">
-                                <i className="fa-solid fa-flag text-[10px] text-[#0284c7]"></i>
-                                <span className="font-bold">{res.city}</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Row 3: Tarihler & Etiketler */}
-                          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center border-t border-dashed border-[#e2eff7] pt-2">
-                            <div className="md:col-span-4 flex items-center gap-1.5">
-                              <span className="text-[#475569]"><i className="fa-solid fa-calendar-plus text-[11px]"></i></span>
-                              <div>
-                                <span className="font-bold text-[#475569]">Yayın tarihi:</span> 23.06.2026
-                              </div>
-                            </div>
-                            <div className="md:col-span-5 flex items-center flex-wrap gap-1.5">
-                              <span className="text-[#475569]"><i className="fa-solid fa-stopwatch text-[11px]"></i></span>
-                              <div>
-                                <span className="font-bold text-[#475569]">Teklif tarihi:</span>{" "}
-                                {res.id === "res-3" ? "05.07.2026 11:00 (Süre Doldu)" : "16.07.2026 10:30"}
-                              </div>
-                              {res.id !== "res-3" && (
-                                <span className="ml-1.5 bg-[#fef2f2] border border-[#fca5a5] text-[#b91c1c] text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-[#b91c1c] animate-pulse"></span>
-                                  1 gün kaldı
-                                </span>
-                              )}
-                            </div>
-                            <div className="md:col-span-3 flex justify-start md:justify-end gap-1.5 flex-wrap">
-                              <span className="bg-[#f1f5f9] text-[#475569] px-2 py-0.5 rounded border border-[#cbd5e1] text-[10px] font-medium flex items-center gap-1">
-                                <i className="fa-solid fa-tag text-[9px] text-[#64748b]"></i> {res.source}
-                              </span>
-                              <span className="bg-[#f1f5f9] text-[#475569] px-2 py-0.5 rounded border border-[#cbd5e1] text-[10px] font-medium flex items-center gap-1">
-                                <i className="fa-solid fa-tag text-[9px] text-[#64748b]"></i> Açık İhale
-                              </span>
-                              <span className="bg-[#f1f5f9] text-[#475569] px-2 py-0.5 rounded border border-[#cbd5e1] text-[10px] font-medium flex items-center gap-1">
-                                <i className="fa-solid fa-tag text-[9px] text-[#64748b]"></i> Kısmi Teklif
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Footer Buttons */}
-                          <div className="border-t border-[#d2e7f3] pt-3 flex flex-wrap gap-2">
-                            <button 
+                      {expandedCategory === category.name && (
+                        <div className="bg-slate-50/50 border-t border-slate-100">
+                          {category.children.map((subcategory) => (
+                            <button
+                              key={subcategory}
                               type="button"
-                              onClick={() => setActiveDetailTab(activeDetailTab === `malzeme-${res.id}` ? null : `malzeme-${res.id}`)}
-                              className={`px-3 py-1.5 rounded border text-[#0284c7] font-semibold bg-white hover:bg-[#e0f2fe] hover:border-[#0284c7] transition-all flex items-center gap-1.5 text-[11px] ${
-                                activeDetailTab === `malzeme-${res.id}` ? "border-[#0284c7] bg-[#f0f9ff]" : "border-[#cbd5e1]"
-                              }`}
+                              onClick={() => {
+                                setSelectedCat(category.name);
+                                setSelectedSubcategory(subcategory);
+                              }}
+                              className={`flex w-full items-center gap-2 px-8 py-2 text-left text-[11px] font-semibold hover:bg-white hover:text-accent ${selectedSubcategory === subcategory ? 'bg-white text-accent font-bold' : 'text-slate-600'}`}
                             >
-                              <i className="fa-solid fa-file-invoice text-[#0284c7]"></i> Malzeme Listesi <span className="bg-[#e0f2fe] text-[#0369a1] text-[9px] font-extrabold px-1 rounded-full ml-1">22</span>
+                              <span className="text-slate-300">└</span>
+                              {subcategory}
                             </button>
-
-                            <button 
-                              type="button"
-                              onClick={() => setActiveDetailTab(activeDetailTab === `ilan-${res.id}` ? null : `ilan-${res.id}`)}
-                              className={`px-3 py-1.5 rounded border text-[#0284c7] font-semibold bg-white hover:bg-[#e0f2fe] hover:border-[#0284c7] transition-all flex items-center gap-1.5 text-[11px] ${
-                                activeDetailTab === `ilan-${res.id}` ? "border-[#0284c7] bg-[#f0f9ff]" : "border-[#cbd5e1]"
-                              }`}
-                            >
-                              <i className="fa-solid fa-bullhorn text-[#0284c7]"></i> İhale İlanı
-                            </button>
-
-                            <button 
-                              type="button"
-                              onClick={() => setActiveDetailTab(activeDetailTab === `idari-${res.id}` ? null : `idari-${res.id}`)}
-                              className={`px-3 py-1.5 rounded border text-[#0284c7] font-semibold bg-white hover:bg-[#e0f2fe] hover:border-[#0284c7] transition-all flex items-center gap-1.5 text-[11px] ${
-                                activeDetailTab === `idari-${res.id}` ? "border-[#0284c7] bg-[#f0f9ff]" : "border-[#cbd5e1]"
-                              }`}
-                            >
-                              <i className="fa-solid fa-file-shield text-[#0284c7]"></i> İdari Şartname
-                            </button>
-
-                            <button 
-                              type="button"
-                              onClick={() => setActiveDetailTab(activeDetailTab === `teknik-${res.id}` ? null : `teknik-${res.id}`)}
-                              className={`px-3 py-1.5 rounded border text-[#0284c7] font-semibold bg-white hover:bg-[#e0f2fe] hover:border-[#0284c7] transition-all flex items-center gap-1.5 text-[11px] ${
-                                activeDetailTab === `teknik-${res.id}` ? "border-[#0284c7] bg-[#f0f9ff]" : "border-[#cbd5e1]"
-                              }`}
-                            >
-                              <i className="fa-solid fa-file-code text-[#0284c7]"></i> Teknik Şartname
-                            </button>
-
-                            <button 
-                              type="button"
-                              onClick={() => setActiveDetailTab(activeDetailTab === `benzer-${res.id}` ? null : `benzer-${res.id}`)}
-                              className={`px-3 py-1.5 rounded border text-[#0284c7] font-semibold bg-white hover:bg-[#e0f2fe] hover:border-[#0284c7] transition-all flex items-center gap-1.5 text-[11px] ${
-                                activeDetailTab === `benzer-${res.id}` ? "border-[#0284c7] bg-[#f0f9ff]" : "border-[#cbd5e1]"
-                              }`}
-                            >
-                              <i className="fa-solid fa-rotate-left text-[#0284c7]"></i> Benzer İhale Geçmişi
-                            </button>
-                          </div>
-
-                          {/* Dynamic content tab drawers inside card */}
-                          {activeDetailTab === `malzeme-${res.id}` && (
-                            <div className="mt-2 p-4 bg-white border border-[#cbd5e1] rounded-lg text-left">
-                              <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-2 mb-3 flex items-center gap-1.5">
-                                <i className="fa-solid fa-list-ol text-accent text-[12px]"></i> Malzeme & Birim Fiyat Teklif Formu
-                              </h5>
-                              <div className="overflow-x-auto">
-                                <table className="w-full text-xs text-slate-600 border-collapse">
-                                  <thead>
-                                    <tr className="bg-slate-50 border-b border-slate-200">
-                                      <th className="p-2 text-left font-bold text-slate-700">Malzeme/Hizmet Tanımı</th>
-                                      <th className="p-2 text-center font-bold text-slate-700 w-24">Miktar / Birim</th>
-                                      <th className="p-2 text-right font-bold text-slate-700 w-32">Birim Fiyat Teklifi (₺)</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {res.material_list ? (
-                                      res.material_list.split('\n').filter(line => line.trim()).map((m, idx) => {
-                                        const parts = m.split(/[-:]/);
-                                        const itemName = parts[0]?.trim() || "";
-                                        const itemQty = parts[1]?.trim() || "1 Adet";
-                                        return (
-                                          <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50/50">
-                                            <td className="p-2 font-medium text-slate-800">{itemName}</td>
-                                            <td className="p-2 text-center font-bold text-slate-600">{itemQty}</td>
-                                            <td className="p-2 text-right">
-                                              <input 
-                                                type="number" 
-                                                placeholder="0.00" 
-                                                className="w-28 text-right bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:border-accent"
-                                              />
-                                            </td>
-                                          </tr>
-                                        );
-                                      })
-                                    ) : (
-                                      <>
-                                        <tr className="border-b border-slate-100 hover:bg-slate-50/50">
-                                          <td className="p-2 font-medium text-slate-800">Hazır Beton (C30/37)</td>
-                                          <td className="p-2 text-center font-bold text-slate-600">1.250 m³</td>
-                                          <td className="p-2 text-right">
-                                            <input 
-                                              type="number" 
-                                              placeholder="0.00" 
-                                              className="w-28 text-right bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:border-accent"
-                                            />
-                                          </td>
-                                        </tr>
-                                        <tr className="border-b border-slate-100 hover:bg-slate-50/50">
-                                          <td className="p-2 font-medium text-slate-800">Nervürlü Çelik Boru</td>
-                                          <td className="p-2 text-center font-bold text-slate-600">85 Ton</td>
-                                          <td className="p-2 text-right">
-                                            <input 
-                                              type="number" 
-                                              placeholder="0.00" 
-                                              className="w-28 text-right bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:border-accent"
-                                            />
-                                          </td>
-                                        </tr>
-                                        <tr className="border-b border-slate-100 hover:bg-slate-50/50">
-                                          <td className="p-2 font-medium text-slate-800">Kazı ve Dolgu İşçiliği</td>
-                                          <td className="p-2 text-center font-bold text-slate-600">3.400 m³</td>
-                                          <td className="p-2 text-right">
-                                            <input 
-                                              type="number" 
-                                              placeholder="0.00" 
-                                              className="w-28 text-right bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:border-accent"
-                                            />
-                                          </td>
-                                        </tr>
-                                      </>
-                                    )}
-                                  </tbody>
-                                </table>
-                              </div>
-                              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between flex-wrap gap-3">
-                                <span className="text-[10px] text-slate-400">Teklifinizi göndermek ve canlı eksiltme arenasına katılmak için portaldan oturum açmalısınız.</span>
-                                <button 
-                                  type="button"
-                                  onClick={() => {
-                                    alert('Teklif vermek ve canlı eksiltme arenasına katılmak için kurumsal üye girişi yapmanız gerekmektedir. Portal giriş ve kayıt ekranına yönlendiriliyorsunuz.');
-                                    window.location.href = '/portal.html#/uyelik';
-                                  }}
-                                  className="px-4 py-2 bg-accent text-white font-bold rounded-lg hover:bg-accentLight transition-all text-xs flex items-center gap-1.5 shadow-sm"
-                                >
-                                  <i className="fa-solid fa-paper-plane"></i> Teklif Gönder ve Katıl
-                                </button>
-                              </div>
-                            </div>
-                          )}
-
-                          {activeDetailTab === `ilan-${res.id}` && (
-                            <div className="mt-2 p-3 bg-white border border-[#cbd5e1] rounded-lg text-left text-xs text-[#475569] leading-relaxed">
-                              <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2 font-heading">Resmi İhale İlan Metni (Özet)</h5>
-                              {res.description ? (
-                                <p>{res.description}</p>
-                              ) : (
-                                "İdare tarafından 23.06.2026 tarihinde onaylanan şartnameye istinaden, B2B tersine ihale yöntemiyle canlı eksiltme yapılacaktır. Teklifler " + (res.id === "res-3" ? "sonuçlanmıştır" : "16.07.2026 günü saat 10:30'a kadar") + " platform üzerinden kabul edilecektir. Katılmak isteyen tedarikçilerin güncel yeterlilik belgesi ve oda kayıt suretini yüklemeleri zorunludur."
-                              )}
-                            </div>
-                          )}
-
-                          {activeDetailTab === `idari-${res.id}` && (
-                            <div className="mt-2 p-3 bg-white border border-[#cbd5e1] rounded-lg text-left text-xs text-[#475569]">
-                              <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2 font-heading">İdari Şartname Maddeleri</h5>
-                              {res.admin_spec ? (
-                                <div className="whitespace-pre-line">{res.admin_spec}</div>
-                              ) : (
-                                <ul className="list-disc pl-4 space-y-1">
-                                  <li>Teklif geçerlilik süresi, ihale tarihinden itibaren en az 90 takvim günü olmalıdır.</li>
-                                  <li>Canlı eksiltme arenamızda en düşük fiyat teklifi veren 3 firma son pazarlığa davet edilecektir.</li>
-                                  <li>Geçici teminat oranı olarak teklif bedelinin %3'ü oranında teminat mektubu talep edilmektedir.</li>
-                                </ul>
-                              )}
-                            </div>
-                          )}
-
-                          {activeDetailTab === `teknik-${res.id}` && (
-                            <div className="mt-2 p-3 bg-white border border-[#cbd5e1] rounded-lg text-left text-xs text-[#475569]">
-                              <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2 font-heading">Teknik Yeterlilik Kriterleri</h5>
-                              {res.tech_spec ? (
-                                <div className="whitespace-pre-line">{res.tech_spec}</div>
-                              ) : (
-                                <>
-                                  <p className="mb-2">Tüm inşaat ve yapım malzemelerinin TSE standardı belgesi bulunmalıdır. Yüklenici, işe başladıktan sonra 10 gün içinde detaylı iş programını idareye sunacaktır.</p>
-                                  <span className="text-[10px] text-accent font-semibold flex items-center gap-1"><i className="fa-solid fa-circle-info"></i> Detaylı teknik şartname PDF dosyasını indirmek için portala giriş yapın.</span>
-                                </>
-                              )}
-                            </div>
-                          )}
-
-                          {activeDetailTab === `benzer-${res.id}` && (
-                            <div className="mt-2 p-3 bg-white border border-[#cbd5e1] rounded-lg text-left text-xs text-[#475569]">
-                              <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2 font-heading">Aynı Sektördeki Geçmiş Sonuçlar & Teklif Günlüğü</h5>
-                              <div className="space-y-1.5">
-                                {res.similar_history ? (
-                                  res.similar_history.split('\n').filter(line => line.trim()).map((item, idx) => {
-                                    const parts = item.split(/[-:]/);
-                                    return (
-                                      <div key={idx} className="flex justify-between text-[11px] border-b border-gray-100 pb-1">
-                                        <span>{parts[0]?.trim()}</span>
-                                        <span className="text-emerald-600 font-bold">{parts.slice(1).join('-').trim()}</span>
-                                      </div>
-                                    );
-                                  })
-                                ) : (
-                                  <>
-                                    <div className="flex justify-between text-[11px] border-b border-gray-100 pb-1">
-                                      <span>2025/8902 - Asfalt Alımı İhalesi (Adana)</span>
-                                      <span className="text-emerald-600 font-bold">Sonuç: 8.420.000 ₺ (%12.4 Tasarruf)</span>
-                                    </div>
-                                    <div className="flex justify-between text-[11px] border-b border-gray-100 pb-1">
-                                      <span>2025/1102 - Hazır Beton Alım Hizmeti (Kozan)</span>
-                                      <span className="text-emerald-600 font-bold">Sonuç: 1.150.000 ₺ (%8.5 Tasarruf)</span>
-                                    </div>
-                                  </>
-                                )}
-                              </div>
-                              <h6 className="font-bold text-[#1e293b] mt-4 mb-2 flex items-center gap-1.5 text-[11.5px] font-heading">
-                                <i className="fa-solid fa-clock-rotate-left text-accent"></i> Güncel Teklif Geçmişi (Audit Trail)
-                              </h6>
-                              <div className="bg-slate-50 border border-slate-100 rounded-lg p-2.5 space-y-1.5 font-mono text-[10px] text-slate-500">
-                                <div className="flex justify-between">
-                                  <span>[15:42:01] Tedarikçi #8 (Demir A.Ş.)</span>
-                                  <span className="text-red-500 font-semibold">- 8.500 ₺ indirim yaptı</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span>[15:39:12] Tedarikçi #3 (Öz Yapı)</span>
-                                  <span className="text-red-500 font-semibold">- 12.000 ₺ indirim yaptı</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span>[15:35:50] Sistem</span>
-                                  <span className="text-slate-400">İhale canlı eksiltme aşamasına geçti</span>
-                                </div>
-                              </div>
-                            </div>
-                          )}
+                          ))}
                         </div>
                       )}
                     </div>
                   ))}
                 </div>
-              ) : (
-                <span className="text-xs text-gray-500">Arama kriterlerine uygun ihale bulunamadı.</span>
               )}
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+
+            {/* SEKTÖRLER */}
+            <div className="border-b border-slate-200">
+              <button
+                type="button"
+                onClick={() => setExpandedFilterSection(expandedFilterSection === 'sectors' ? null : 'sectors')}
+                className="flex w-full items-center justify-between px-4 py-3.5 text-left font-bold text-slate-700 text-xs"
+              >
+                <span className="flex items-center gap-2">🏭 Sektörler</span>
+                <i className={`fa-solid fa-chevron-down transition-transform text-[10px] text-slate-400 ${expandedFilterSection === 'sectors' ? 'rotate-180' : ''}`}></i>
+              </button>
+
+              {expandedFilterSection === 'sectors' && (
+                <div className="max-h-[300px] overflow-y-auto border-t border-slate-100">
+                  {SECTORS_LIST.map((sector) => (
+                    <button
+                      key={sector.name}
+                      type="button"
+                      onClick={() => setSelectedSector(sector.name)}
+                      className={`flex w-full items-center justify-between gap-3 border-b border-slate-100 px-4 py-2.5 text-left hover:bg-slate-50 ${selectedSector === sector.name ? 'bg-accent/5 text-accent font-bold' : ''}`}
+                    >
+                      <span className={`min-w-0 text-[11px] font-bold leading-5 ${selectedSector === sector.name ? 'text-accent' : 'text-slate-700'}`}>
+                        {sector.name}
+                      </span>
+                      <span className="shrink-0 rounded-md border bg-white px-2 py-0.5 text-[9px] font-black text-slate-500">
+                        {sector.count}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* İHALE TÜRLERİ */}
+            <div className="border-b border-slate-200">
+              <button
+                type="button"
+                onClick={() => setExpandedFilterSection(expandedFilterSection === 'types' ? null : 'types')}
+                className="flex w-full items-center justify-between px-4 py-3.5 text-left font-bold text-slate-700 text-xs"
+              >
+                <span className="flex items-center gap-2">🛠 İhale Türleri</span>
+                <i className={`fa-solid fa-chevron-down transition-transform text-[10px] text-slate-400 ${expandedFilterSection === 'types' ? 'rotate-180' : ''}`}></i>
+              </button>
+
+              {expandedFilterSection === 'types' && (
+                <div className="border-t border-slate-100 p-3">
+                  {TENDER_TYPES_LIST.map((type) => (
+                    <button
+                      key={type.name}
+                      type="button"
+                      onClick={() => setSelectedType(type.name)}
+                      className={`mb-2 flex w-full items-center justify-between rounded-lg border border-slate-200 px-3 py-2 text-left hover:border-accent hover:bg-slate-50 ${selectedType === type.name ? 'border-accent bg-accent/5 text-accent font-bold' : ''}`}
+                    >
+                      <span className="text-xs font-semibold text-slate-700">{type.name}</span>
+                      <span className="text-[9px] font-black text-slate-500">{type.count}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* TEKLİF YÖNTEMLERİ */}
+            <div className="border-b border-slate-200">
+              <button
+                type="button"
+                onClick={() => setExpandedFilterSection(expandedFilterSection === 'methods' ? null : 'methods')}
+                className="flex w-full items-center justify-between px-4 py-3.5 text-left font-bold text-slate-700 text-xs"
+              >
+                <span className="flex items-center gap-2">🔄 Teklif Yöntemleri</span>
+                <i className={`fa-solid fa-chevron-down transition-transform text-[10px] text-slate-400 ${expandedFilterSection === 'methods' ? 'rotate-180' : ''}`}></i>
+              </button>
+
+              {expandedFilterSection === 'methods' && (
+                <div className="border-t border-slate-100 p-3">
+                  {OFFER_METHODS_LIST.map((method) => (
+                    <button
+                      key={method.name}
+                      type="button"
+                      onClick={() => setSelectedMethod(method.name)}
+                      className={`mb-2 flex w-full items-center justify-between rounded-lg border border-slate-200 px-3 py-2 text-left hover:border-accent hover:bg-slate-50 ${selectedMethod === method.name ? 'border-accent bg-accent/5 text-accent font-bold' : ''}`}
+                    >
+                      <span className="text-xs font-semibold text-slate-700">{method.name}</span>
+                      <span className="text-[9px] font-black text-slate-500">{method.count}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* FİYATLANDIRMA TÜRLERİ */}
+            <div className="border-b border-slate-200">
+              <button
+                type="button"
+                onClick={() => setExpandedFilterSection(expandedFilterSection === 'pricing' ? null : 'pricing')}
+                className="flex w-full items-center justify-between px-4 py-3.5 text-left font-bold text-slate-700 text-xs"
+              >
+                <span className="flex items-center gap-2">📋 Fiyatlandırma Türleri</span>
+                <i className={`fa-solid fa-chevron-down transition-transform text-[10px] text-slate-400 ${expandedFilterSection === 'pricing' ? 'rotate-180' : ''}`}></i>
+              </button>
+
+              {expandedFilterSection === 'pricing' && (
+                <div className="border-t border-slate-100 p-3">
+                  {PRICING_TYPES_LIST.map((pricing) => (
+                    <button
+                      key={pricing.name}
+                      type="button"
+                      onClick={() => setSelectedPricingType(pricing.name)}
+                      className={`mb-2 flex w-full items-center justify-between rounded-lg border border-slate-200 px-3 py-2 text-left hover:border-accent hover:bg-slate-50 ${selectedPricingType === pricing.name ? 'border-accent bg-accent/5 text-accent font-bold' : ''}`}
+                    >
+                      <span className="text-xs font-semibold text-slate-700">{pricing.name}</span>
+                      <span className="text-[9px] font-black text-slate-500">{pricing.count}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* İLLER */}
+            <div>
+              <button
+                type="button"
+                onClick={() => setExpandedFilterSection(expandedFilterSection === 'cities' ? null : 'cities')}
+                className="flex w-full items-center justify-between px-4 py-3.5 text-left font-bold text-slate-700 text-xs"
+              >
+                <span className="flex items-center gap-2"><i className="fa-solid fa-location-dot text-slate-400"></i> İş / Teslimat Yeri</span>
+                <i className="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+              </button>
+
+              {expandedFilterSection === 'cities' && (
+                <div className="border-t border-slate-100 p-3">
+                  <select
+                    value={selectedCity}
+                    onChange={(e) => setSelectedCity(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white p-3 text-xs font-bold text-slate-700 outline-none focus:border-accent"
+                  >
+                    <option value="">81 İl / Tüm Türkiye</option>
+                    {CITIES_LIST.map((city) => (
+                      <option key={city} value={city}>{city}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+          </aside>
+
+          {/* ===================== SAĞ SONUÇLAR VE ARAMA PANELİ ===================== */}
+          <div className="flex flex-col gap-4 text-left">
+            {/* Arama Çubuğu */}
+            <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-sm">
+              <form onSubmit={handleExplorerSearch} className="flex gap-2">
+                <div className="flex-1 relative">
+                  <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                  <input
+                    type="text"
+                    placeholder="Anahtar kelime veya firma arayın..."
+                    value={explorerSearch}
+                    onChange={(e) => setExplorerSearch(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-accent"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="px-6 py-3 rounded-xl bg-accent text-white font-bold text-xs hover:bg-accentLight transition-all"
+                >
+                  Ara
+                </button>
+              </form>
+            </div>
+
+            {/* AKTİF FİLTRELER */}
+            {(selectedCat || selectedSubcategory || selectedSector || selectedCity || selectedType || selectedMethod || selectedPricingType) && (
+              <div className="rounded-xl border border-accent/10 bg-accent/5 p-4">
+                <div className="text-[10px] font-black uppercase tracking-wider text-accent mb-2">Aktif Filtreler</div>
+                <div className="flex flex-wrap gap-2">
+                  {selectedCat && (
+                    <button type="button" onClick={() => { setSelectedCat(""); setSelectedSubcategory(""); }} className="bg-white px-3 py-1.5 rounded-full text-[11px] font-bold text-slate-700 border border-slate-200 hover:text-accent shadow-sm">
+                      Kategori: {selectedCat} ×
+                    </button>
+                  )}
+                  {selectedSubcategory && (
+                    <button type="button" onClick={() => setSelectedSubcategory("")} className="bg-white px-3 py-1.5 rounded-full text-[11px] font-bold text-slate-700 border border-slate-200 hover:text-accent shadow-sm">
+                      Alt Kategori: {selectedSubcategory} ×
+                    </button>
+                  )}
+                  {selectedSector && (
+                    <button type="button" onClick={() => setSelectedSector("")} className="bg-white px-3 py-1.5 rounded-full text-[11px] font-bold text-slate-700 border border-slate-200 hover:text-accent shadow-sm">
+                      Sektör: {selectedSector} ×
+                    </button>
+                  )}
+                  {selectedCity && (
+                    <button type="button" onClick={() => setSelectedCity("")} className="bg-white px-3 py-1.5 rounded-full text-[11px] font-bold text-slate-700 border border-slate-200 hover:text-accent shadow-sm">
+                      Şehir: {selectedCity} ×
+                    </button>
+                  )}
+                  {selectedType && (
+                    <button type="button" onClick={() => setSelectedType("")} className="bg-white px-3 py-1.5 rounded-full text-[11px] font-bold text-slate-700 border border-slate-200 hover:text-accent shadow-sm">
+                      Tür: {selectedType} ×
+                    </button>
+                  )}
+                  {selectedMethod && (
+                    <button type="button" onClick={() => setSelectedMethod("")} className="bg-white px-3 py-1.5 rounded-full text-[11px] font-bold text-slate-700 border border-slate-200 hover:text-accent shadow-sm">
+                      Yöntem: {selectedMethod} ×
+                    </button>
+                  )}
+                  {selectedPricingType && (
+                    <button type="button" onClick={() => setSelectedPricingType("")} className="bg-white px-3 py-1.5 rounded-full text-[11px] font-bold text-slate-700 border border-slate-200 hover:text-accent shadow-sm">
+                      Fiyatlandırma: {selectedPricingType} ×
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* SONUÇ ÜST BAR */}
+            <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <span className="font-black text-slate-800 text-sm">{searchResults.length} </span>
+                <span className="text-xs text-slate-500">aktif ihale listeleniyor</span>
+              </div>
+            </div>
+
+            {/* İHALE LİSTESİ */}
+            <div className="space-y-4">
+              {isSearching ? (
+                <div className="py-16 flex flex-col items-center justify-center gap-3 bg-white border border-slate-200 rounded-2xl">
+                  <i className="fa-solid fa-circle-notch fa-spin text-accent text-3xl"></i>
+                  <span className="text-xs text-slate-500 font-semibold">İhaleler yükleniyor...</span>
+                </div>
+              ) : searchResults.length > 0 ? (
+                searchResults.map((res) => (
+                  <div key={res.id} className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-accent/40 hover:shadow-lg transition-all flex flex-col text-left">
+                    <div className="flex flex-col lg:flex-row lg:justify-between gap-6">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          {res.featured && (
+                            <span className="rounded-full bg-orange-50 border border-orange-200 px-2.5 py-0.5 text-[10px] font-black text-orange-700">
+                              🔥 Öne Çıkan
+                            </span>
+                          )}
+                          <span className="rounded-full bg-accent/5 border border-accent/10 px-2.5 py-0.5 text-[10px] font-black text-accent">
+                            {res.type}
+                          </span>
+                          <span className="rounded-full bg-purple-50 border border-purple-200 px-2.5 py-0.5 text-[10px] font-black text-purple-700">
+                            {res.method}
+                          </span>
+                          <span className="rounded-full bg-slate-50 border border-slate-200 px-2.5 py-0.5 text-[10px] font-black text-slate-600">
+                            {res.pricing}
+                          </span>
+                        </div>
+
+                        <h3 className="mt-4 text-lg font-black text-slate-800 hover:text-accent transition-colors leading-snug">
+                          {res.title}
+                        </h3>
+
+                        <div className="mt-3 flex items-center gap-2 text-xs font-bold text-slate-500">
+                          <i className="fa-solid fa-building text-slate-400"></i>
+                          <span>{res.company}</span>
+                          {res.verified && <i className="fa-solid fa-circle-check text-accent text-[13px]"></i>}
+                        </div>
+
+                        <p className="mt-3 text-xs leading-relaxed text-slate-500 font-medium">
+                          {res.description}
+                        </p>
+
+                        <div className="mt-5 flex flex-wrap gap-4 text-xs font-bold text-slate-500">
+                          <span className="flex items-center gap-1.5">
+                            <i className="fa-solid fa-folder text-slate-400"></i>
+                            {res.category}
+                          </span>
+                          <span className="flex items-center gap-1.5">
+                            <i className="fa-solid fa-location-dot text-slate-400"></i>
+                            {res.city}
+                          </span>
+                          <span className="flex items-center gap-1.5">
+                            <i className="fa-solid fa-comments text-slate-400"></i>
+                            {res.offers || 0} teklif
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Right Panel */}
+                      <div className="flex min-w-56 flex-col justify-between border-t border-slate-100 pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+                        <div>
+                          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-slate-400">
+                            <i className="fa-solid fa-stopwatch text-slate-400"></i>
+                            Son Teklif Tarihi
+                          </div>
+                          <div className="mt-2 text-sm font-black text-slate-800">
+                            {res.date.includes("yayınlandı") ? "23.07.2026" : res.date}
+                          </div>
+                          <div className={`mt-1.5 text-xs font-black ${res.daysLeft <= 4 ? 'text-red-500' : 'text-orange-500'}`}>
+                            {res.daysLeft} gün kaldı
+                          </div>
+                        </div>
+
+                        <div className="mt-6 flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setExpandedTenderId(expandedTenderId === res.id ? null : res.id)}
+                            className="flex-1 flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-xs font-black text-white hover:bg-accent transition-colors"
+                          >
+                            {expandedTenderId === res.id ? "Detayları Gizle" : "Detayları Gör"}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Detay Kartı Açılımı */}
+                    {expandedTenderId === res.id && (
+                      <div className="w-full mt-4 p-4 rounded-lg bg-[#f4f9fc] text-[#334155] border border-[#7dc6e6] text-[12px] font-sans flex flex-col gap-3 shadow-md">
+                        {/* EKAP Detayları */}
+                        <div className="flex items-center gap-2 pb-2 border-b border-[#d2e7f3]">
+                          <span className="bg-[#f0f9ff] text-[#0284c7] border border-[#7dc6e6] text-[10px] font-extrabold px-1.5 py-0.5 rounded">
+                            # 1
+                          </span>
+                          <span className="font-bold text-[#1e293b] text-xs">
+                            {res.id === "res-1" || res.id === 1 ? "2026/184920" : res.id === "res-2" || res.id === 2 ? "2026/492019" : "2026/902811"} - {res.title}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
+                          <div className="md:col-span-6 flex items-start gap-1">
+                            <span className="text-[#0284c7] font-bold mr-1">→</span>
+                            <div>
+                              <span className="font-bold text-[#475569]">İşin niteliği:</span>{" "}
+                              {res.description || `${res.category} kapsamında, ${res.city} bölge sınırlarında teknik şartnameye ve malzeme listesine uygun olarak tedarik, nakliye ve saha montaj yapım işi.`}
+                            </div>
+                          </div>
+                          <div className="md:col-span-3 flex items-center gap-1.5">
+                            <span className="text-[#0284c7]"><i className="fa-solid fa-calendar-days text-[11px]"></i></span>
+                            <div>
+                              <span className="font-bold text-[#475569]">İşin süresi:</span>{" "}
+                              {res.id === 1 ? "2 Ay 21 Gün" : res.id === 2 ? "1 Yıl" : "6 Ay"}
+                            </div>
+                          </div>
+                          <div className="md:col-span-3 flex items-center gap-1.5">
+                            <span className="text-[#0284c7]"><i className="fa-solid fa-arrows-up-down text-[11px]"></i></span>
+                            <div>
+                              <span className="font-bold text-[#475569]">Yaklaşık maliyet:</span>{" "}
+                              {res.value}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start border-t border-dashed border-[#e2eff7] pt-2">
+                          <div className="md:col-span-8 flex items-start gap-1">
+                            <span className="text-[#0284c7]"><i className="fa-solid fa-building text-[11px]"></i></span>
+                            <div>
+                              <span className="font-bold text-[#475569]">İdare adı:</span>{" "}
+                              {res.company}
+                            </div>
+                          </div>
+                          <div className="md:col-span-4 flex justify-start md:justify-end gap-3 text-right">
+                            <div className="flex items-center gap-1 text-[#475569]">
+                              <i className="fa-solid fa-location-arrow text-[10px] text-[#0284c7]"></i>
+                              <span>Merkez</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-[#475569]">
+                              <i className="fa-solid fa-flag text-[10px] text-[#0284c7]"></i>
+                              <span className="font-bold">{res.city}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center border-t border-dashed border-[#e2eff7] pt-2">
+                          <div className="md:col-span-4 flex items-center gap-1.5">
+                            <span className="text-[#475569]"><i className="fa-solid fa-calendar-plus text-[11px]"></i></span>
+                            <div>
+                              <span className="font-bold text-[#475569]">Yayın tarihi:</span> 23.06.2026
+                            </div>
+                          </div>
+                          <div className="md:col-span-5 flex items-center flex-wrap gap-1.5">
+                            <span className="text-[#475569]"><i className="fa-solid fa-stopwatch text-[11px]"></i></span>
+                            <div>
+                              <span className="font-bold text-[#475569]">Teklif tarihi:</span> {res.date.includes("yayınlandı") ? "23.07.2026" : res.date}
+                            </div>
+                            <span className="ml-1.5 bg-[#fef2f2] border border-[#fca5a5] text-[#b91c1c] text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#b91c1c] animate-pulse"></span>
+                              {res.daysLeft} gün kaldı
+                            </span>
+                          </div>
+                          <div className="md:col-span-3 flex justify-start md:justify-end gap-1.5 flex-wrap">
+                            <span className="bg-[#f1f5f9] text-[#475569] px-2 py-0.5 rounded border border-[#cbd5e1] text-[10px] font-medium flex items-center gap-1">
+                              <i className="fa-solid fa-tag text-[9px] text-[#64748b]"></i> {res.source}
+                            </span>
+                            <span className="bg-[#f1f5f9] text-[#475569] px-2 py-0.5 rounded border border-[#cbd5e1] text-[10px] font-medium flex items-center gap-1">
+                              <i className="fa-solid fa-tag text-[9px] text-[#64748b]"></i> {res.method}
+                            </span>
+                            <span className="bg-[#f1f5f9] text-[#475569] px-2 py-0.5 rounded border border-[#cbd5e1] text-[10px] font-medium flex items-center gap-1">
+                              <i className="fa-solid fa-tag text-[9px] text-[#64748b]"></i> {res.pricing}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Footer Buttons */}
+                        <div className="border-t border-[#d2e7f3] pt-3 flex flex-wrap gap-2">
+                          <button 
+                            type="button"
+                            onClick={() => setActiveDetailTab(activeDetailTab === `malzeme-${res.id}` ? null : `malzeme-${res.id}`)}
+                            className={`px-3 py-1.5 rounded border text-[#0284c7] font-semibold bg-white hover:bg-[#e0f2fe] hover:border-[#0284c7] transition-all flex items-center gap-1.5 text-[11px] ${
+                              activeDetailTab === `malzeme-${res.id}` ? "border-[#0284c7] bg-[#f0f9ff]" : "border-[#cbd5e1]"
+                            }`}
+                          >
+                            <i className="fa-solid fa-file-invoice text-[#0284c7]"></i> Malzeme Listesi <span className="bg-[#e0f2fe] text-[#0369a1] text-[9px] font-extrabold px-1 rounded-full ml-1">22</span>
+                          </button>
+
+                          <button 
+                            type="button"
+                            onClick={() => setActiveDetailTab(activeDetailTab === `ilan-${res.id}` ? null : `ilan-${res.id}`)}
+                            className={`px-3 py-1.5 rounded border text-[#0284c7] font-semibold bg-white hover:bg-[#e0f2fe] hover:border-[#0284c7] transition-all flex items-center gap-1.5 text-[11px] ${
+                              activeDetailTab === `ilan-${res.id}` ? "border-[#0284c7] bg-[#f0f9ff]" : "border-[#cbd5e1]"
+                            }`}
+                          >
+                            <i className="fa-solid fa-bullhorn text-[#0284c7]"></i> İhale İlanı
+                          </button>
+
+                          <button 
+                            type="button"
+                            onClick={() => setActiveDetailTab(activeDetailTab === `idari-${res.id}` ? null : `idari-${res.id}`)}
+                            className={`px-3 py-1.5 rounded border text-[#0284c7] font-semibold bg-white hover:bg-[#e0f2fe] hover:border-[#0284c7] transition-all flex items-center gap-1.5 text-[11px] ${
+                              activeDetailTab === `idari-${res.id}` ? "border-[#0284c7] bg-[#f0f9ff]" : "border-[#cbd5e1]"
+                            }`}
+                          >
+                            <i className="fa-solid fa-file-shield text-[#0284c7]"></i> İdari Şartname
+                          </button>
+
+                          <button 
+                            type="button"
+                            onClick={() => setActiveDetailTab(activeDetailTab === `teknik-${res.id}` ? null : `teknik-${res.id}`)}
+                            className={`px-3 py-1.5 rounded border text-[#0284c7] font-semibold bg-white hover:bg-[#e0f2fe] hover:border-[#0284c7] transition-all flex items-center gap-1.5 text-[11px] ${
+                              activeDetailTab === `teknik-${res.id}` ? "border-[#0284c7] bg-[#f0f9ff]" : "border-[#cbd5e1]"
+                            }`}
+                          >
+                            <i className="fa-solid fa-file-code text-[#0284c7]"></i> Teknik Şartname
+                          </button>
+
+                          <button 
+                            type="button"
+                            onClick={() => setActiveDetailTab(activeDetailTab === `benzer-${res.id}` ? null : `benzer-${res.id}`)}
+                            className={`px-3 py-1.5 rounded border text-[#0284c7] font-semibold bg-white hover:bg-[#e0f2fe] hover:border-[#0284c7] transition-all flex items-center gap-1.5 text-[11px] ${
+                              activeDetailTab === `benzer-${res.id}` ? "border-[#0284c7] bg-[#f0f9ff]" : "border-[#cbd5e1]"
+                            }`}
+                          >
+                            <i className="fa-solid fa-rotate-left text-[#0284c7]"></i> Benzer İhale Geçmişi
+                          </button>
+                        </div>
+
+                        {/* Dynamic content tab drawers inside card */}
+                        {activeDetailTab === `malzeme-${res.id}` && (
+                          <div className="mt-2 p-4 bg-white border border-[#cbd5e1] rounded-lg text-left">
+                            <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-2 mb-3 flex items-center gap-1.5 font-heading">
+                              <i className="fa-solid fa-list-ol text-accent text-[12px]"></i> Malzeme & Birim Fiyat Teklif Formu
+                            </h5>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-xs text-slate-600 border-collapse">
+                                <thead>
+                                  <tr className="bg-slate-50 border-b border-slate-200">
+                                    <th className="p-2 text-left font-bold text-slate-700">Malzeme/Hizmet Tanımı</th>
+                                    <th className="p-2 text-center font-bold text-slate-700 w-24">Miktar / Birim</th>
+                                    <th className="p-2 text-right font-bold text-slate-700 w-32">Birim Fiyat Teklifi (₺)</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {res.material_list ? (
+                                    res.material_list.split('\n').filter(line => line.trim()).map((m, idx) => {
+                                      const parts = m.split(/[-:]/);
+                                      const itemName = parts[0]?.trim() || "";
+                                      const itemQty = parts[1]?.trim() || "1 Adet";
+                                      return (
+                                        <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50/50">
+                                          <td className="p-2 font-medium text-slate-800">{itemName}</td>
+                                          <td className="p-2 text-center font-bold text-slate-600">{itemQty}</td>
+                                          <td className="p-2 text-right">
+                                            <input 
+                                              type="number" 
+                                              placeholder="0.00" 
+                                              className="w-28 text-right bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:border-accent"
+                                            />
+                                          </td>
+                                        </tr>
+                                      );
+                                    })
+                                  ) : (
+                                    <>
+                                      <tr className="border-b border-slate-100 hover:bg-slate-50/50">
+                                        <td className="p-2 font-medium text-slate-800">Hazır Beton (C30/37)</td>
+                                        <td className="p-2 text-center font-bold text-slate-600">1.250 m³</td>
+                                        <td className="p-2 text-right">
+                                          <input 
+                                            type="number" 
+                                            placeholder="0.00" 
+                                            className="w-28 text-right bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:border-accent"
+                                          />
+                                        </td>
+                                      </tr>
+                                      <tr className="border-b border-slate-100 hover:bg-slate-50/50">
+                                        <td className="p-2 font-medium text-slate-800">Nervürlü Çelik Boru</td>
+                                        <td className="p-2 text-center font-bold text-slate-600">85 Ton</td>
+                                        <td className="p-2 text-right">
+                                          <input 
+                                            type="number" 
+                                            placeholder="0.00" 
+                                            className="w-28 text-right bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:border-accent"
+                                          />
+                                        </td>
+                                      </tr>
+                                      <tr className="border-b border-slate-100 hover:bg-slate-50/50">
+                                        <td className="p-2 font-medium text-slate-800">Kazı ve Dolgu İşçiliği</td>
+                                        <td className="p-2 text-center font-bold text-slate-600">3.400 m³</td>
+                                        <td className="p-2 text-right">
+                                          <input 
+                                            type="number" 
+                                            placeholder="0.00" 
+                                            className="w-28 text-right bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:border-accent"
+                                          />
+                                        </td>
+                                      </tr>
+                                    </>
+                                  )}
+                                </tbody>
+                              </table>
+                            </div>
+                            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between flex-wrap gap-3">
+                              <span className="text-[10px] text-slate-400">Teklifinizi göndermek ve canlı eksiltme arenasına katılmak için portaldan oturum açmalısınız.</span>
+                              <button 
+                                type="button"
+                                onClick={() => {
+                                  alert('Teklif vermek ve canlı eksiltme arenasına katılmak için kurumsal üye girişi yapmanız gerekmektedir. Portal giriş ve kayıt ekranına yönlendiriliyorsunuz.');
+                                  window.location.href = '/portal.html#/uyelik';
+                                }}
+                                className="px-4 py-2 bg-accent text-white font-bold rounded-lg hover:bg-accentLight transition-all text-xs flex items-center gap-1.5 shadow-sm animate-pulse"
+                              >
+                                <i className="fa-solid fa-paper-plane"></i> Teklif Gönder ve Katıl
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        {activeDetailTab === `ilan-${res.id}` && (
+                          <div className="mt-2 p-3 bg-white border border-[#cbd5e1] rounded-lg text-left text-xs text-[#475569] leading-relaxed">
+                            <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2 font-heading">Resmi İhale İlan Metni (Özet)</h5>
+                            {res.description ? (
+                              <p>{res.description}</p>
+                            ) : (
+                              <p>İdare tarafından 23.06.2026 tarihinde onaylanan şartnameye istinaden, B2B tersine ihale yöntemiyle canlı eksiltme yapılacaktır. Teklifler {res.daysLeft <= 0 ? "sonuçlanmıştır" : "16.07.2026 günü saat 10:30'a kadar"} platform üzerinden kabul edilecektir. Katılmak isteyen tedarikçilerin güncel yeterlilik belgesi ve oda kayıt suretini yüklemeleri zorunludur.</p>
+                            )}
+                          </div>
+                        )}
+
+                        {activeDetailTab === `idari-${res.id}` && (
+                          <div className="mt-2 p-3 bg-white border border-[#cbd5e1] rounded-lg text-left text-xs text-[#475569]">
+                            <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2 font-heading">İdari Şartname Maddeleri</h5>
+                            {res.admin_spec ? (
+                              <div className="whitespace-pre-line">{res.admin_spec}</div>
+                            ) : (
+                              <ul className="list-disc pl-4 space-y-1">
+                                <li>Teklif geçerlilik süresi, ihale tarihinden itibaren en az 90 takvim günü olmalıdır.</li>
+                                <li>Canlı eksiltme arenamızda en düşük fiyat teklifi veren 3 firma son pazarlığa davet edilecektir.</li>
+                                <li>Geçici teminat oranı olarak teklif bedelinin %3'ü oranında teminat mektubu talep edilmektedir.</li>
+                              </ul>
+                            )}
+                          </div>
+                        )}
+
+                        {activeDetailTab === `teknik-${res.id}` && (
+                          <div className="mt-2 p-3 bg-white border border-[#cbd5e1] rounded-lg text-left text-xs text-[#475569]">
+                            <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2 font-heading">Teknik Yeterlilik Kriterleri</h5>
+                            {res.tech_spec ? (
+                              <div className="whitespace-pre-line">{res.tech_spec}</div>
+                            ) : (
+                              <>
+                                <p className="mb-2">Tüm inşaat ve yapım malzemelerinin TSE standardı belgesi bulunmalıdır. Yüklenici, işe başladıktan sonra 10 gün içinde detaylı iş programını idareye sunacaktır.</p>
+                                <span className="text-[10px] text-accent font-semibold flex items-center gap-1"><i className="fa-solid fa-circle-info"></i> Detaylı teknik şartname PDF dosyasını indirmek için portala giriş yapın.</span>
+                              </>
+                            )}
+                          </div>
+                        )}
+
+                        {activeDetailTab === `benzer-${res.id}` && (
+                          <div className="mt-2 p-3 bg-white border border-[#cbd5e1] rounded-lg text-left text-xs text-[#475569]">
+                            <h5 className="font-bold text-[#1e293b] border-b border-[#e2e8f0] pb-1.5 mb-2 font-heading">Aynı Sektördeki Geçmiş Sonuçlar & Teklif Günlüğü</h5>
+                            <div className="space-y-1.5">
+                              {res.similar_history ? (
+                                res.similar_history.split('\n').filter(line => line.trim()).map((item, idx) => {
+                                  const parts = item.split(/[-:]/);
+                                  return (
+                                    <div key={idx} className="flex justify-between text-[11px] border-b border-gray-100 pb-1">
+                                      <span>{parts[0]?.trim()}</span>
+                                      <span className="text-emerald-600 font-bold">{parts.slice(1).join('-').trim()}</span>
+                                    </div>
+                                  );
+                                })
+                              ) : (
+                                <>
+                                  <div className="flex justify-between text-[11px] border-b border-gray-100 pb-1">
+                                    <span>2025/8902 - Asfalt Alımı İhalesi (Adana)</span>
+                                    <span className="text-emerald-600 font-bold">Sonuç: 8.420.000 ₺ (%12.4 Tasarruf)</span>
+                                  </div>
+                                  <div className="flex justify-between text-[11px] border-b border-gray-100 pb-1">
+                                    <span>2025/1102 - Hazır Beton Alım Hizmeti (Kozan)</span>
+                                    <span className="text-emerald-600 font-bold">Sonuç: 1.150.000 ₺ (%8.5 Tasarruf)</span>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                            <h6 className="font-bold text-[#1e293b] mt-4 mb-2 flex items-center gap-1.5 text-[11.5px] font-heading">
+                              <i className="fa-solid fa-clock-rotate-left text-accent"></i> Güncel Teklif Geçmişi (Audit Trail)
+                            </h6>
+                            <div className="bg-slate-50 border border-slate-100 rounded-lg p-2.5 space-y-1.5 font-mono text-[10px] text-slate-500">
+                              <div className="flex justify-between">
+                                <span>[15:42:01] Tedarikçi #8 (Demir A.Ş.)</span>
+                                <span className="text-red-500 font-semibold">- 8.500 ₺ indirim yaptı</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>[15:39:12] Tedarikçi #3 (Öz Yapı)</span>
+                                <span className="text-red-500 font-semibold">- 12.000 ₺ indirim yaptı</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>[15:35:50] Sistem</span>
+                                <span className="text-slate-400">İhale canlı eksiltme aşamasına geçti</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="py-16 text-center bg-white border border-slate-200 rounded-2xl">
+                  <i className="fa-solid fa-circle-xmark text-slate-300 text-4xl mb-3 block"></i>
+                  <span className="text-xs text-slate-500 font-semibold">Arama kriterlerine uygun ihale bulunamadı.</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
 
         {/* Categories & Metadata Grid (EKAP style from screenshot) */}
         <div className="mb-10">
